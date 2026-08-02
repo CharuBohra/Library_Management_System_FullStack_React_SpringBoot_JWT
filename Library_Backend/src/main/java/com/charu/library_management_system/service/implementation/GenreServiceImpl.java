@@ -9,6 +9,8 @@ import com.charu.library_management_system.service.GenreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class GenreServiceImpl implements GenreService {
@@ -27,8 +29,26 @@ public class GenreServiceImpl implements GenreService {
             genre.setParentGenre(parent);
         }
 
+        System.out.println(genre.getId());
+
         Genre savedGenre = genreRepository.save(genre);
 
-        return genreMapper.toDTO(savedGenre);
+        System.out.println(savedGenre.getId());
+
+        GenreDTO dto = genreMapper.toDTO(savedGenre);
+
+        System.out.println(dto.getId());
+
+        return dto;
+    }
+
+    @Override
+    public List<GenreDTO> getAllGenres() {
+        List<GenreDTO> genres = genreRepository.findAll()
+                .stream()
+                .map(genreMapper::toDTO)
+                .toList();
+
+        return genres;
     }
 }

@@ -17,7 +17,7 @@ import java.util.List;
 @AllArgsConstructor
 public class GenreDTO {
 
-    private Long Id;
+    private Long id;
 
     @NotBlank(message = "Genre code is required ")
     private String code;
