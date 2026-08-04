@@ -1,12 +1,16 @@
 package com.charu.library_management_system.service.implementation;
 
 import com.charu.library_management_system.dto.GenreDTO;
+import com.charu.library_management_system.exception.GenreNotFoundException;
 import com.charu.library_management_system.exception.ParentGenreNotFoundException;
 import com.charu.library_management_system.mapper.GenreMapper;
 import com.charu.library_management_system.models.Genre;
 import com.charu.library_management_system.repository.GenreRepository;
 import com.charu.library_management_system.service.GenreService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -51,4 +55,88 @@ public class GenreServiceImpl implements GenreService {
 
         return genres;
     }
+
+    @Override
+    public GenreDTO getGenreById(Long genreId) {
+        Genre genre = genreRepository.findById(genreId)
+                .orElseThrow(()->new GenreNotFoundException("Genre not found for id "+genreId));
+
+        return genreMapper.toDTO(genre);
+    }
+
+    @Override
+    public GenreDTO updateGenre(Long genreId, GenreDTO genreDTO) {
+        Genre genre = genreRepository.findById(genreId)
+                .orElseThrow(()->new GenreNotFoundException("Genre not found for id "+genreId));
+
+
+        genreMapper.updateEntityFromDTO(genreDTO,genre);
+
+        if(genreDTO.getParentGenreId()!=null)
+        {
+            Genre parent = genreRepository.findById(genreDTO.getParentGenreId())
+                    .orElseThrow(()->new ParentGenreNotFoundException("Parent Genre not found for id "+genreDTO.getParentGenreId()));
+            genre.setParentGenre(parent);
+        }
+
+        Genre updatedGenre = genreRepository.save(genre);
+
+        return genreMapper.toDTO(updatedGenre);
+
+    }
+
+    @Override
+    @Transactional
+    public void deleteGenre(Long genreId) {
+        Genre genre = genreRepository.findById(genreId)
+                .orElseThrow(()->new GenreNotFoundException("Genre not found for id "+genreId));
+        genre.setActive(false);
+    }
+
+    @Override
+    public void hardDeleteGenre(Long genreId) {
+        Genre genre = genreRepository.findById(genreId)
+                .orElseThrow(()->new GenreNotFoundException("Genre not found for id "+genreId));
+        genreRepository.delete(genre);
+    }
+
+    @Override
+    public List<GenreDTO> getAllActiveGenresWithSubGenre() {
+        List<GenreDTO> activeGenres = genreRepository.findByParentGenreIsNullAndActiveTrueOrderByDisplayOrderAsc()
+                .stream()
+                .map(genreMapper::toDTO)
+                .toList();
+
+        return activeGenres;
+    }
+
+    @Override
+    public List<GenreDTO> getTopLevelGenres() {
+        List<GenreDTO> topGenres = genreRepository.findByParentGenreIsNullAndActiveTrueOrderByDisplayOrderAsc()
+                .stream()
+                .map(genreMapper::toDTO)
+                .toList();
+
+        return topGenres;
+    }
+
+//    @Override
+//    public Page<GenreDTO> searchGenre(String searchTerm, Pageable pageable) {
+//        return null;
+//    }
+
+    @Override
+    public Long getTotalActiveGenres() {
+        return genreRepository.countByActiveTrue();
+    }
+
+    @Override
+    public Long getBookCountByGenre(Long genreId) {
+        return 0L;
+    }
+
+//    @Override
+//    public Long getBookCountByGenre(Long genreId) {
+//        return genreRepository.countBookByGenre(genreId);
+//    }
 }
