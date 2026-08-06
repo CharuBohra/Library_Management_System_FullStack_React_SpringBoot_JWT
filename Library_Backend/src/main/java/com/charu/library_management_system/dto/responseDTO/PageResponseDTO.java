@@ -16,7 +16,7 @@ public class PageResponseDTO<T>{
 
     private Integer pageSize;
 
-    private Long totalPages;
+    private Integer totalPages;
 
     private Long totalElements;
 

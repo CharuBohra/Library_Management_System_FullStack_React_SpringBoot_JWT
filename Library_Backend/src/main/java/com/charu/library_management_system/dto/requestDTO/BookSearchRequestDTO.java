@@ -6,9 +6,8 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class BookSearchRequestDTO {
-    private String title;
+@Builder public class BookSearchRequestDTO {
+    private String searchTerm;
 
     private Long genreId;
 
