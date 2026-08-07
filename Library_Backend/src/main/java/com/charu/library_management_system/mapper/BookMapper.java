@@ -1,6 +1,7 @@
 package com.charu.library_management_system.mapper;
 
 import com.charu.library_management_system.dto.BookDTO;
+import com.charu.library_management_system.dto.requestDTO.UpdateBookRequestDTO;
 import com.charu.library_management_system.models.Book;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -24,5 +25,5 @@ public interface BookMapper {
     @Mapping(target = "genre" , ignore = true)
     @Mapping(target = "createdAt" , ignore = true)
     @Mapping(target = "updatedAt" , ignore = true)
-    void updateEntityFromDTO(BookDTO bookDTO, @MappingTarget Book book);
+    void updateEntityFromDTO(UpdateBookRequestDTO updateBookDTO, @MappingTarget Book book);
 }

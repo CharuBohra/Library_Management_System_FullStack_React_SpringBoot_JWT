@@ -32,7 +32,7 @@ public interface BookRepository extends JpaRepository<Book,Long> {
             Pageable pageable
     );
 
-    Long countActiveByTrue();
+    Long countByActiveTrue();
 
     @Query("select count(b) from Book b where b.availableCopies>0 and b.active=true")
     Long countAvailableBooks();

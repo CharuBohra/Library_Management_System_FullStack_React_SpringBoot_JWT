@@ -2,6 +2,7 @@ package com.charu.library_management_system.service;
 
 import com.charu.library_management_system.dto.BookDTO;
 import com.charu.library_management_system.dto.requestDTO.BookSearchRequestDTO;
+import com.charu.library_management_system.dto.requestDTO.UpdateBookRequestDTO;
 import com.charu.library_management_system.dto.responseDTO.PageResponseDTO;
 
 import java.util.List;
@@ -15,7 +16,7 @@ public interface BookService {
 
     BookDTO getBookByISBN(String isbn);
 
-    BookDTO updateBook(BookDTO bookDTO);
+    BookDTO updateBook(Long id, UpdateBookRequestDTO bookDTO);
 
     void deleteBook(Long bookId);
 

@@ -2,6 +2,7 @@ package com.charu.library_management_system.service.implementation;
 
 import com.charu.library_management_system.dto.BookDTO;
 import com.charu.library_management_system.dto.requestDTO.BookSearchRequestDTO;
+import com.charu.library_management_system.dto.requestDTO.UpdateBookRequestDTO;
 import com.charu.library_management_system.dto.responseDTO.PageResponseDTO;
 import com.charu.library_management_system.exception.BookNotFoundException;
 import com.charu.library_management_system.exception.DuplicateIsbnException;
@@ -79,16 +80,17 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
-    public BookDTO updateBook(BookDTO bookDTO) {
-        Book book = bookRepository.findById(bookDTO.getId())
-                .orElseThrow(()->new BookNotFoundException("Book does not exist with id "+bookDTO.getId()));
+    @Transactional
+    public BookDTO updateBook(Long id, UpdateBookRequestDTO updateBookDTO) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(()->new BookNotFoundException("Book does not exist with id "+id));
 
-        bookMapper.updateEntityFromDTO(bookDTO,book);
+        bookMapper.updateEntityFromDTO(updateBookDTO,book);
 
-        if(bookDTO.getGenreId()!=null)
+        if(updateBookDTO.getGenreId()!=null)
         {
-            Genre genre = genreRepository.findById(bookDTO.getGenreId())
-                    .orElseThrow(()->new GenreNotFoundException("Genre not found for id "+bookDTO.getGenreId()));
+            Genre genre = genreRepository.findById(updateBookDTO.getGenreId())
+                    .orElseThrow(()->new GenreNotFoundException("Genre not found for id "+updateBookDTO.getGenreId()));
             book.setGenre(genre);
         }
 
@@ -107,6 +109,7 @@ public class BookServiceImpl implements BookService {
     }
 
     @Override
+    @Transactional
     public void hardDeleteBook(Long bookId) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(()->new BookNotFoundException("Book does not exist with id "+bookId));
@@ -133,7 +136,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Long getTotalActiveBooks() {
-        Long activeBookCount = bookRepository.countActiveByTrue();
+        Long activeBookCount = bookRepository.countByActiveTrue();
         return activeBookCount;
     }
 

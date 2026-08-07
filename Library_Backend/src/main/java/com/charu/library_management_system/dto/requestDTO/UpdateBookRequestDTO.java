@@ -1,4 +1,4 @@
-package com.charu.library_management_system.dto;
+package com.charu.library_management_system.dto.requestDTO;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.*;
@@ -10,17 +10,10 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class BookDTO {
-
-    private Long id;
-
-    @NotBlank(message = "ISBN is mandatory for books")
-    @Size(max = 20, message = "ISBN cannot exceed 20 characters")
-    private String isbn;
-
+@NoArgsConstructor
+@Builder
+public class UpdateBookRequestDTO {
     @NotBlank(message = "Book title is mandatory")
     @Size(min = 1,max = 255 , message = "Title length should be in between 1-255 characters only")
     private String title;
@@ -82,5 +75,4 @@ public class BookDTO {
         }
         return availableCopies<=totalCopies;
     }
-
 }
