@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -33,6 +34,7 @@ public class BookServiceImpl implements BookService {
     private final BookMapper bookMapper;
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public BookDTO createBook(BookDTO bookDTO) {
         if(bookRepository.existsByIsbn(bookDTO.getIsbn())){
             throw new DuplicateIsbnException("Book already exists with isbn "+bookDTO.getIsbn());
@@ -52,6 +54,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public List<BookDTO> createBooksBulk(List<BookDTO> bookDTOS) {
         List<BookDTO> createdBooks = new ArrayList<>();
 
@@ -81,6 +84,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public BookDTO updateBook(Long id, UpdateBookRequestDTO updateBookDTO) {
         Book book = bookRepository.findById(id)
                 .orElseThrow(()->new BookNotFoundException("Book does not exist with id "+id));
@@ -101,6 +105,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteBook(Long bookId) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(()->new BookNotFoundException("Book does not exist with id "+bookId));
@@ -110,6 +115,7 @@ public class BookServiceImpl implements BookService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public void hardDeleteBook(Long bookId) {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(()->new BookNotFoundException("Book does not exist with id "+bookId));

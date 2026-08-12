@@ -11,6 +11,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,6 +24,7 @@ public class GenreServiceImpl implements GenreService {
     private final GenreMapper genreMapper;
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public GenreDTO createGenre(GenreDTO genreDTO) {
 
         Genre genre = genreMapper.toEntity(genreDTO);
@@ -65,6 +67,7 @@ public class GenreServiceImpl implements GenreService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public GenreDTO updateGenre(Long genreId, GenreDTO genreDTO) {
         Genre genre = genreRepository.findById(genreId)
                 .orElseThrow(()->new GenreNotFoundException("Genre not found for id "+genreId));
@@ -87,6 +90,7 @@ public class GenreServiceImpl implements GenreService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteGenre(Long genreId) {
         Genre genre = genreRepository.findById(genreId)
                 .orElseThrow(()->new GenreNotFoundException("Genre not found for id "+genreId));
@@ -94,6 +98,8 @@ public class GenreServiceImpl implements GenreService {
     }
 
     @Override
+    @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public void hardDeleteGenre(Long genreId) {
         Genre genre = genreRepository.findById(genreId)
                 .orElseThrow(()->new GenreNotFoundException("Genre not found for id "+genreId));
@@ -132,11 +138,6 @@ public class GenreServiceImpl implements GenreService {
 
     @Override
     public Long getBookCountByGenre(Long genreId) {
-        return 0L;
+        return genreRepository.countBookByGenre(genreId);
     }
-
-//    @Override
-//    public Long getBookCountByGenre(Long genreId) {
-//        return genreRepository.countBookByGenre(genreId);
-//    }
 }

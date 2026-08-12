@@ -41,9 +41,10 @@ public class Genre {
     private boolean active= true;
 
     @ManyToOne
+    @JoinColumn(name = "parent_genre_id")
     private Genre parentGenre;
 
-    @OneToMany
+    @OneToMany(mappedBy = "parentGenre")
     private List<Genre> subGenres = new ArrayList<Genre>();
 
     //@OneToMany
