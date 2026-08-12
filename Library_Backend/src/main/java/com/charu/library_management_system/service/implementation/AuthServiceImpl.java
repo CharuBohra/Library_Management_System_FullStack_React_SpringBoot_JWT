@@ -9,11 +9,15 @@ import com.charu.library_management_system.enums.UserRole;
 import com.charu.library_management_system.exception.UserExistsException;
 import com.charu.library_management_system.exception.UserNotFoundException;
 import com.charu.library_management_system.mapper.UserMapper;
+import com.charu.library_management_system.models.PasswordResetToken;
 import com.charu.library_management_system.models.User;
+import com.charu.library_management_system.repository.PasswordResetTokenRepository;
 import com.charu.library_management_system.repository.UserRepository;
 import com.charu.library_management_system.security.CustomUserDetails;
 import com.charu.library_management_system.security.JwtService;
 import com.charu.library_management_system.service.AuthService;
+import com.charu.library_management_system.service.EmailService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,6 +27,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +37,8 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final PasswordResetTokenRepository passwordResetTokenRepository;
+    private final EmailService emailService;
 
     @Override
     public ApiResponse signup(UserDTO req) {
@@ -66,7 +73,7 @@ public class AuthServiceImpl implements AuthService {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
         String email = userDetails.getUsername();
-        User user = userRepository.findUserByEmail(email)
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(()-> new UserNotFoundException("User not found with email "+email));
 
         user.setLastLogin(LocalDateTime.now());
@@ -89,11 +96,36 @@ public class AuthServiceImpl implements AuthService {
 }
 
     @Override
+    @Transactional
     public void createResetPasswordToken(String email) {
+        String frontendUrl = "http://localhost:5173/";
 
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(()->new UserNotFoundException("User does not exist with email "+email));
+
+        String rstToken = UUID.randomUUID().toString();
+
+        PasswordResetToken passwordResetToken = PasswordResetToken.builder()
+               .token(rstToken)
+                .user(user)
+                .expiryDate(LocalDateTime.now().plusMinutes(5))
+                .build();
+
+        PasswordResetToken savedToken = passwordResetTokenRepository.save(passwordResetToken);
+
+        String resetToken = frontendUrl+rstToken;
+
+        String subject = "Password Reset Link";
+
+        String body = "Click the following link to reset your password. " +
+                "This link is valid for 5 minutes:\n" +
+                resetToken;
+
+        emailService.sendEmail(user.getEmail(),subject,body);
     }
 
     @Override
+    @Transactional
     public void resetPassword(String token, String newPassword) {
 
     }
