@@ -27,7 +27,9 @@ public class EmailServiceImpl implements EmailService {
             javaMailSender.send(mimeMessage);
         }catch (MailException e)
         {
-            throw new EmailSendingException("Failed to send email");
+            System.err.println("MAIL ERROR:");
+            e.printStackTrace();
+            throw new EmailSendingException("Failed to send email",e);
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         }

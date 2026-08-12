@@ -6,6 +6,8 @@ import com.charu.library_management_system.dto.responseDTO.ApiResponse;
 import com.charu.library_management_system.dto.responseDTO.AuthResponse;
 import com.charu.library_management_system.enums.AuthProvider;
 import com.charu.library_management_system.enums.UserRole;
+import com.charu.library_management_system.exception.ResetTokenExpiredException;
+import com.charu.library_management_system.exception.ResetTokenNotFoundException;
 import com.charu.library_management_system.exception.UserExistsException;
 import com.charu.library_management_system.exception.UserNotFoundException;
 import com.charu.library_management_system.mapper.UserMapper;
@@ -127,6 +129,19 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void resetPassword(String token, String newPassword) {
+        PasswordResetToken resetToken = passwordResetTokenRepository.findByToken(token)
+                .orElseThrow(()->new ResetTokenNotFoundException("Reset token not found"));
 
+        if(resetToken.isExpired()){
+            throw new ResetTokenExpiredException("Reset token has expired");
+        }
+
+        User user = resetToken.getUser();
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+
+        User savedUser = userRepository.save(user);
+
+        passwordResetTokenRepository.delete(resetToken);
     }
 }
