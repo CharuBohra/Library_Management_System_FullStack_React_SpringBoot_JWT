@@ -1,5 +1,6 @@
 package com.charu.library_management_system.security;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,6 +41,19 @@ public class SecurityConfig {
                 .cors(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .headers(headers -> headers.frameOptions(frame-> frame.sameOrigin()))
+                .exceptionHandling(exception -> exception
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            response.setContentType("application/json");
+
+                            response.getWriter().write("""
+                {
+                    "code": "FORBIDDEN",
+                    "message": "You do not have permission to access this resource"
+                }
+                """);
+                        })
+                )
                 .authorizeHttpRequests(auth -> auth.
                         requestMatchers(
                                 "/auth/login/**",
