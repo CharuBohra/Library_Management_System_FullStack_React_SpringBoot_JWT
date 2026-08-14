@@ -87,4 +87,20 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
     }
+    @ExceptionHandler(SubscriptionPlanAlreadyExistsException.class)
+    public ResponseEntity<ApiResponse> handleSubscriptionPlanAlreadyExists(SubscriptionPlanAlreadyExistsException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage()).status(true).build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
+    }
+    @ExceptionHandler(SubscriptionPlanNotFoundException.class)
+    public ResponseEntity<ApiResponse> handleSubscriptionPlanNotFound(SubscriptionPlanNotFoundException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage()).status(true).build();
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
+    }
 }
