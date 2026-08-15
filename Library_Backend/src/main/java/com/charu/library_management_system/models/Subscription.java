@@ -9,7 +9,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -117,6 +116,7 @@ public class Subscription {
             this.planName = plan.getName();
             this.planCode = plan.getPlanCode();
             this.price = plan.getPrice();
+            this.currency = plan.getCurrency();
             this.maxBooksAllowed = plan.getMaxBooksAllowed();
             this.maxDaysPerBook=plan.getMaxDaysPerBook();
             if(startDate==null)
