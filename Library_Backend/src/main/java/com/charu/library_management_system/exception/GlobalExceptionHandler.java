@@ -103,4 +103,29 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
     }
+    @ExceptionHandler(SubscriptionAlreadyInactiveException.class)
+    public ResponseEntity<ApiResponse> handleSubscriptionAlreadyInactive(SubscriptionAlreadyInactiveException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage()).status(true).build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
+    }
+    @ExceptionHandler(SubscriptionNotFoundException.class)
+    public ResponseEntity<ApiResponse> handleSubscriptionNotFound(SubscriptionNotFoundException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage()).status(true).build();
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
+    }
+    @ExceptionHandler(ActiveSubscriptionNotFoundException.class)
+    public ResponseEntity<ApiResponse> handleActiveSubscriptionNotFound(ActiveSubscriptionNotFoundException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage()).status(true).build();
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
+    }
+
 }
