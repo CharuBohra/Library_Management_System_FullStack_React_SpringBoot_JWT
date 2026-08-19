@@ -2,11 +2,15 @@ package com.charu.library_management_system.service.gateway;
 
 import com.charu.library_management_system.dto.responseDTO.PaymentLinkResponse;
 import com.charu.library_management_system.enums.PaymentType;
+import com.charu.library_management_system.exception.SubscriptionPlanNotFoundException;
 import com.charu.library_management_system.models.Payment;
+import com.charu.library_management_system.models.SubscriptionPlan;
 import com.charu.library_management_system.models.User;
+import com.charu.library_management_system.repository.SubscriptionPlanRepository;
 import com.razorpay.PaymentLink;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
+import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -14,7 +18,11 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 
 @Service
+@RequiredArgsConstructor
 public class RazorpayService {
+
+    private final SubscriptionPlanRepository subscriptionPlanRepository;
+
     @Value("${razorpay.key.id}")
     private String razorId;
 
@@ -54,7 +62,7 @@ public class RazorpayService {
 
             paymentLinkRequest.put("reminder_enable",true);
 
-            String successUrl = baseUrl + "/payment_success"+ payment.getId();
+            String successUrl = baseUrl + "/payment_success/"+ payment.getId();
 
             paymentLinkRequest.put("callback_url",successUrl);
             paymentLinkRequest.put("callback_method","get");
@@ -98,6 +106,43 @@ public class RazorpayService {
             return payment.toJson();
         } catch (RazorpayException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public boolean isValidPayment(String paymentId)
+    {
+        try{
+            JSONObject paymentDetails = fetchPaymentDetails(paymentId);
+
+            String status = paymentDetails.optString("status");
+            long amount = paymentDetails.optLong("amount");
+            BigDecimal amountInRupees = BigDecimal.valueOf(amount).divide(BigDecimal.valueOf(100));
+
+            JSONObject notes = paymentDetails.getJSONObject("notes");
+            String paymentType = notes.optString("type");
+
+            //check status
+            if(!"captured".equalsIgnoreCase(status))
+            {
+                return false;
+            }
+            //check expected amount
+            if(paymentType.equals(PaymentType.MEMBERSHIP.toString()))
+            {
+                String planCode = notes.optString("plan");
+                SubscriptionPlan subscriptionPlan = subscriptionPlanRepository.findByPlanCode(planCode)
+                        .orElseThrow(()->new SubscriptionPlanNotFoundException("Subscription Plan not found for planCode "+planCode));
+                return amountInRupees.compareTo(subscriptionPlan.getPrice())==0;
+            }else if(paymentType.equals(PaymentType.FINE.toString()))
+            {
+                String fineId = notes.optString("fine_id");
+                //findById(fineId)
+                //return fine.getAmount == amountInRupees;
+            }
+
+            return false;
+        } catch (Exception e) {
+            return false;
         }
     }
 
