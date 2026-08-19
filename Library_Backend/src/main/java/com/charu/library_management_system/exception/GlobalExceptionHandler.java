@@ -127,5 +127,12 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
     }
+    @ExceptionHandler(PaymentNotFoundException.class)
+    public ResponseEntity<ApiResponse> handlePaymentNotFound(PaymentNotFoundException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage()).status(true).build();
 
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
+    }
 }
