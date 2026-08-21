@@ -141,7 +141,7 @@ public class PaymentServiceImpl implements PaymentService {
         //publish event
 
         return paymentMapper.toDTO(payment);
-    }s
+    }
 
     @Override
     public PageResponseDTO<PaymentDTO> getAllPayments(Pageable pageable) {
