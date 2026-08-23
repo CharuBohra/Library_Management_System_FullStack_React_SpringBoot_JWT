@@ -3,6 +3,7 @@ package com.charu.library_management_system.controller;
 import com.charu.library_management_system.dto.SubscriptionDTO;
 import com.charu.library_management_system.dto.responseDTO.ApiResponse;
 import com.charu.library_management_system.dto.responseDTO.PageResponseDTO;
+import com.charu.library_management_system.dto.responseDTO.PaymentInitiateResponse;
 import com.charu.library_management_system.service.SubscriptionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +22,9 @@ public class SubscriptionController {
     private final SubscriptionService subscriptionService;
 
     @PostMapping("/subscribe")
-    public ResponseEntity<SubscriptionDTO> subscribeToPlan(@Valid @RequestBody SubscriptionDTO subscriptionDTO)
+    public ResponseEntity<PaymentInitiateResponse> subscribeToPlan(@Valid @RequestBody SubscriptionDTO subscriptionDTO)
     {
-        SubscriptionDTO subscription = subscriptionService.subscribe(subscriptionDTO);
+        PaymentInitiateResponse subscription = subscriptionService.subscribe(subscriptionDTO);
         return ResponseEntity.ok(subscription);
     }
 

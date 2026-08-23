@@ -2,6 +2,7 @@ package com.charu.library_management_system.service;
 
 import com.charu.library_management_system.dto.SubscriptionDTO;
 import com.charu.library_management_system.dto.responseDTO.PageResponseDTO;
+import com.charu.library_management_system.dto.responseDTO.PaymentInitiateResponse;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 public interface SubscriptionService {
 
-    SubscriptionDTO subscribe(SubscriptionDTO subscriptionDTO);
+    PaymentInitiateResponse subscribe(SubscriptionDTO subscriptionDTO);
 
     SubscriptionDTO getUsersActiveSubscription();
 

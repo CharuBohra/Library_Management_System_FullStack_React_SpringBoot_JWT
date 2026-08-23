@@ -80,4 +80,11 @@ public class SubscriptionPlanServiceImpl implements SubscriptionPlanService {
 
         return subscriptionPlanDTOList;
     }
+
+    @Override
+    public SubscriptionPlan getSubscriptionByPlanCode(String planCode) {
+        SubscriptionPlan subscriptionPlan = subscriptionPlanRepository.findByPlanCode(planCode)
+                .orElseThrow(()->new SubscriptionPlanNotFoundException("Subscription Plan not found for planCode "+planCode));
+        return subscriptionPlan;
+    }
 }

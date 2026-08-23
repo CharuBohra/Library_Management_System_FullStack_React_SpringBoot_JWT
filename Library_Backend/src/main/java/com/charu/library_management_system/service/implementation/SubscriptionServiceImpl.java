@@ -2,7 +2,11 @@ package com.charu.library_management_system.service.implementation;
 
 import com.charu.library_management_system.dto.SubscriptionDTO;
 import com.charu.library_management_system.dto.UserDTO;
+import com.charu.library_management_system.dto.requestDTO.PaymentInitiateRequest;
 import com.charu.library_management_system.dto.responseDTO.PageResponseDTO;
+import com.charu.library_management_system.dto.responseDTO.PaymentInitiateResponse;
+import com.charu.library_management_system.enums.PaymentGateway;
+import com.charu.library_management_system.enums.PaymentType;
 import com.charu.library_management_system.exception.ActiveSubscriptionNotFoundException;
 import com.charu.library_management_system.exception.SubscriptionAlreadyInactiveException;
 import com.charu.library_management_system.exception.SubscriptionNotFoundException;
@@ -14,6 +18,7 @@ import com.charu.library_management_system.models.SubscriptionPlan;
 import com.charu.library_management_system.models.User;
 import com.charu.library_management_system.repository.SubscriptionPlanRepository;
 import com.charu.library_management_system.repository.SubscriptionRepository;
+import com.charu.library_management_system.service.PaymentService;
 import com.charu.library_management_system.service.SubscriptionService;
 import com.charu.library_management_system.service.UserService;
 import jakarta.transaction.Transactional;
@@ -37,10 +42,11 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final UserService userService;
     private final SubscriptionPlanRepository subscriptionPlanRepository;
     private final UserMapper userMapper;
+    private final PaymentService paymentService;
 
     @Override
     @Transactional
-    public SubscriptionDTO subscribe(SubscriptionDTO subscriptionDTO) {
+    public PaymentInitiateResponse subscribe(SubscriptionDTO subscriptionDTO) {
         UserDTO userDTO = userService.getCurrentUser();
         User user = userMapper.toEntity(userDTO);
 
@@ -55,9 +61,16 @@ public class SubscriptionServiceImpl implements SubscriptionService {
 
         subscriptionRepository.save(subscription);
 
-        //create payment
+        PaymentInitiateRequest request = PaymentInitiateRequest.builder()
+                .userId(userDTO.getId())
+                .paymentType(PaymentType.MEMBERSHIP)
+                .paymentGateway(PaymentGateway.RAZORPAY)
+                .amount(subscription.getPrice())
+                .description("Library Subscription - "+plan.getName())
+                .subscriptionId(subscription.getId())
+                .build();
 
-        return subscriptionMapper.toDTO(subscription);
+        return paymentService.initiatePayment(request);
     }
 
     @Override

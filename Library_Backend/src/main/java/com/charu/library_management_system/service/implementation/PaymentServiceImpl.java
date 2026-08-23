@@ -9,6 +9,7 @@ import com.charu.library_management_system.dto.responseDTO.PaymentInitiateRespon
 import com.charu.library_management_system.dto.responseDTO.PaymentLinkResponse;
 import com.charu.library_management_system.enums.PaymentGateway;
 import com.charu.library_management_system.enums.PaymentStatus;
+import com.charu.library_management_system.events.publisher.PaymentEventPublisher;
 import com.charu.library_management_system.exception.PaymentNotFoundException;
 import com.charu.library_management_system.exception.SubscriptionNotFoundException;
 import com.charu.library_management_system.exception.UserNotFoundException;
@@ -44,6 +45,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final RazorpayService razorpayService;
     private final PaymentMapper paymentMapper;
+    private final PaymentEventPublisher paymentEventPublisher;
 
     @Transactional
     @Override
@@ -82,7 +84,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         paymentRepository.save(payment);
 
-        PaymentInitiateResponse response = null;
+        PaymentInitiateResponse response = new PaymentInitiateResponse();
 
         if(paymentInitiateRequest.getPaymentGateway()== PaymentGateway.RAZORPAY)
         {
@@ -125,7 +127,7 @@ public class PaymentServiceImpl implements PaymentService {
         {
             if(isValid)
             {
-                payment.setGatewayOrderId(paymentVerifyRequest.getRazorPaymentId());
+                payment.setGatewayPaymentId(paymentVerifyRequest.getRazorPaymentId());
             }
         }
         if(isValid)
@@ -133,12 +135,13 @@ public class PaymentServiceImpl implements PaymentService {
             payment.setPaymentStatus(PaymentStatus.SUCCESS);
             payment.setCompletedAt(LocalDateTime.now());
             payment = paymentRepository.save(payment);
+
+            paymentEventPublisher.publishPaymentSuccessEvent(payment);
         } else {
             payment.setPaymentStatus(PaymentStatus.FAILURE);
             payment.setFailureReason("Payment verification failed");
             payment = paymentRepository.save(payment);
         }
-        //publish event
 
         return paymentMapper.toDTO(payment);
     }

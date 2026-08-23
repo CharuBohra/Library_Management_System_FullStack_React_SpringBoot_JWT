@@ -2,11 +2,10 @@ package com.charu.library_management_system.service.gateway;
 
 import com.charu.library_management_system.dto.responseDTO.PaymentLinkResponse;
 import com.charu.library_management_system.enums.PaymentType;
-import com.charu.library_management_system.exception.SubscriptionPlanNotFoundException;
 import com.charu.library_management_system.models.Payment;
 import com.charu.library_management_system.models.SubscriptionPlan;
 import com.charu.library_management_system.models.User;
-import com.charu.library_management_system.repository.SubscriptionPlanRepository;
+import com.charu.library_management_system.service.SubscriptionPlanService;
 import com.razorpay.PaymentLink;
 import com.razorpay.RazorpayClient;
 import com.razorpay.RazorpayException;
@@ -21,7 +20,7 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 public class RazorpayService {
 
-    private final SubscriptionPlanRepository subscriptionPlanRepository;
+    private final SubscriptionPlanService subscriptionPlanService;
 
     @Value("${razorpay.key.id}")
     private String razorId;
@@ -130,8 +129,7 @@ public class RazorpayService {
             if(paymentType.equals(PaymentType.MEMBERSHIP.toString()))
             {
                 String planCode = notes.optString("plan");
-                SubscriptionPlan subscriptionPlan = subscriptionPlanRepository.findByPlanCode(planCode)
-                        .orElseThrow(()->new SubscriptionPlanNotFoundException("Subscription Plan not found for planCode "+planCode));
+                SubscriptionPlan subscriptionPlan = subscriptionPlanService.getSubscriptionByPlanCode(planCode);
                 return amountInRupees.compareTo(subscriptionPlan.getPrice())==0;
             }else if(paymentType.equals(PaymentType.FINE.toString()))
             {
