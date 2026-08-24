@@ -7,7 +7,9 @@ import com.charu.library_management_system.dto.responseDTO.PageResponseDTO;
 import com.charu.library_management_system.dto.responseDTO.PaymentInitiateResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
+@Service
 public interface PaymentService {
 
     PaymentInitiateResponse initiatePayment(PaymentInitiateRequest paymentInitiateRequest);

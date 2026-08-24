@@ -17,8 +17,18 @@ public interface SubscriptionMapper {
     @Mapping(target = "planId" , source = "plan.id")
     SubscriptionDTO toDTO(Subscription subscription);
 
-    @Mapping(target = "id", source = "id")
+    @Mapping(target = "id", source = "subscriptionDTO.id")
     @Mapping(target = "user", source = "user")
     @Mapping(target = "plan", source = "plan")
-    Subscription toEntity(SubscriptionDTO subscriptionDTO, User user , SubscriptionPlan subscriptionPlan);
+    @Mapping(target = "planName", ignore = true)
+    @Mapping(target = "planCode", ignore = true)
+    @Mapping(target = "price", ignore = true)
+    @Mapping(target = "maxBooksAllowed", ignore = true)
+    @Mapping(target = "maxDaysPerBook", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "endDate", ignore = true)
+    @Mapping(target = "currency" , ignore = true)
+    @Mapping(target = "active",ignore = true)
+    Subscription toEntity(SubscriptionDTO subscriptionDTO, User user , SubscriptionPlan plan);
 }
