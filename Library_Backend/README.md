@@ -4,7 +4,7 @@ A backend REST API for managing books, genres, users, subscriptions, and payment
 
 The application is built using **Java 21** and **Spring Boot** and follows a layered architecture using DTOs, MapStruct, Spring Data JPA, Bean Validation, Spring Security, JWT authentication, role-based authorization, subscription management, and Razorpay payment integration.
 
----
+--------------------------------
 
 ## 📌 Project Overview
 
