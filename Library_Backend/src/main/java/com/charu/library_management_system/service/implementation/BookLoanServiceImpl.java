@@ -4,21 +4,30 @@ import com.charu.library_management_system.dto.BookDTO;
 import com.charu.library_management_system.dto.BookLoanDTO;
 import com.charu.library_management_system.dto.SubscriptionDTO;
 import com.charu.library_management_system.dto.UserDTO;
+import com.charu.library_management_system.dto.requestDTO.BookLoanSearchRequestDTO;
 import com.charu.library_management_system.dto.requestDTO.CheckInRequestDTO;
 import com.charu.library_management_system.dto.requestDTO.CheckoutBookRequestDTO;
+import com.charu.library_management_system.dto.requestDTO.RenewalRequestDTO;
 import com.charu.library_management_system.dto.responseDTO.PageResponseDTO;
 import com.charu.library_management_system.enums.BookLoanStatus;
+import com.charu.library_management_system.enums.BookLoanType;
+import com.charu.library_management_system.mapper.BookLoanMapper;
 import com.charu.library_management_system.mapper.BookMapper;
 import com.charu.library_management_system.mapper.UserMapper;
 import com.charu.library_management_system.models.Book;
+import com.charu.library_management_system.models.BookLoan;
 import com.charu.library_management_system.models.User;
 import com.charu.library_management_system.repository.BookLoanRepository;
+import com.charu.library_management_system.repository.BookRepository;
 import com.charu.library_management_system.service.BookLoanService;
 import com.charu.library_management_system.service.BookService;
 import com.charu.library_management_system.service.SubscriptionService;
 import com.charu.library_management_system.service.UserService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -30,8 +39,11 @@ public class BookLoanServiceImpl implements BookLoanService {
     private final SubscriptionService subscriptionService;
     private final BookService bookService;
     private final BookMapper bookMapper;
+    private final BookLoanMapper bookLoanMapper;
+    private final BookRepository bookRepository;
 
     @Override
+    @Transactional
     public BookLoanDTO checkoutBook(CheckoutBookRequestDTO checkoutBookRequest) {
         UserDTO user = userService.getCurrentUser();
 
@@ -39,13 +51,14 @@ public class BookLoanServiceImpl implements BookLoanService {
     }
 
     @Override
+    @Transactional
     public BookLoanDTO checkoutBookForUser(Long userId, CheckoutBookRequestDTO checkoutBookRequest) {
         // 1 ----->  Validate User exist
         UserDTO userDTO = userService.findById(userId);
         User user = userMapper.toEntity(userDTO);
 
         //2 -------> Validate user has active subscription
-        SubscriptionDTO subscriptionDTO = subscriptionService.getUsersActiveSubscription();
+        SubscriptionDTO subscriptionDTO = subscriptionService.getUsersActiveSubscription(userId);
 
         // 3 ------>  Validate book exists and is available
         BookDTO bookDTO = bookService.getBookById(checkoutBookRequest.getBookId());
@@ -60,24 +73,55 @@ public class BookLoanServiceImpl implements BookLoanService {
             throw new BookNotAvailableException("Book selected is not available "+book.getTitle());
         }
 
-        //4 . Check if user already has this book checkout
+        //4 ------> Check if user already has this book checkout
         if(bookLoanRepository.hasActiveCheckout(userId,checkoutBookRequest.getBookId()){
             throw new BookAlreadyBorrowedException("Book already has active checkout");
         }
 
-        //5. Check users active checkout limit
-        long activeCheckout = bookLoanRepository.countActiveBookLoanByUser(userId);
+        //5 ------> Check users active checkout limit
+        long activeCheckoutCount = bookLoanRepository.countActiveBookLoanByUser(userId);
         long maxBooksAllowed = subscriptionDTO.getMaxBooksAllowed();
 
-        if(activeCheckout>=maxBooksAllowed)
+        if(activeCheckoutCount>=maxBooksAllowed)
         {
-            throw new BookCheckoutLimitExceededException("Reached maximum number of books allowed")
+            throw new BookCheckoutLimitExceededException(
+                    "You have reached the maximum number of books allowed by your subscription"
+            );
         }
 
-        //6 . Check for overdue books
-        Long overdueCount = bookLoanRepository.countOverdueBookLoanByUser(userId);
+        //6 ------> Check for overdue books
+        Long overdueBookCount = bookLoanRepository.countOverdueBookLoanByUser(userId);
+        if(overdueBookCount>0)
+        {
+            throw new OverdueBookExistsException(
+                    "Please return your overdue book(s) before borrowing another book"
+            );
+        }
 
-        return null;
+        //7 -----> Create Book loan
+        LocalDateTime checkoutDate = LocalDateTime.now();
+        BookLoan bookLoan = BookLoan.builder()
+                .user(user)
+                .book(book)
+                .type(BookLoanType.CHECKOUT)
+                .status(BookLoanStatus.CHECKED_OUT)
+                .checkoutDate(checkoutDate)
+                .dueDate(checkoutDate.plusDays(checkoutBookRequest.getCheckoutDays()))
+                .renewalCount(0)
+                .maxRenewals(2)
+                .notes("Book Loan taken by user "+user.getFullName())
+                .isOverdue(false)
+                .overdueDays(0)
+                .build();
+
+        // 8 -------> Update Available Copies
+        book.setAvailableCopies(book.getAvailableCopies()-1);
+
+        // 9 -------> Save book
+        bookRepository.save(book);
+        BookLoan savedBookLoan = bookLoanRepository.save(bookLoan);
+
+        return bookLoanMapper.toDTO(savedBookLoan);
     }
 
     @Override

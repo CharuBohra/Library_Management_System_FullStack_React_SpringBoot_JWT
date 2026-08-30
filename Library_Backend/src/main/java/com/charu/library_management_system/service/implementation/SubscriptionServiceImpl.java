@@ -84,6 +84,15 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     }
 
     @Override
+    public SubscriptionDTO getUsersActiveSubscription(Long userId)
+    {
+        Subscription subscription = subscriptionRepository.getUsersActiveSubscription(userId , LocalDate.now())
+                .orElseThrow(()-> new ActiveSubscriptionNotFoundException("No active subscriptions found for user id "+userId));
+
+        return subscriptionMapper.toDTO(subscription);
+    }
+
+    @Override
     @Transactional
     public SubscriptionDTO cancelSubscription(Long id, String reason) {
         Subscription subscription = subscriptionRepository.findById(id)

@@ -34,7 +34,7 @@ public class BookLoanDTO {
 
     private String bookAuthor;
 
-    private String bookCoverImage;
+    private String bookCoverImageUrl;
 
     @NotNull(message = "Book Loan Type is mandatory")
     private BookLoanType type;

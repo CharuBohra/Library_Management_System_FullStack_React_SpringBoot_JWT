@@ -15,6 +15,8 @@ public interface SubscriptionService {
 
     SubscriptionDTO getUsersActiveSubscription();
 
+    SubscriptionDTO getUsersActiveSubscription(Long userId);
+
     SubscriptionDTO cancelSubscription(Long id , String reason) throws AccessDeniedException;
 
     SubscriptionDTO activateSubscription(Long id , Long paymentId);
