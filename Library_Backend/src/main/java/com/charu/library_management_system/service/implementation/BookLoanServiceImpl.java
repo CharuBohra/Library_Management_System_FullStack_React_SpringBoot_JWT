@@ -11,6 +11,7 @@ import com.charu.library_management_system.dto.requestDTO.RenewalRequestDTO;
 import com.charu.library_management_system.dto.responseDTO.PageResponseDTO;
 import com.charu.library_management_system.enums.BookLoanStatus;
 import com.charu.library_management_system.enums.BookLoanType;
+import com.charu.library_management_system.exception.*;
 import com.charu.library_management_system.mapper.BookLoanMapper;
 import com.charu.library_management_system.mapper.BookMapper;
 import com.charu.library_management_system.mapper.UserMapper;
@@ -74,12 +75,12 @@ public class BookLoanServiceImpl implements BookLoanService {
         }
 
         //4 ------> Check if user already has this book checkout
-        if(bookLoanRepository.hasActiveCheckout(userId,checkoutBookRequest.getBookId()){
+        if(bookLoanRepository.hasActiveCheckout(userId,checkoutBookRequest.getBookId())){
             throw new BookAlreadyBorrowedException("Book already has active checkout");
         }
 
         //5 ------> Check users active checkout limit
-        long activeCheckoutCount = bookLoanRepository.countActiveBookLoanByUser(userId);
+        long activeCheckoutCount = bookLoanRepository.countActiveBookLoansByUser(userId);
         long maxBooksAllowed = subscriptionDTO.getMaxBooksAllowed();
 
         if(activeCheckoutCount>=maxBooksAllowed)
@@ -90,7 +91,7 @@ public class BookLoanServiceImpl implements BookLoanService {
         }
 
         //6 ------> Check for overdue books
-        Long overdueBookCount = bookLoanRepository.countOverdueBookLoanByUser(userId);
+        long overdueBookCount = bookLoanRepository.countOverdueBookLoansByUser(userId);
         if(overdueBookCount>0)
         {
             throw new OverdueBookExistsException(

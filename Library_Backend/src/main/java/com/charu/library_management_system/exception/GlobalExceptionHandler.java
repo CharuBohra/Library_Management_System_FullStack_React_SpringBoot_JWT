@@ -135,4 +135,44 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
     }
+    @ExceptionHandler(BookNotActiveException.class)
+    public ResponseEntity<ApiResponse> handleBookNotActive(BookNotActiveException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage()).status(true).build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
+    }
+    @ExceptionHandler(BookNotAvailableException.class)
+    public ResponseEntity<ApiResponse> handleBookNotAvailable(BookNotAvailableException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage()).status(true).build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
+    }
+    @ExceptionHandler(BookAlreadyBorrowedException.class)
+    public ResponseEntity<ApiResponse> handleBookAlreadyBorrowed(BookAlreadyBorrowedException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage()).status(true).build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
+    }
+    @ExceptionHandler(BookCheckoutLimitExceededException.class)
+    public ResponseEntity<ApiResponse> handleBookCheckoutLimitExceeded(BookCheckoutLimitExceededException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage()).status(true).build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
+    }
+    @ExceptionHandler(OverdueBookExistsException.class)
+    public ResponseEntity<ApiResponse> handleOverdueBookExists(OverdueBookExistsException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage()).status(true).build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
+    }
 }

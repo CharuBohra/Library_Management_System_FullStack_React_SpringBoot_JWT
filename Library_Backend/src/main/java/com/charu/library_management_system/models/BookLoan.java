@@ -70,4 +70,14 @@ public class BookLoan {
     @Column(nullable = false)
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    public boolean isActive()
+    {
+        return status==BookLoanStatus.CHECKED_OUT ||  status==BookLoanStatus.OVERDUE;
+    }
+
+    public boolean canRenew()
+    {
+        return status==BookLoanStatus.CHECKED_OUT && !isOverdue && renewalCount<maxRenewals;
+    }
 }
