@@ -12,4 +12,6 @@ public interface BookLoanRepository extends JpaRepository<BookLoan,Long> {
     Page<BookLoan> findByUserId(Long userId ,Pageable pageable);
     Page<BookLoan> findByUserIdAndStatus(Long userId, BookLoanStatus status, Pageable pageable);
     Page<BookLoan> findByBookId(Long bookId, Pageable pageable);
+
+
 }
