@@ -61,6 +61,7 @@ public class BookLoanServiceImpl implements BookLoanService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public BookLoanDTO checkoutBookForUser(Long userId, CheckoutBookRequestDTO checkoutBookRequest) {
         // 1 ----->  Validate User exist
         UserDTO userDTO = userService.findById(userId);
