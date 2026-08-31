@@ -35,6 +35,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -280,8 +281,40 @@ public class BookLoanServiceImpl implements BookLoanService {
     }
 
     @Override
+    @Transactional
     public int updateOverdueBookLoan() {
-        return 0;
+        LocalDateTime now = LocalDateTime.now();
+        Pageable pageable = PageRequest.of(0,1000);
+        Page<BookLoan> overduePage = bookLoanRepository.findOverdueBookLoans(now,pageable);
+        int updateCount =0;
+
+        for(BookLoan bookLoan : overduePage)
+        {
+            if(bookLoan.getStatus()== BookLoanStatus.CHECKED_OUT)
+            {
+                bookLoan.setStatus(BookLoanStatus.OVERDUE);
+                bookLoan.setIsOverdue(true);
+                int overdueDays = calculateOverdueDays(bookLoan.getDueDate(),now);
+
+                bookLoan.setOverdueDays(overdueDays);
+
+                //fine --- todo
+
+                bookLoanRepository.save(bookLoan);
+                updateCount += 1;
+            }
+        }
+        return updateCount;
+    }
+
+    public int calculateOverdueDays(LocalDateTime dueDate , LocalDateTime today)
+    {
+        if(today.isBefore(dueDate) || today.isEqual(dueDate))
+        {
+            return 0;
+        }
+
+        return (int) ChronoUnit.DAYS.between(dueDate,today);
     }
 
     private Pageable createPageable(int page , int pageSize , String sortBy , String sortDirection)
