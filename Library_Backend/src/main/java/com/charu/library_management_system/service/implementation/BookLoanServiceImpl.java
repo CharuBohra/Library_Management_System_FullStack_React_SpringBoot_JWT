@@ -26,10 +26,16 @@ import com.charu.library_management_system.service.SubscriptionService;
 import com.charu.library_management_system.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -214,16 +220,99 @@ public class BookLoanServiceImpl implements BookLoanService {
 
     @Override
     public PageResponseDTO<BookLoanDTO> getMyBookLoans(BookLoanStatus status, int page, int size) {
-        return null;
+        UserDTO user = userService.getCurrentUser();
+
+        Page<BookLoan> bookLoanPage;
+
+        if(status!=null)
+        {
+            //return only checkouts based on status , sorted by due date
+            Pageable pageable = createPageable(page, size , "dueDate", "ASC");
+            bookLoanPage = bookLoanRepository.findByUserIdAndStatus(user.getId(),status,pageable);
+        }else{
+            //return all history (both active and returned , sorted by descending
+            Pageable pageable = createPageable(page,size,"createdAt","DESC");
+            bookLoanPage = bookLoanRepository.findByUserId(user.getId(),pageable);
+        }
+
+        return convertToPageResponse(bookLoanPage);
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public PageResponseDTO<BookLoanDTO> getBookLoans(BookLoanSearchRequestDTO bookLoanSearchRequest) {
-        return null;
+        Pageable pageable = createPageable(bookLoanSearchRequest.getPage(),
+                bookLoanSearchRequest.getSize(),
+                bookLoanSearchRequest.getSortBy(),
+                bookLoanSearchRequest.getSortDir());
+
+        Page<BookLoan> bookLoanPage;
+
+        if(Boolean.TRUE.equals(bookLoanSearchRequest.getOverdueOnly()))
+        {
+            bookLoanPage = bookLoanRepository.findOverdueBookLoans(LocalDateTime.now(),pageable);
+        }
+        else if(bookLoanSearchRequest.getUserId()!=null && bookLoanSearchRequest.getStatus()!=null)
+        {
+            bookLoanPage = bookLoanRepository.findByUserIdAndStatus(bookLoanSearchRequest.getUserId(),bookLoanSearchRequest.getStatus(),pageable);
+        }
+        else if(bookLoanSearchRequest.getUserId()!=null)
+        {
+            bookLoanPage = bookLoanRepository.findByUserId(bookLoanSearchRequest.getUserId(),pageable);
+        }
+        else if(bookLoanSearchRequest.getBookId()!=null)
+        {
+            bookLoanPage = bookLoanRepository.findByBookId(bookLoanSearchRequest.getBookId(), pageable);
+        }
+        else if(bookLoanSearchRequest.getStatus()!=null)
+        {
+            bookLoanPage = bookLoanRepository.findByStatus(bookLoanSearchRequest.getStatus(),pageable);
+        }
+        else if(bookLoanSearchRequest.getStartDate()!=null && bookLoanSearchRequest.getEndDate()!=null)
+        {
+            bookLoanPage = bookLoanRepository.findBookLoansByDateRange(bookLoanSearchRequest.getStartDate(),bookLoanSearchRequest.getEndDate(),pageable);
+        }
+        else{
+            bookLoanPage = bookLoanRepository.findAll(pageable);
+        }
+
+        return convertToPageResponse(bookLoanPage);
     }
 
     @Override
     public int updateOverdueBookLoan() {
         return 0;
+    }
+
+    private Pageable createPageable(int page , int pageSize , String sortBy , String sortDirection)
+    {
+        page = Math.max(page, 0);
+
+        pageSize = Math.min(pageSize,10);
+        pageSize = Math.max(pageSize,1);
+
+        Sort sort = sortDirection.equalsIgnoreCase("ASC")
+                ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+
+        return PageRequest.of(page,pageSize,sort);
+    }
+
+    private PageResponseDTO<BookLoanDTO> convertToPageResponse(Page<BookLoan> bookLoanPage)
+    {
+        List<BookLoanDTO> bookLoanDTOS = bookLoanPage.getContent()
+                .stream()
+                .map(bookLoanMapper::toDTO)
+                .toList();
+
+        return PageResponseDTO.<BookLoanDTO>builder()
+                .content(bookLoanDTOS)
+                .pageNumber(bookLoanPage.getNumber())
+                .pageSize(bookLoanPage.getSize())
+                .totalPages(bookLoanPage.getTotalPages())
+                .totalElements(bookLoanPage.getTotalElements())
+                .first(bookLoanPage.isFirst())
+                .last(bookLoanPage.isLast())
+                .empty(bookLoanPage.isEmpty())
+                .build();
     }
 }
