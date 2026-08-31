@@ -167,12 +167,29 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
     }
-    @ExceptionHandler(OverdueBookExistsException.class)
-    public ResponseEntity<ApiResponse> handleOverdueBookExists(OverdueBookExistsException ex)
+    @ExceptionHandler(BookAlreadyReturnedException.class)
+    public ResponseEntity<ApiResponse> handleBookAlreadyReturned(BookAlreadyReturnedException ex)
     {
         ApiResponse apiResponse = ApiResponse.builder()
                 .message(ex.getMessage()).status(true).build();
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
     }
+    @ExceptionHandler(BookCannotBeRenewedException.class)
+    public ResponseEntity<ApiResponse> handleBookCannotBeRenewed(BookCannotBeRenewedException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage()).status(true).build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
+    }
+    @ExceptionHandler(BookLoanNotFoundException.class)
+    public ResponseEntity<ApiResponse> handleBookLoanNotFound(BookLoanNotFoundException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage()).status(true).build();
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
+    }
+
 }

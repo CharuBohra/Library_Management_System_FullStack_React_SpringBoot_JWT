@@ -26,6 +26,7 @@ import com.charu.library_management_system.service.SubscriptionService;
 import com.charu.library_management_system.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -126,13 +127,89 @@ public class BookLoanServiceImpl implements BookLoanService {
     }
 
     @Override
+    @Transactional
     public BookLoanDTO checkinBook(CheckInRequestDTO checkInRequest) {
-        return null;
+        //1. Validate if book loan exists
+        BookLoan bookLoan = bookLoanRepository.findById(checkInRequest.getBookLoanId())
+                .orElseThrow(()->new BookLoanNotFoundException("Book Loan not found for id "+checkInRequest.getBookLoanId()));
+
+        //2. Check if book already returned
+        if(!bookLoan.isActive())
+        {
+            throw new BookAlreadyReturnedException("Book is already returned by user");
+        }
+
+        //Check Ownership
+        UserDTO user = userService.getCurrentUser();
+
+        if(!user.getId().equals(bookLoan.getUser().getId()))
+        {
+            throw new AccessDeniedException("You do not have permission to return this book");
+        }
+
+        //3. set return date
+        bookLoan.setReturnDate(LocalDateTime.now());
+
+        //4. Get Book Loan Condition
+        BookLoanStatus condition = checkInRequest.getCondition();
+        if(condition==null)
+        {
+            condition = BookLoanStatus.RETURNED;
+        }
+        bookLoan.setStatus(condition);
+
+        //5. Fine todo
+        bookLoan.setOverdueDays(0);
+        bookLoan.setIsOverdue(false);
+
+        //6. Set Notes
+        bookLoan.setNotes(checkInRequest.getNotes()!=null
+                        ? checkInRequest.getNotes()
+                        :"Book returned by user");
+
+        //7. Update availability of book
+        if(condition!=BookLoanStatus.LOST)
+        {
+            Book book = bookLoan.getBook();
+            book.setAvailableCopies(book.getAvailableCopies()+1);
+            bookRepository.save(book);
+        }
+
+        //8. Save bookLoan
+        BookLoan savedBookLoan = bookLoanRepository.save(bookLoan);
+        return bookLoanMapper.toDTO(savedBookLoan);
     }
 
     @Override
+    @Transactional
     public BookLoanDTO renewCheckout(RenewalRequestDTO renewalRequest) {
-        return null;
+        //1. Validate if book loan exists
+        BookLoan bookLoan = bookLoanRepository.findById(renewalRequest.getBookLoanId())
+                .orElseThrow(()->new BookLoanNotFoundException("Book Loan not found for id "+renewalRequest.getBookLoanId()));
+
+        //Check Ownership
+        UserDTO user = userService.getCurrentUser();
+
+        if(!user.getId().equals(bookLoan.getUser().getId()))
+        {
+            throw new AccessDeniedException("You do not have permission to renew this book");
+        }
+
+        //2 . Check if book can be renewed or not
+        if(!bookLoan.canRenew())
+        {
+            throw new BookCannotBeRenewedException("Book cannot be renewed for id "+renewalRequest.getBookLoanId());
+        }
+
+        //3. update due date
+        bookLoan.setDueDate(bookLoan.getDueDate().plusDays(renewalRequest.getExtensionDays()));
+        bookLoan.setRenewalCount(bookLoan.getRenewalCount()+1);
+        bookLoan.setNotes(renewalRequest.getNotes()!=null
+                        ? renewalRequest.getNotes()
+                        : "Book renewed by user");
+
+        BookLoan savedBookLoan = bookLoanRepository.save(bookLoan);
+        return bookLoanMapper.toDTO(savedBookLoan);
     }
 
     @Override
