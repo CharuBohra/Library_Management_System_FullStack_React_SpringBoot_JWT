@@ -23,17 +23,19 @@ public class BookLoan {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn(name = "book_id", nullable = false)
     private Book book;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private BookLoanType type;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private BookLoanStatus status;
 
     @Column(nullable = false)

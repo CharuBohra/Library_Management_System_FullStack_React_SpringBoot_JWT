@@ -71,8 +71,8 @@ public class BookLoanServiceImpl implements BookLoanService {
         SubscriptionDTO subscriptionDTO = subscriptionService.getUsersActiveSubscription(userId);
 
         // 3 ------>  Validate book exists and is available
-        BookDTO bookDTO = bookService.getBookById(checkoutBookRequest.getBookId());
-        Book book = bookMapper.toEntity(bookDTO);
+        Book book = bookRepository.findById(checkoutBookRequest.getBookId())
+                .orElseThrow(()-> new BookNotFoundException("Book not found for id "+checkoutBookRequest.getBookId()));
 
         if(!book.isActive())
         {
@@ -324,6 +324,14 @@ public class BookLoanServiceImpl implements BookLoanService {
 
         pageSize = Math.min(pageSize,10);
         pageSize = Math.max(pageSize,1);
+
+        if (sortBy == null || sortBy.isBlank()) {
+            sortBy = "createdAt";
+        }
+
+        if (sortDirection == null || sortDirection.isBlank()) {
+            sortDirection = "DESC";
+        }
 
         Sort sort = sortDirection.equalsIgnoreCase("ASC")
                 ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
