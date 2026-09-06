@@ -15,6 +15,8 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name = "fines")
 public class Fine {
 
     @Id
@@ -30,12 +32,14 @@ public class Fine {
     private BookLoan bookLoan;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private FineType type;
 
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 10,scale = 2)
     private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private FineStatus status;
 
     @Column(length = 500)
@@ -44,14 +48,14 @@ public class Fine {
     @Column(length = 1000)
     private String notes;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "waived_user_id")
     private User waivedBy;
 
     @Column(name = "waived_at")
     private LocalDateTime waivedAt;
 
-    @Column(name = "waiver_reason")
+    @Column(name = "waiver_reason",length = 500)
     private String waiverReason;
 
     @Column(name = "paid_at")
@@ -79,5 +83,4 @@ public class Fine {
         this.waivedAt = LocalDateTime.now();
         this.waiverReason = reason;
     }
-
 }
