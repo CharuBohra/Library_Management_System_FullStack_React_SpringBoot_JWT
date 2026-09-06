@@ -15,7 +15,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse> handleGenreNotFound(GenreNotFoundException ex)
     {
         ApiResponse apiResponse = ApiResponse.builder()
-                .message(ex.getMessage()).status(true).build();
+                .message(ex.getMessage()).status(false).build();
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
     }
@@ -24,7 +24,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse> handleParentGenreNotFound(ParentGenreNotFoundException ex)
     {
         ApiResponse apiResponse = ApiResponse.builder()
-                .message(ex.getMessage()).status(true).build();
+                .message(ex.getMessage()).status(false).build();
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
     }
@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse> handleBookNotFound(BookNotFoundException ex)
     {
         ApiResponse apiResponse = ApiResponse.builder()
-                .message(ex.getMessage()).status(true).build();
+                .message(ex.getMessage()).status(false).build();
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
     }
@@ -40,7 +40,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse> handleUserExists(UserExistsException ex)
     {
         ApiResponse apiResponse = ApiResponse.builder()
-                .message(ex.getMessage()).status(true).build();
+                .message(ex.getMessage()).status(false).build();
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
     }
@@ -48,7 +48,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse> handleUserNotFound(UserNotFoundException ex)
     {
         ApiResponse apiResponse = ApiResponse.builder()
-                .message(ex.getMessage()).status(true).build();
+                .message(ex.getMessage()).status(false).build();
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
     }
@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse> handleResetTokenExpired(ResetTokenExpiredException ex)
     {
         ApiResponse apiResponse = ApiResponse.builder()
-                .message(ex.getMessage()).status(true).build();
+                .message(ex.getMessage()).status(false).build();
 
         return ResponseEntity.status(HttpStatus.GONE).body(apiResponse);
     }
@@ -64,7 +64,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse> handleResetTokenNotFound(ResetTokenNotFoundException ex)
     {
         ApiResponse apiResponse = ApiResponse.builder()
-                .message(ex.getMessage()).status(true).build();
+                .message(ex.getMessage()).status(false).build();
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
     }
@@ -72,7 +72,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse> handleEmailSending(EmailSendingException ex)
     {
         ApiResponse apiResponse = ApiResponse.builder()
-                .message(ex.getMessage()).status(true).build();
+                .message(ex.getMessage()).status(false).build();
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
     }
@@ -91,7 +91,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse> handleSubscriptionPlanAlreadyExists(SubscriptionPlanAlreadyExistsException ex)
     {
         ApiResponse apiResponse = ApiResponse.builder()
-                .message(ex.getMessage()).status(true).build();
+                .message(ex.getMessage()).status(false).build();
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
     }
@@ -99,7 +99,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse> handleSubscriptionPlanNotFound(SubscriptionPlanNotFoundException ex)
     {
         ApiResponse apiResponse = ApiResponse.builder()
-                .message(ex.getMessage()).status(true).build();
+                .message(ex.getMessage()).status(false).build();
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
     }
@@ -107,7 +107,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse> handleSubscriptionAlreadyInactive(SubscriptionAlreadyInactiveException ex)
     {
         ApiResponse apiResponse = ApiResponse.builder()
-                .message(ex.getMessage()).status(true).build();
+                .message(ex.getMessage()).status(false).build();
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
     }
@@ -115,7 +115,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse> handleSubscriptionNotFound(SubscriptionNotFoundException ex)
     {
         ApiResponse apiResponse = ApiResponse.builder()
-                .message(ex.getMessage()).status(true).build();
+                .message(ex.getMessage()).status(false).build();
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
     }
@@ -123,7 +123,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse> handleActiveSubscriptionNotFound(ActiveSubscriptionNotFoundException ex)
     {
         ApiResponse apiResponse = ApiResponse.builder()
-                .message(ex.getMessage()).status(true).build();
+                .message(ex.getMessage()).status(false).build();
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
     }
@@ -131,7 +131,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse> handlePaymentNotFound(PaymentNotFoundException ex)
     {
         ApiResponse apiResponse = ApiResponse.builder()
-                .message(ex.getMessage()).status(true).build();
+                .message(ex.getMessage()).status(false).build();
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
     }
@@ -139,7 +139,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse> handleBookNotActive(BookNotActiveException ex)
     {
         ApiResponse apiResponse = ApiResponse.builder()
-                .message(ex.getMessage()).status(true).build();
+                .message(ex.getMessage()).status(false).build();
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
     }
@@ -147,7 +147,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse> handleBookNotAvailable(BookNotAvailableException ex)
     {
         ApiResponse apiResponse = ApiResponse.builder()
-                .message(ex.getMessage()).status(true).build();
+                .message(ex.getMessage()).status(false).build();
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
     }
@@ -155,7 +155,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse> handleBookAlreadyBorrowed(BookAlreadyBorrowedException ex)
     {
         ApiResponse apiResponse = ApiResponse.builder()
-                .message(ex.getMessage()).status(true).build();
+                .message(ex.getMessage()).status(false).build();
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
     }
@@ -163,7 +163,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse> handleBookCheckoutLimitExceeded(BookCheckoutLimitExceededException ex)
     {
         ApiResponse apiResponse = ApiResponse.builder()
-                .message(ex.getMessage()).status(true).build();
+                .message(ex.getMessage()).status(false).build();
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
     }
@@ -171,7 +171,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse> handleBookAlreadyReturned(BookAlreadyReturnedException ex)
     {
         ApiResponse apiResponse = ApiResponse.builder()
-                .message(ex.getMessage()).status(true).build();
+                .message(ex.getMessage()).status(false).build();
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
     }
@@ -179,7 +179,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse> handleBookCannotBeRenewed(BookCannotBeRenewedException ex)
     {
         ApiResponse apiResponse = ApiResponse.builder()
-                .message(ex.getMessage()).status(true).build();
+                .message(ex.getMessage()).status(false).build();
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
     }
@@ -187,9 +187,32 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse> handleBookLoanNotFound(BookLoanNotFoundException ex)
     {
         ApiResponse apiResponse = ApiResponse.builder()
-                .message(ex.getMessage()).status(true).build();
+                .message(ex.getMessage()).status(false).build();
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
     }
+    @ExceptionHandler(FineAlreadyPaidException.class)
+    public ResponseEntity<ApiResponse> handleFineAlreadyPaid(FineAlreadyPaidException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage()).status(false).build();
 
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
+    }
+    @ExceptionHandler(FineAlreadyWaivedException.class)
+    public ResponseEntity<ApiResponse> handleFineAlreadyWaived(FineAlreadyWaivedException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage()).status(false).build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
+    }
+    @ExceptionHandler(FineNotFoundException.class)
+    public ResponseEntity<ApiResponse> handleFineNotFound(FineNotFoundException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage()).status(false).build();
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
+    }
 }
