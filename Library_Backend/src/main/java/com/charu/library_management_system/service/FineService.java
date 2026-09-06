@@ -17,7 +17,7 @@ public interface FineService {
 
     FineDTO createFine(CreateFineRequestDTO createFineRequest);
 
-    PaymentInitiateResponse payFine(Long fineId, String transactionId);
+    PaymentInitiateResponse payFine(Long fineId);
 
     void markFineAsPaid(Long fineId , BigDecimal amount , String transactionId);
 

@@ -34,6 +34,10 @@ public class Payment {
     @ManyToOne(fetch = FetchType.LAZY)
     private Subscription subscription;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "fine_id")
+    private Fine fine;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private PaymentType paymentType;

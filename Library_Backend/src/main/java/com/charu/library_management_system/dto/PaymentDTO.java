@@ -34,6 +34,8 @@ public class PaymentDTO {
 
     private String planCode;
 
+    private Long fineId;
+
     @NotNull
     private PaymentType paymentType;
 

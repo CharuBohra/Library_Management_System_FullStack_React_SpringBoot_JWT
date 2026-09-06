@@ -83,4 +83,21 @@ public class Fine {
         this.waivedAt = LocalDateTime.now();
         this.waiverReason = reason;
     }
+
+    public void applyPayment(BigDecimal amount)
+    {
+        if(amount==null || amount.compareTo(BigDecimal.ZERO)<=0)
+        {
+            throw new IllegalArgumentException("Amount must be positive");
+        }
+
+        if (amount.compareTo(this.amount) != 0) {
+            throw new IllegalArgumentException(
+                    "Payment amount does not match fine amount"
+            );
+        }
+
+        this.status = FineStatus.PAID;
+        this.paidAt = LocalDateTime.now();
+    }
 }

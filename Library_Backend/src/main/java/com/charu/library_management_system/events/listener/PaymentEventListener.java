@@ -1,6 +1,7 @@
 package com.charu.library_management_system.events.listener;
 
 import com.charu.library_management_system.models.Payment;
+import com.charu.library_management_system.service.FineService;
 import com.charu.library_management_system.service.SubscriptionService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class PaymentEventListener {
     private final SubscriptionService subscriptionService;
+    private final FineService fineService;
 
     @Async
     @Transactional
@@ -20,8 +22,10 @@ public class PaymentEventListener {
     {
         switch (payment.getPaymentType())
         {
-            case FINE,
-                 LOST_BOOK_PENALTY,
+            case FINE:
+                fineService.markFineAsPaid(payment.getFine().getId(),payment.getAmount(), payment.getTransactionId());
+                break;
+            case LOST_BOOK_PENALTY,
                  DAMAGED_BOOK_PENALTY:
                               break;
             case MEMBERSHIP:

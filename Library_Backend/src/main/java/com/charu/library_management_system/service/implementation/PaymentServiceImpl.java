@@ -14,9 +14,11 @@ import com.charu.library_management_system.exception.PaymentNotFoundException;
 import com.charu.library_management_system.exception.SubscriptionNotFoundException;
 import com.charu.library_management_system.exception.UserNotFoundException;
 import com.charu.library_management_system.mapper.PaymentMapper;
+import com.charu.library_management_system.models.Fine;
 import com.charu.library_management_system.models.Payment;
 import com.charu.library_management_system.models.Subscription;
 import com.charu.library_management_system.models.User;
+import com.charu.library_management_system.repository.FineRepository;
 import com.charu.library_management_system.repository.PaymentRepository;
 import com.charu.library_management_system.repository.SubscriptionRepository;
 import com.charu.library_management_system.repository.UserRepository;
@@ -46,6 +48,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final RazorpayService razorpayService;
     private final PaymentMapper paymentMapper;
     private final PaymentEventPublisher paymentEventPublisher;
+    private final FineRepository fineRepository;
 
     @Transactional
     @Override
@@ -81,6 +84,22 @@ public class PaymentServiceImpl implements PaymentService {
             payment.setAmount(subscription.getPrice());
             payment.setCurrency(subscription.getCurrency());
         }
+        else if(paymentInitiateRequest.getFineId()!=null)
+        {
+            Fine fine = fineRepository.findById(paymentInitiateRequest.getFineId())
+                    .orElseThrow(()-> new FineNotFoundException("Fine Entry not found for ID "+paymentInitiateRequest.getFineId()));
+
+            if (!fine.getUser().getId().equals(user.getId())) {
+                throw new AccessDeniedException(
+                        "You cannot make payment for this fine"
+                );
+            }
+
+            payment.setFine(fine);
+            payment.setAmount(fine.getAmount());
+            payment.setCurrency("INR");
+        }
+
 
         paymentRepository.save(payment);
 

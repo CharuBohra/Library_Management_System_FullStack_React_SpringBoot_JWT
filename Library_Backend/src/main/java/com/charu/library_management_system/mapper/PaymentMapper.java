@@ -15,6 +15,7 @@ public interface PaymentMapper {
     @Mapping(target = "subscriptionId" , source = "subscription.id")
     @Mapping(target = "planName" , source = "subscription.planName")
     @Mapping(target = "planCode", source = "subscription.planCode")
+    @Mapping(target = "fineId", source = "fine.id")
     PaymentDTO toDTO(Payment payment);
 
     @Mapping(target = "id", source = "id")
@@ -30,5 +31,6 @@ public interface PaymentMapper {
     @Mapping(target = "completedAt" , ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt" , ignore = true)
+    @Mapping(target = "fine", ignore = true)
     Payment toEntity(PaymentDTO paymentDTO);
 }

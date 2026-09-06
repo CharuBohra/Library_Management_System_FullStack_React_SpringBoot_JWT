@@ -2,9 +2,12 @@ package com.charu.library_management_system.service.gateway;
 
 import com.charu.library_management_system.dto.responseDTO.PaymentLinkResponse;
 import com.charu.library_management_system.enums.PaymentType;
+import com.charu.library_management_system.models.Fine;
 import com.charu.library_management_system.models.Payment;
 import com.charu.library_management_system.models.SubscriptionPlan;
 import com.charu.library_management_system.models.User;
+import com.charu.library_management_system.repository.FineRepository;
+import com.charu.library_management_system.service.FineService;
 import com.charu.library_management_system.service.SubscriptionPlanService;
 import com.razorpay.PaymentLink;
 import com.razorpay.RazorpayClient;
@@ -21,6 +24,7 @@ import java.math.BigDecimal;
 public class RazorpayService {
 
     private final SubscriptionPlanService subscriptionPlanService;
+    private final FineRepository fineRepository;
 
     @Value("${razorpay.key.id}")
     private String razorId;
@@ -76,7 +80,7 @@ public class RazorpayService {
                 notes.put("type",PaymentType.MEMBERSHIP);
             }else if(payment.getPaymentType()== PaymentType.FINE)
             {
-                //notes.put("fine_id",fineId);
+                notes.put("fine_id",payment.getFine().getId());
                 notes.put("type",PaymentType.FINE);
             }
             
@@ -133,9 +137,10 @@ public class RazorpayService {
                 return amountInRupees.compareTo(subscriptionPlan.getPrice())==0;
             }else if(paymentType.equals(PaymentType.FINE.toString()))
             {
-                String fineId = notes.optString("fine_id");
-                //findById(fineId)
-                //return fine.getAmount == amountInRupees;
+                Long fineId = notes.optLong("fine_id");
+                Fine fine = fineRepository.findById(fineId)
+                        .orElseThrow(()->new FineNotFoundException("Fine not found for ID "+fineId));
+                return amountInRupees.compareTo(fine.getAmount())==0;
             }
 
             return false;
