@@ -2,6 +2,7 @@ package com.charu.library_management_system.service;
 
 import com.charu.library_management_system.dto.FineDTO;
 import com.charu.library_management_system.dto.requestDTO.CreateFineRequestDTO;
+import com.charu.library_management_system.dto.requestDTO.WaiveFineRequestDTO;
 import com.charu.library_management_system.dto.responseDTO.PageResponseDTO;
 import com.charu.library_management_system.dto.responseDTO.PaymentInitiateResponse;
 import com.charu.library_management_system.enums.FineStatus;
