@@ -33,6 +33,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -119,6 +120,7 @@ public class FineServiceImpl implements FineService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public FineDTO waiveFine(WaiveFineRequestDTO waiveFineRequest) {
         Fine fine = fineRepository.findById(waiveFineRequest.getFineId())
                 .orElseThrow(()-> new FineNotFoundException("Fine Entry not found for ID "+waiveFineRequest.getFineId()));
@@ -174,6 +176,7 @@ public class FineServiceImpl implements FineService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public PageResponseDTO<FineDTO> getAllFine(FineStatus status, FineType type, Long userId, int page, int size) {
         Pageable pageable = PageRequest.of(page,size, Sort.by("createdAt").descending());
 
