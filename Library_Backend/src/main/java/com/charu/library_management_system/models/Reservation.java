@@ -19,7 +19,7 @@ public class Reservation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long Id;
+    private Long id;
 
     @JoinColumn(name = "user_id",nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
@@ -58,4 +58,17 @@ public class Reservation {
     @Column(nullable = false)
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    public boolean canBeCancelled()
+    {
+        return status== ReservationStatus.PENDING ||
+                status == ReservationStatus.AVAILABLE;
+    }
+
+    public boolean hasExpired()
+    {
+        return status== ReservationStatus.AVAILABLE
+                && availableUntil!=null
+                && LocalDateTime.now().isAfter(availableUntil);
+    }
 }
