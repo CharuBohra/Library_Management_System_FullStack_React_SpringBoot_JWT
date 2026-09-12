@@ -1,6 +1,8 @@
 package com.charu.library_management_system.service;
 
 import com.charu.library_management_system.dto.ReservationDTO;
+import com.charu.library_management_system.dto.requestDTO.ReservationRequestDTO;
+import com.charu.library_management_system.dto.requestDTO.ReservationSearchRequestDTO;
 import com.charu.library_management_system.dto.responseDTO.PageResponseDTO;
 import org.springframework.stereotype.Service;
 
