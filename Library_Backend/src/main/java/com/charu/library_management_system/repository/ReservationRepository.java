@@ -25,7 +25,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
 
     @Query("SELECT count(r) from Reservation r WHERE r.user.id = :userId AND "+
     "(r.status = 'PENDING' OR r.status = 'AVAILABLE')")
-    long countPendingReservationsByUser(@Param("userId") Long userId);
+    long countActiveReservationsByUser(@Param("userId") Long userId);
 
     @Query("SELECT count(r) from Reservation r WHERE r.book.id = :bookId AND "+
             "(r.status = 'PENDING')")

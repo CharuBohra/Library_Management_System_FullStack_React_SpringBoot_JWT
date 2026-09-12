@@ -1,6 +1,7 @@
 package com.charu.library_management_system.repository;
 
 import com.charu.library_management_system.enums.BookLoanStatus;
+import com.charu.library_management_system.enums.ReservationStatus;
 import com.charu.library_management_system.models.BookLoan;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -38,4 +39,6 @@ public interface BookLoanRepository extends JpaRepository<BookLoan,Long> {
     Page<BookLoan> findBookLoansByDateRange(@Param("startDate") LocalDateTime startDate,
                                             @Param("endDate") LocalDateTime endDate,
                                             Pageable pageable);
+
+    boolean existsByUserIdAndBookIdAndStatus(Long userId, Long bookId, BookLoanStatus status);
 }
