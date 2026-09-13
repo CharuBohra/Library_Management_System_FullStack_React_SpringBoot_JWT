@@ -1,29 +1,31 @@
 package com.charu.library_management_system.service.implementation;
 
-import com.charu.library_management_system.dto.BookDTO;
 import com.charu.library_management_system.dto.ReservationDTO;
 import com.charu.library_management_system.dto.UserDTO;
+import com.charu.library_management_system.dto.requestDTO.CheckoutBookRequestDTO;
 import com.charu.library_management_system.dto.requestDTO.ReservationRequestDTO;
 import com.charu.library_management_system.dto.requestDTO.ReservationSearchRequestDTO;
 import com.charu.library_management_system.dto.responseDTO.PageResponseDTO;
 import com.charu.library_management_system.enums.BookLoanStatus;
 import com.charu.library_management_system.enums.ReservationStatus;
+import com.charu.library_management_system.enums.UserRole;
+import com.charu.library_management_system.exception.BookNotAvailableException;
 import com.charu.library_management_system.exception.BookNotFoundException;
 import com.charu.library_management_system.exception.UserNotFoundException;
 import com.charu.library_management_system.mapper.ReservationMapper;
-import com.charu.library_management_system.mapper.UserMapper;
 import com.charu.library_management_system.models.Book;
-import com.charu.library_management_system.models.BookLoan;
 import com.charu.library_management_system.models.Reservation;
 import com.charu.library_management_system.models.User;
 import com.charu.library_management_system.repository.BookLoanRepository;
 import com.charu.library_management_system.repository.BookRepository;
 import com.charu.library_management_system.repository.ReservationRepository;
 import com.charu.library_management_system.repository.UserRepository;
-import com.charu.library_management_system.service.BookService;
+import com.charu.library_management_system.service.BookLoanService;
 import com.charu.library_management_system.service.ReservationService;
 import com.charu.library_management_system.service.UserService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -34,7 +36,7 @@ public class ReservationServiceImpl implements ReservationService {
 
     private final BookLoanRepository bookLoanRepository;
     private final BookRepository bookRepository;
-    private final BookService bookService;
+    private final BookLoanService bookLoanService;
     private final UserService userService;
     private final ReservationMapper reservationMapper;
     private final ReservationRepository reservationRepository;
@@ -44,12 +46,14 @@ public class ReservationServiceImpl implements ReservationService {
 
 
     @Override
+    @Transactional
     public ReservationDTO createReservation(ReservationRequestDTO reservationRequest) {
         UserDTO userDTO = userService.getCurrentUser();
         return createReservationForUser(userDTO.getId(),reservationRequest);
     }
 
     @Override
+    @Transactional
     public ReservationDTO createReservationForUser(Long userId, ReservationRequestDTO reservationRequest) {
         //Check if user already has loan
         boolean hasActiveLoan = bookLoanRepository.existsByUserIdAndBookIdAndStatus(
@@ -109,14 +113,64 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
+    @Transactional
     public ReservationDTO cancelReservation(Long reservationId) {
-        return null;
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(()->new ReservationNotFoundException("Reservation not found with id "+reservationId));
+
+        UserDTO user = userService.getCurrentUser();
+
+        if(!user.getId().equals(reservation.getUser().getId()) && !user.getRole().equals(UserRole.ADMIN))
+        {
+            throw new AccessDeniedException("You are not allowed to do this reservation");
+        }
+        if(!reservation.canBeCancelled())
+        {
+            throw new ReservationCannotBeCancelledException("Reservation cannot be cancelled");
+        }
+
+        Integer cancelledPosition = reservation.getQueuePosition();
+
+        reservation.setStatus(ReservationStatus.CANCELLED);
+        reservation.setCancelledAt(LocalDateTime.now());
+
+        Reservation saveReservation = reservationRepository.save(reservation);
+
+        if(cancelledPosition!=null)
+        {
+            reservationRepository.updateQueuePosition(reservation.getBook().getId() , cancelledPosition);
+        }
+
+        return reservationMapper.toDTO(saveReservation);
     }
 
     @Override
+    @Transactional
     public ReservationDTO fulfillReservation(Long reservationId) {
-        return null;
+        Reservation reservation = reservationRepository.findById(reservationId)
+                .orElseThrow(()->new ReservationNotFoundException("Reservation not found with id "+reservationId));
+
+
+        if(reservation.getBook().getAvailableCopies()<=0)
+        {
+            throw new BookNotAvailableException("Book is not available for Exception");
+        }
+
+        reservation.setStatus(ReservationStatus.FULFILLED);
+        reservation.setFulfilledAt(LocalDateTime.now());
+
+        Reservation saveReservation = reservationRepository.save(reservation);
+
+        CheckoutBookRequestDTO requestDTO = CheckoutBookRequestDTO.builder()
+                .bookId(reservation.getBook().getId())
+                .notes(reservation.getNotes())
+                .build();
+
+        bookLoanService.checkoutBookForUser(reservation.getUser().getId(),requestDTO);
+
+        return reservationMapper.toDTO(saveReservation);
     }
+
 
     @Override
     public PageResponseDTO<ReservationDTO> getMyReservations(ReservationSearchRequestDTO reservationSearchRequest) {

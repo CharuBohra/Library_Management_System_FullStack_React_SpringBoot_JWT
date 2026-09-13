@@ -4,6 +4,7 @@ import com.charu.library_management_system.enums.ReservationStatus;
 import com.charu.library_management_system.models.Reservation;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -50,4 +51,14 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             @Param("activeOnly") Boolean activeOnly,
             Pageable pageable
     );
+
+    @Modifying
+    @Query("UPDATE Reservation r "+
+            "SET r.queuePosition = r.queuePosition - 1 "+
+            "WHERE r.book.id = :bookId "+
+            "AND r.status = 'PENDING' "+
+            "AND r.queuePosition > :queuePosition "
+    )
+    int updateQueuePosition(@Param("bookId") Long bookId , @Param("queuePosition") Integer queuePosition);
+
 }
