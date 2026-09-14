@@ -2,6 +2,7 @@ package com.charu.library_management_system.repository;
 
 import com.charu.library_management_system.enums.ReservationStatus;
 import com.charu.library_management_system.models.Reservation;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -44,7 +45,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     "(:bookId IS NULL OR r.book.id = :bookId ) AND "+
     "(:status IS NULL OR r.status = :status ) AND "+
     "(:activeOnly = false OR (r.status ='PENDING' OR r.status='AVAILABLE'))")
-    List<Reservation> searchReservationWithFilters(
+    Page<Reservation> searchReservationWithFilters(
             @Param("userId") Long userId,
             @Param("bookId") Long bookId,
             @Param("status")ReservationStatus status,

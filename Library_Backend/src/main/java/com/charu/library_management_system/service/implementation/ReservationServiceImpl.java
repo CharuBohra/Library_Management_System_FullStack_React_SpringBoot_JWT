@@ -25,10 +25,14 @@ import com.charu.library_management_system.service.ReservationService;
 import com.charu.library_management_system.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -42,7 +46,7 @@ public class ReservationServiceImpl implements ReservationService {
     private final ReservationRepository reservationRepository;
     private final UserRepository userRepository;
 
-    private int MAX_RESERVATIONS = 5;
+    private static final int MAX_RESERVATIONS = 5;
 
 
     @Override
@@ -66,7 +70,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         //Validate user exist
         User user = userRepository.findById(userId)
-                .orElseThrow(()->new UserNotFoundException("User not found for id "+ userId);
+                .orElseThrow(()->new UserNotFoundException("User not found for id "+ userId));
 
         //Validate Book exists
         Book book = bookRepository.findById(reservationRequest.getBookId())
@@ -174,11 +178,58 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     public PageResponseDTO<ReservationDTO> getMyReservations(ReservationSearchRequestDTO reservationSearchRequest) {
-        return null;
+        UserDTO user = userService.getCurrentUser();
+        reservationSearchRequest.setUserId(user.getId());
+        return searchReservations(reservationSearchRequest);
     }
 
     @Override
     public PageResponseDTO<ReservationDTO> searchReservations(ReservationSearchRequestDTO reservationSearchRequest) {
-        return null;
+         Pageable pageable = createPageable(reservationSearchRequest.getPage(),
+                reservationSearchRequest.getSize(),
+                reservationSearchRequest.getSortBy(),
+                reservationSearchRequest.getSortDirection());
+
+        Page<Reservation> reservationPage = reservationRepository.searchReservationWithFilters(
+                reservationSearchRequest.getUserId(),
+                reservationSearchRequest.getBookId(),
+                reservationSearchRequest.getStatus(),
+                Boolean.TRUE.equals(
+                        reservationSearchRequest.getActiveOnly()
+                ),
+                pageable
+        );
+
+        return convertToPageResponse(reservationPage);
+    }
+
+    private Pageable createPageable(int page , int size , String sortBy, String sortDir)
+    {
+        page = Math.min(page,10);
+        page = Math.max(page,1);
+
+        Sort sort = sortDir.equalsIgnoreCase("ASC")
+                ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
+
+        return PageRequest.of(page,size,sort);
+    }
+
+    private PageResponseDTO<ReservationDTO> convertToPageResponse(Page<Reservation> reservationPage)
+    {
+        List<ReservationDTO> reservationDTOS = reservationPage.getContent()
+                .stream()
+                .map(reservationMapper::toDTO)
+                .toList();
+
+        return PageResponseDTO.<ReservationDTO>builder()
+                .content(reservationDTOS)
+                .pageNumber(reservationPage.getNumber())
+                .pageSize(reservationPage.getSize())
+                .totalPages(reservationPage.getTotalPages())
+                .totalElements(reservationPage.getTotalElements())
+                .first(reservationPage.isFirst())
+                .last(reservationPage.isLast())
+                .empty(reservationPage.isEmpty())
+                .build();
     }
 }
