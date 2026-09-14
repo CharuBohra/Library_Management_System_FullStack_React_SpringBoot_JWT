@@ -9,9 +9,7 @@ import com.charu.library_management_system.dto.responseDTO.PageResponseDTO;
 import com.charu.library_management_system.enums.BookLoanStatus;
 import com.charu.library_management_system.enums.ReservationStatus;
 import com.charu.library_management_system.enums.UserRole;
-import com.charu.library_management_system.exception.BookNotAvailableException;
-import com.charu.library_management_system.exception.BookNotFoundException;
-import com.charu.library_management_system.exception.UserNotFoundException;
+import com.charu.library_management_system.exception.*;
 import com.charu.library_management_system.mapper.ReservationMapper;
 import com.charu.library_management_system.models.Book;
 import com.charu.library_management_system.models.Reservation;
@@ -65,7 +63,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         if(hasActiveLoan)
         {
-            throw new UserAlreadyHasBookLoan("User already has this book loan with them");
+            throw new UserAlreadyHasBookLoanException("User already has this book loan with them");
         }
 
         //Validate user exist
@@ -80,7 +78,7 @@ public class ReservationServiceImpl implements ReservationService {
         boolean hasActiveReservation = reservationRepository.hasActiveReservation(userId,reservationRequest.getBookId());
         if(hasActiveReservation)
         {
-            throw new UserAlreadyHasReservation("User already has reservation for this book");
+            throw new UserAlreadyHasReservationException("User already has reservation for this book");
         }
 
         //check if book is available
@@ -94,7 +92,7 @@ public class ReservationServiceImpl implements ReservationService {
         long activeReservations = reservationRepository.countActiveReservationsByUser(userId);
         if(activeReservations >= MAX_RESERVATIONS)
         {
-            throw new MaxReservationLimitException("You have already reached "+ MAX_RESERVATIONS+" reservations limit");
+            throw new MaxReservationLimitException("You have already reserved "+ MAX_RESERVATIONS+" times");
         }
 
         //create reservation

@@ -215,4 +215,52 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
     }
+    @ExceptionHandler(BookAlreadyAvailableException.class)
+    public ResponseEntity<ApiResponse> handleBookAlreadyAvailable(BookAlreadyAvailableException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage()).status(false).build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
+    }
+    @ExceptionHandler(MaxReservationLimitException.class)
+    public ResponseEntity<ApiResponse> handleMaxReservationLimit(MaxReservationLimitException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage()).status(false).build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
+    }
+    @ExceptionHandler(ReservationNotFoundException.class)
+    public ResponseEntity<ApiResponse> handleFineNotFound(ReservationNotFoundException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage()).status(false).build();
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
+    }
+    @ExceptionHandler(ReservationCannotBeCancelledException.class)
+    public ResponseEntity<ApiResponse> handleReservationCannotBeCancelled(ReservationCannotBeCancelledException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage()).status(false).build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
+    }
+    @ExceptionHandler(UserAlreadyHasReservationException.class)
+    public ResponseEntity<ApiResponse> handleUserAlreadyHasReservation(UserAlreadyHasReservationException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage()).status(false).build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
+    }
+    @ExceptionHandler(UserAlreadyHasBookLoanException.class)
+    public ResponseEntity<ApiResponse> handleUserAlreadyHasBookLoan(UserAlreadyHasBookLoanException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage()).status(false).build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
+    }
 }
