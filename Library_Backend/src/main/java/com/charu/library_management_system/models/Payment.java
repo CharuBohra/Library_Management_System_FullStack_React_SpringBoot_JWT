@@ -30,7 +30,7 @@ public class Payment {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    @JoinColumn(name="subscription_id",nullable = false)
+    @JoinColumn(name="subscription_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private Subscription subscription;
 

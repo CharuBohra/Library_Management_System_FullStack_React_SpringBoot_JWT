@@ -53,6 +53,7 @@ public class FineServiceImpl implements FineService {
     private final UserRepository userRepository;
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public FineDTO createFine(CreateFineRequestDTO createFineRequest) {
         BookLoan bookLoan = bookLoanRepository.findById(createFineRequest.getBookLoanId())
                 .orElseThrow(()->new BookLoanNotFoundException("Book Loan not found for ID "+createFineRequest.getBookLoanId()));
