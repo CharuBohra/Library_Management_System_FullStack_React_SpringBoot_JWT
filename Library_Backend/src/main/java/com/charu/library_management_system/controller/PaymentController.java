@@ -48,4 +48,16 @@ public class PaymentController {
         PageResponseDTO<PaymentDTO> payments = paymentService.getAllPayments(pageable);
         return ResponseEntity.ok(payments);
     }
+
+    @GetMapping("/payment_success/{paymentId}")
+    public ResponseEntity<PaymentDTO> paymentSuccess(@PathVariable Long paymentId , @RequestParam("razorpay_payment_id") String razorpayPaymentId)
+    {
+        PaymentVerifyRequest paymentVerifyRequest = PaymentVerifyRequest.builder()
+                .razorPaymentId(razorpayPaymentId)
+                .build();
+
+        PaymentDTO paymentDTO = paymentService.verifyPayment(paymentVerifyRequest);
+
+        return ResponseEntity.ok(paymentDTO);
+    }
 }

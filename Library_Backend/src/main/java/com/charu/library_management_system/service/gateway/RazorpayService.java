@@ -66,7 +66,7 @@ public class RazorpayService {
 
             paymentLinkRequest.put("reminder_enable",true);
 
-            String successUrl = baseUrl + "/payment_success/"+ payment.getId();
+            String successUrl = baseUrl + "/api/payments/payment_success/"+ payment.getId();
 
             paymentLinkRequest.put("callback_url",successUrl);
             paymentLinkRequest.put("callback_method","get");
