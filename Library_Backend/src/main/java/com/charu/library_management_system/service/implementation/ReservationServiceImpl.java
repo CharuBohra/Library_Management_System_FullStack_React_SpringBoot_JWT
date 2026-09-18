@@ -28,6 +28,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -56,6 +57,7 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public ReservationDTO createReservationForUser(Long userId, ReservationRequestDTO reservationRequest) {
         //Check if user already has loan
         boolean hasActiveLoan = bookLoanRepository.existsByUserIdAndBookIdAndStatus(
@@ -148,6 +150,7 @@ public class ReservationServiceImpl implements ReservationService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public ReservationDTO fulfillReservation(Long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(()->new ReservationNotFoundException("Reservation not found with id "+reservationId));
@@ -182,6 +185,7 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public PageResponseDTO<ReservationDTO> searchReservations(ReservationSearchRequestDTO reservationSearchRequest) {
          Pageable pageable = createPageable(reservationSearchRequest.getPage(),
                 reservationSearchRequest.getSize(),
