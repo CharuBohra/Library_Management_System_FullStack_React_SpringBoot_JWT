@@ -9,7 +9,7 @@ public interface WishlistService {
 
     WishlistDTO addToWishlist(Long bookId, String notes);
 
-    void removeFromWishList(Long bookId);
+    void removeFromWishlist(Long bookId);
 
     PageResponseDTO<WishlistDTO> getMyWishlist(int page , int size);
 }
