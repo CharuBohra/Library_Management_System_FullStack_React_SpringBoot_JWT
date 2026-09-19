@@ -16,7 +16,7 @@ public class WishlistDTO {
 
     private Long userId;
 
-    private Long userFullName;
+    private String userFullName;
 
     private BookDTO book;
 
