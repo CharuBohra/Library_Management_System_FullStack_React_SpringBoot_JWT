@@ -16,6 +16,7 @@ import com.charu.library_management_system.repository.UserRepository;
 import com.charu.library_management_system.repository.WishlistRepository;
 import com.charu.library_management_system.service.UserService;
 import com.charu.library_management_system.service.WishlistService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -37,6 +38,7 @@ public class WishlistServiceImpl implements WishlistService {
     private final WishlistMapper wishlistMapper;
 
     @Override
+    @Transactional
     public WishlistDTO addToWishlist(Long bookId, String notes) {
         UserDTO userDTO = userService.getCurrentUser();
         User user = userRepository.findById(userDTO.getId())

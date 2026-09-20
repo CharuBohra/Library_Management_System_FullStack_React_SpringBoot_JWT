@@ -5,6 +5,7 @@ import com.charu.library_management_system.dto.responseDTO.ApiResponse;
 import com.charu.library_management_system.dto.responseDTO.PageResponseDTO;
 import com.charu.library_management_system.service.WishlistService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +21,7 @@ public class WishlistController {
                                                      @RequestParam(required = false) String notes)
     {
         WishlistDTO wishlistDTO = wishlistService.addToWishlist(bookId,notes);
-        return ResponseEntity.ok(wishlistDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(wishlistDTO);
     }
 
     @DeleteMapping("/remove/{bookId}")
