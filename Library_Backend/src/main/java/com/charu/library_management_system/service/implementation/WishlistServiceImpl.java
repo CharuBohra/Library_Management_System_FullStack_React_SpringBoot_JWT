@@ -1,11 +1,12 @@
 package com.charu.library_management_system.service.implementation;
 
-import com.charu.library_management_system.dto.BookDTO;
 import com.charu.library_management_system.dto.UserDTO;
 import com.charu.library_management_system.dto.WishlistDTO;
 import com.charu.library_management_system.dto.responseDTO.PageResponseDTO;
+import com.charu.library_management_system.exception.BookAlreadyInWishlistException;
 import com.charu.library_management_system.exception.BookNotFoundException;
 import com.charu.library_management_system.exception.UserNotFoundException;
+import com.charu.library_management_system.exception.WishlistNotFoundException;
 import com.charu.library_management_system.mapper.WishlistMapper;
 import com.charu.library_management_system.models.Book;
 import com.charu.library_management_system.models.User;
@@ -46,7 +47,7 @@ public class WishlistServiceImpl implements WishlistService {
 
         if(wishlistRepository.existsByUserIdAndBookId(userDTO.getId(),bookId))
         {
-            throw new BookAlreadyInWishlistException("The book is already in Wishlist by the user");
+            throw new BookAlreadyInWishlistException("Book is already in the user's wishlist");
         }
 
         Wishlist wishlist = Wishlist.builder()
