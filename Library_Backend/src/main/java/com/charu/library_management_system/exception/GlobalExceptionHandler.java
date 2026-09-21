@@ -263,4 +263,71 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
     }
+    @ExceptionHandler(BookAlreadyReviewedException.class)
+    public ResponseEntity<ApiResponse> handleBookAlreadyReviewed(BookAlreadyReviewedException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage())
+                .status(false)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
+    }
+
+    @ExceptionHandler(BookNotEligibleForReviewException.class)
+    public ResponseEntity<ApiResponse> handleBookNotEligibleForReview(BookNotEligibleForReviewException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage())
+                .status(false)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiResponse);
+    }
+
+    @ExceptionHandler(BookReviewNotFoundException.class)
+    public ResponseEntity<ApiResponse> handleBookReviewNotFound(BookReviewNotFoundException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage())
+                .status(false)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
+    }
+
+    @ExceptionHandler(ReviewNotOwnedByCurrentUserException.class)
+    public ResponseEntity<ApiResponse> handleReviewNotOwnedByCurrentUser(
+            ReviewNotOwnedByCurrentUserException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage())
+                .status(false)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiResponse);
+    }
+    @ExceptionHandler(BookAlreadyInWishlistException.class)
+    public ResponseEntity<ApiResponse> handleBookAlreadyInWishlist(
+            BookAlreadyInWishlistException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage())
+                .status(false)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
+    }
+
+    @ExceptionHandler(WishlistNotFoundException.class)
+    public ResponseEntity<ApiResponse> handleWishlistNotFound(
+            WishlistNotFoundException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage())
+                .status(false)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
+    }
 }
