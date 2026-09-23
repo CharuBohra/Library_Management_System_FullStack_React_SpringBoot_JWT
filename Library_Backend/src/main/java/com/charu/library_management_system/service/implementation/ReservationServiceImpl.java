@@ -158,7 +158,7 @@ public class ReservationServiceImpl implements ReservationService {
 
         if(reservation.getBook().getAvailableCopies()<=0)
         {
-            throw new BookNotAvailableException("Book is not available for Exception");
+            throw new BookNotAvailableException("Book is not available for Reservation");
         }
 
         reservation.setStatus(ReservationStatus.FULFILLED);
@@ -208,7 +208,7 @@ public class ReservationServiceImpl implements ReservationService {
     private Pageable createPageable(int page , int size , String sortBy, String sortDir)
     {
         page = Math.min(page,10);
-        page = Math.max(page,1);
+        page = Math.max(page,0);
 
         Sort sort = sortDir.equalsIgnoreCase("ASC")
                 ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
