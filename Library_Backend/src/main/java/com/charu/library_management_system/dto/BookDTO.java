@@ -65,7 +65,7 @@ public class BookDTO {
     private BigDecimal price;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    private Integer damagedCopies=0;
+    private Integer damagedCopies;
 
     @Size(max = 500, message = "image url should not exceed 500 characters")
     private String coverImageUrl;

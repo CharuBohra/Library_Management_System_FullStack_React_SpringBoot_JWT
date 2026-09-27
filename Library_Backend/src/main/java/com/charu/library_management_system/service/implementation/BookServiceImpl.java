@@ -7,6 +7,7 @@ import com.charu.library_management_system.dto.responseDTO.PageResponseDTO;
 import com.charu.library_management_system.exception.BookNotFoundException;
 import com.charu.library_management_system.exception.DuplicateIsbnException;
 import com.charu.library_management_system.exception.GenreNotFoundException;
+import com.charu.library_management_system.exception.NoDamagedCopiesException;
 import com.charu.library_management_system.mapper.BookMapper;
 import com.charu.library_management_system.models.Book;
 import com.charu.library_management_system.models.Genre;
@@ -157,7 +158,7 @@ public class BookServiceImpl implements BookService {
     @PreAuthorize("hasRole('ADMIN')")
     public BookDTO repairDamagedCopy(Long bookId) {
         Book book = bookRepository.findById(bookId)
-                .orElseThrow(()-> new BookNotFoundException("Book not found"));
+                .orElseThrow(()-> new BookNotFoundException("Book not found with id "+bookId));
 
         if(book.getDamagedCopies()<=0)
         {
@@ -176,7 +177,7 @@ public class BookServiceImpl implements BookService {
     @PreAuthorize("hasRole('ADMIN')")
     public BookDTO writeOffDamagedCopy(Long bookId) {
         Book book = bookRepository.findById(bookId)
-                .orElseThrow(()-> new BookNotFoundException("Book not found"));
+                .orElseThrow(()-> new BookNotFoundException("Book not found with id "+bookId));
 
         if(book.getDamagedCopies()<=0)
         {
