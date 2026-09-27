@@ -108,4 +108,18 @@ public class BookController {
         BookStatsResponse bookStats = new BookStatsResponse(totalActiveBooks,totalAvailableBooks);
         return ResponseEntity.ok(bookStats);
     }
+
+    @PostMapping("/{bookId}/damaged-copies/repair")
+    public ResponseEntity<BookDTO> repairDamagedBooks(@PathVariable("bookId") Long bookId)
+    {
+        BookDTO book = bookService.repairDamagedCopy(bookId);
+        return ResponseEntity.ok(book);
+    }
+
+    @PostMapping("/{bookId}/damaged-copies/write-off")
+    public ResponseEntity<BookDTO> writeOffDamagedBooks(@PathVariable("bookId") Long bookId)
+    {
+        BookDTO book = bookService.writeOffDamagedCopy(bookId);
+        return ResponseEntity.ok(book);
+    }
 }
