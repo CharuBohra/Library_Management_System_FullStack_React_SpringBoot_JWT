@@ -16,7 +16,6 @@ public interface BookMapper {
     @Mapping(target = "genreCode" , source = "genre.code")
     BookDTO toDTO(Book book);
 
-    @Mapping(target = "id" , source = "id")
     @Mapping(target = "genre" , ignore = true)
     Book toEntity(BookDTO bookDTO);
 

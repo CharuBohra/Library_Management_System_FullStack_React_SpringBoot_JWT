@@ -54,6 +54,10 @@ public class Book {
     @Column(precision=8 , scale = 2)
     private BigDecimal price;
 
+    @Builder.Default
+    @Column(nullable = false)
+    private Integer damagedCopies = 0;
+
     private String coverImageUrl;
 
     @Column(nullable = false)

@@ -14,7 +14,6 @@ public interface GenreMapper {
     @Mapping(target="parentGenreName", source = "parentGenre.name")
     GenreDTO toDTO(Genre genre);
 
-    @Mapping(target ="id", source = "id")
     @Mapping(target = "parentGenre" , ignore = true)
     @Mapping(target = "subGenres" , ignore = true)
     Genre toEntity(GenreDTO genreDTO);

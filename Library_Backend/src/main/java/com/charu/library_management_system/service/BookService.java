@@ -27,4 +27,8 @@ public interface BookService {
     Long getTotalActiveBooks();
 
     Long getTotalAvailableBooks();
+
+    BookDTO repairDamagedCopy(Long bookId);
+
+    BookDTO writeOffDamagedCopy(Long bookId);
 }

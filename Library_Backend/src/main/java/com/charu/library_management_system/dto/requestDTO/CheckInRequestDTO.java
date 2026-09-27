@@ -1,6 +1,7 @@
 package com.charu.library_management_system.dto.requestDTO;
 
-import com.charu.library_management_system.enums.BookLoanStatus;
+
+import com.charu.library_management_system.enums.BookReturnCondition;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -16,7 +17,7 @@ public class CheckInRequestDTO {
     private Long bookLoanId;
 
     @Builder.Default
-    private BookLoanStatus condition = BookLoanStatus.RETURNED;
+    private BookReturnCondition condition = BookReturnCondition.GOOD;
 
     @Size(max = 500, message = "Notes length should not exceed 500 characters")
     private String notes;

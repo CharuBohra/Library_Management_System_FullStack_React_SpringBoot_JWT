@@ -11,6 +11,7 @@ import com.charu.library_management_system.dto.requestDTO.RenewalRequestDTO;
 import com.charu.library_management_system.dto.responseDTO.PageResponseDTO;
 import com.charu.library_management_system.enums.BookLoanStatus;
 import com.charu.library_management_system.enums.BookLoanType;
+import com.charu.library_management_system.enums.BookReturnCondition;
 import com.charu.library_management_system.exception.*;
 import com.charu.library_management_system.mapper.BookLoanMapper;
 import com.charu.library_management_system.mapper.BookMapper;
@@ -159,12 +160,19 @@ public class BookLoanServiceImpl implements BookLoanService {
         bookLoan.setReturnDate(LocalDateTime.now());
 
         //4. Get Book Loan Condition
-        BookLoanStatus condition = checkInRequest.getCondition();
+        BookReturnCondition condition = checkInRequest.getCondition();
         if(condition==null)
         {
-            condition = BookLoanStatus.RETURNED;
+            condition = BookReturnCondition.GOOD;
         }
-        bookLoan.setStatus(condition);
+
+        BookLoanStatus newStatus = switch(condition)
+        {
+            case GOOD -> BookLoanStatus.RETURNED;
+            case LOST -> BookLoanStatus.LOST;
+            case DAMAGED -> BookLoanStatus.DAMAGED;
+        };
+        bookLoan.setStatus(newStatus);
 
         //5. Fine todo
         bookLoan.setOverdueDays(0);
@@ -176,12 +184,15 @@ public class BookLoanServiceImpl implements BookLoanService {
                         :"Book returned by user");
 
         //7. Update availability of book
-        if(condition!=BookLoanStatus.LOST)
+
+        Book book = bookLoan.getBook();
+        switch(condition)
         {
-            Book book = bookLoan.getBook();
-            book.setAvailableCopies(book.getAvailableCopies()+1);
-            bookRepository.save(book);
+            case GOOD -> book.setAvailableCopies(book.getAvailableCopies()+1);
+            case LOST -> book.setTotalCopies(book.getTotalCopies()-1);
+            case DAMAGED ->book.setDamagedCopies(book.getDamagedCopies()+1);
         }
+        bookRepository.save(book);
 
         //8. Save bookLoan
         BookLoan savedBookLoan = bookLoanRepository.save(bookLoan);
@@ -283,6 +294,7 @@ public class BookLoanServiceImpl implements BookLoanService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public int updateOverdueBookLoan() {
         LocalDateTime now = LocalDateTime.now();
         Pageable pageable = PageRequest.of(0,1000);
