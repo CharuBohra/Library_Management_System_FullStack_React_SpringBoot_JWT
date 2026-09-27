@@ -152,6 +152,44 @@ public class BookServiceImpl implements BookService {
         return countAvailable;
     }
 
+    @Override
+    @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
+    public BookDTO repairDamagedCopy(Long bookId) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(()-> new BookNotFoundException("Book not found"));
+
+        if(book.getDamagedCopies()<=0)
+        {
+            throw new NoDamagedCopiesException("No Damaged copies for the book with id "+bookId);
+        }
+
+        book.setDamagedCopies(book.getDamagedCopies()-1);
+        book.setAvailableCopies(book.getAvailableCopies()+1);
+
+        Book savedBook = bookRepository.save(book);
+        return bookMapper.toDTO(savedBook);
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
+    public BookDTO writeOffDamagedCopy(Long bookId) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(()-> new BookNotFoundException("Book not found"));
+
+        if(book.getDamagedCopies()<=0)
+        {
+            throw new NoDamagedCopiesException("No Damaged copies for the book with id "+bookId);
+        }
+
+        book.setDamagedCopies(book.getDamagedCopies()-1);
+        book.setTotalCopies(book.getTotalCopies()-1);
+
+        Book savedBook = bookRepository.save(book);
+        return bookMapper.toDTO(savedBook);
+    }
+
     private Pageable createPageable(int page , int pageSize , String sortBy , String sortDirection)
     {
         pageSize = Math.min(pageSize,10);

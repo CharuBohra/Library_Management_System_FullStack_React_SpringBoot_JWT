@@ -330,4 +330,37 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(apiResponse);
     }
+    @ExceptionHandler(NoDamagedCopiesException.class)
+    public ResponseEntity<ApiResponse> handleNoDamagedCopies(
+            NoDamagedCopiesException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage())
+                .status(false)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
+    }
+    @ExceptionHandler(DuplicateIsbnException.class)
+    public ResponseEntity<ApiResponse> handleDuplicateIsbn(
+            DuplicateIsbnException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage())
+                .status(false)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
+    }
+    @ExceptionHandler(OverdueBookExistsException.class)
+    public ResponseEntity<ApiResponse> handleOverdueBookExists(
+            OverdueBookExistsException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage())
+                .status(false)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
+    }
 }

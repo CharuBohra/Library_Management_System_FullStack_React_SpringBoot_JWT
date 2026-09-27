@@ -16,12 +16,15 @@ public interface BookMapper {
     @Mapping(target = "genreCode" , source = "genre.code")
     BookDTO toDTO(Book book);
 
+    @Mapping(target = "id" , ignore = true)
+    @Mapping(target = "damagedCopies" , ignore = true)
     @Mapping(target = "genre" , ignore = true)
     Book toEntity(BookDTO bookDTO);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "isbn" , ignore = true)
     @Mapping(target = "genre" , ignore = true)
+    @Mapping(target = "damagedCopies" , ignore = true)
     @Mapping(target = "createdAt" , ignore = true)
     @Mapping(target = "updatedAt" , ignore = true)
     void updateEntityFromDTO(UpdateBookRequestDTO updateBookDTO, @MappingTarget Book book);

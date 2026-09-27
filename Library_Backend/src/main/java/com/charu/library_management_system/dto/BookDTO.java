@@ -1,6 +1,7 @@
 package com.charu.library_management_system.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -62,6 +63,9 @@ public class BookDTO {
     @DecimalMin(value = "0.00",message = "Price of the book cannot be negative")
     @Digits(integer = 8 , fraction = 2,message = "price must have only 2 decimal values and 8 integer places")
     private BigDecimal price;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Integer damagedCopies=0;
 
     @Size(max = 500, message = "image url should not exceed 500 characters")
     private String coverImageUrl;
