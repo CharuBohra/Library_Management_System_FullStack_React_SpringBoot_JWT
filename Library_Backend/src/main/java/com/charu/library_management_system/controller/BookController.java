@@ -30,7 +30,7 @@ public class BookController {
     }
 
     @PostMapping("/create/bulk")
-    public ResponseEntity<List<BookDTO>> addBooksBulk(@Valid @RequestBody List<BookDTO> bookDTOS)
+    public ResponseEntity<List<BookDTO>> addBooksBulk( @RequestBody List<@Valid BookDTO> bookDTOS)
     {
         List<BookDTO> books = bookService.createBooksBulk(bookDTOS);
         return ResponseEntity.ok(books);

@@ -56,8 +56,7 @@ public class BookDTO {
     @Min(0)
     private Integer totalCopies;
 
-    @NotNull(message = "Available Copies is mandatory")
-    @Min(value = 0,message = "Available copies cannot have negative values")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Integer availableCopies;
 
     @DecimalMin(value = "0.00",message = "Price of the book cannot be negative")
@@ -70,21 +69,11 @@ public class BookDTO {
     @Size(max = 500, message = "image url should not exceed 500 characters")
     private String coverImageUrl;
 
+    @Builder.Default
     private Boolean active = true;
 
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
-
-    @JsonIgnore
-    @AssertTrue(message = "Available copies should not be greater than total copies")
-    public boolean isAvailableCopiesValid()
-    {
-        if(totalCopies== null || availableCopies==null)
-        {
-            return true;
-        }
-        return availableCopies<=totalCopies;
-    }
 
 }

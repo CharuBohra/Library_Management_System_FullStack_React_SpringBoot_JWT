@@ -1,12 +1,10 @@
 package com.charu.library_management_system.dto.requestDTO;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -24,10 +22,6 @@ public class UpdateBookRequestDTO {
 
     @NotNull(message = "genre Id is mandatory")
     private Long genreId;
-
-    private String genreCode;
-
-    private String genreName;
 
     @Size(max = 100 , message = "publisher should not exceed 100 characters")
     private String publisher;
@@ -48,31 +42,10 @@ public class UpdateBookRequestDTO {
     @Min(0)
     private Integer totalCopies;
 
-    @NotNull(message = "Available Copies is mandatory")
-    @Min(value = 0,message = "Available copies cannot have negative values")
-    private Integer availableCopies;
-
     @DecimalMin(value = "0.00",message = "Price of the book cannot be negative")
     @Digits(integer = 8 , fraction = 2,message = "price must have only 2 decimal values and 8 integer places")
     private BigDecimal price;
 
     @Size(max = 500, message = "image url should not exceed 500 characters")
     private String coverImageUrl;
-
-    private Boolean active = true;
-
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
-
-    @JsonIgnore
-    @AssertTrue(message = "Available copies should not be greater than total copies")
-    public boolean isAvailableCopiesValid()
-    {
-        if(totalCopies== null || availableCopies==null)
-        {
-            return true;
-        }
-        return availableCopies<=totalCopies;
-    }
 }

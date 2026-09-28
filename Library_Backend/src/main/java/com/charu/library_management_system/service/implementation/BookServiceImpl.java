@@ -4,10 +4,7 @@ import com.charu.library_management_system.dto.BookDTO;
 import com.charu.library_management_system.dto.requestDTO.BookSearchRequestDTO;
 import com.charu.library_management_system.dto.requestDTO.UpdateBookRequestDTO;
 import com.charu.library_management_system.dto.responseDTO.PageResponseDTO;
-import com.charu.library_management_system.exception.BookNotFoundException;
-import com.charu.library_management_system.exception.DuplicateIsbnException;
-import com.charu.library_management_system.exception.GenreNotFoundException;
-import com.charu.library_management_system.exception.NoDamagedCopiesException;
+import com.charu.library_management_system.exception.*;
 import com.charu.library_management_system.mapper.BookMapper;
 import com.charu.library_management_system.models.Book;
 import com.charu.library_management_system.models.Genre;
@@ -47,6 +44,9 @@ public class BookServiceImpl implements BookService {
         Book book = bookMapper.toEntity(bookDTO);
 
         book.setGenre(genre);
+
+        // A new book has nothing on loan or damaged, so every copy is available
+        book.setAvailableCopies(book.getTotalCopies());
 
         Book savedBook = bookRepository.save(book);
 
@@ -89,6 +89,17 @@ public class BookServiceImpl implements BookService {
     public BookDTO updateBook(Long id, UpdateBookRequestDTO updateBookDTO) {
         Book book = bookRepository.findById(id)
                 .orElseThrow(()->new BookNotFoundException("Book does not exist with id "+id));
+
+        int oldTotal = book.getTotalCopies();
+        int newTotal = updateBookDTO.getTotalCopies();
+        int newAvailable = book.getAvailableCopies()+(newTotal-oldTotal);
+
+        if(newAvailable<0)
+        {
+            throw new InvalidStockUpdateException("Cannot reduce total copies to "+newTotal+" for book id "+id+" : copies are on loan or damaged");
+        }
+        book.setTotalCopies(newTotal);
+        book.setAvailableCopies(newAvailable);
 
         bookMapper.updateEntityFromDTO(updateBookDTO,book);
 

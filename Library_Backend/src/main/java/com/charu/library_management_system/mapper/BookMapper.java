@@ -18,6 +18,7 @@ public interface BookMapper {
 
     @Mapping(target = "id" , ignore = true)
     @Mapping(target = "damagedCopies" , ignore = true)
+    @Mapping(target = "availableCopies",ignore = true)
     @Mapping(target = "genre" , ignore = true)
     Book toEntity(BookDTO bookDTO);
 
@@ -25,6 +26,8 @@ public interface BookMapper {
     @Mapping(target = "isbn" , ignore = true)
     @Mapping(target = "genre" , ignore = true)
     @Mapping(target = "damagedCopies" , ignore = true)
+    @Mapping(target = "totalCopies", ignore = true)
+    @Mapping(target = "availableCopies",ignore = true)
     @Mapping(target = "createdAt" , ignore = true)
     @Mapping(target = "updatedAt" , ignore = true)
     void updateEntityFromDTO(UpdateBookRequestDTO updateBookDTO, @MappingTarget Book book);

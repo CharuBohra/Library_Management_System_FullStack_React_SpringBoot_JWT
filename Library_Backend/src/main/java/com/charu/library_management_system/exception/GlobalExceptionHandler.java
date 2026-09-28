@@ -363,4 +363,15 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
     }
+    @ExceptionHandler(InvalidStockUpdateException.class)
+    public ResponseEntity<ApiResponse> handleInvalidStockUpdate(
+            InvalidStockUpdateException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage())
+                .status(false)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
+    }
 }
