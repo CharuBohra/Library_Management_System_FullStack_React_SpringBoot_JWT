@@ -26,6 +26,7 @@ public interface BookMapper {
     @Mapping(target = "isbn" , ignore = true)
     @Mapping(target = "genre" , ignore = true)
     @Mapping(target = "damagedCopies" , ignore = true)
+    @Mapping(target = "active",ignore = true)
     @Mapping(target = "totalCopies", ignore = true)
     @Mapping(target = "availableCopies",ignore = true)
     @Mapping(target = "createdAt" , ignore = true)
