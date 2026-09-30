@@ -60,6 +60,7 @@ public class SecurityConfig {
                         requestMatchers(
                                 "/auth/login/**",
                                 "/auth/signup/**",
+                                "/error",
                                 "/auth/forgot-password/**",
                                 "/auth/reset-password/**",
                                 "/swagger-ui/**",
