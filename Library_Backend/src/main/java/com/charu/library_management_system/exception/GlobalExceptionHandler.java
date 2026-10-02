@@ -385,4 +385,15 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
     }
+    @ExceptionHandler(ReservationCannotBeFulfilledException.class)
+    public ResponseEntity<ApiResponse> handleReservationCannotBeFulfilled(
+            ReservationCannotBeFulfilledException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage())
+                .status(false)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
+    }
 }

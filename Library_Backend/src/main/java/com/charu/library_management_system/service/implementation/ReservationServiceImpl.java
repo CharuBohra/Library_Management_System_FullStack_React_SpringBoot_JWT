@@ -6,7 +6,6 @@ import com.charu.library_management_system.dto.requestDTO.CheckoutBookRequestDTO
 import com.charu.library_management_system.dto.requestDTO.ReservationRequestDTO;
 import com.charu.library_management_system.dto.requestDTO.ReservationSearchRequestDTO;
 import com.charu.library_management_system.dto.responseDTO.PageResponseDTO;
-import com.charu.library_management_system.enums.BookLoanStatus;
 import com.charu.library_management_system.enums.ReservationStatus;
 import com.charu.library_management_system.enums.UserRole;
 import com.charu.library_management_system.exception.*;
@@ -65,8 +64,7 @@ public class ReservationServiceImpl implements ReservationService {
     private ReservationDTO doReservation(Long userId, ReservationRequestDTO reservationRequest)
     {
         //Check if user already has loan
-        boolean hasActiveLoan = bookLoanRepository.existsByUserIdAndBookIdAndStatus(
-                userId,reservationRequest.getBookId(), BookLoanStatus.CHECKED_OUT);
+        boolean hasActiveLoan = bookLoanRepository.hasActiveCheckout(userId, reservationRequest.getBookId());
 
         if(hasActiveLoan)
         {
@@ -161,15 +159,24 @@ public class ReservationServiceImpl implements ReservationService {
                 .orElseThrow(()->new ReservationNotFoundException("Reservation not found with id "+reservationId));
 
 
+        // 1. Only an open reservation can be fulfilled
+        if(reservation.getStatus() != ReservationStatus.PENDING)
+        {
+            throw new ReservationCannotBeFulfilledException(
+                    "Reservation " + reservationId + " is " + reservation.getStatus() + " and cannot be fulfilled");
+        }
+
+        // 2. First come, first served
+        if(reservation.getQueuePosition() == null || reservation.getQueuePosition() != 1)
+        {
+            throw new ReservationCannotBeFulfilledException(
+                    "Reservation " + reservationId + " is not first in the queue for "+reservation.getUser().getFullName());
+        }
+
         if(reservation.getBook().getAvailableCopies()<=0)
         {
             throw new BookNotAvailableException("Book is not available for Reservation");
         }
-
-        reservation.setStatus(ReservationStatus.FULFILLED);
-        reservation.setFulfilledAt(LocalDateTime.now());
-
-        Reservation saveReservation = reservationRepository.save(reservation);
 
         CheckoutBookRequestDTO requestDTO = CheckoutBookRequestDTO.builder()
                 .bookId(reservation.getBook().getId())
@@ -177,6 +184,16 @@ public class ReservationServiceImpl implements ReservationService {
                 .build();
 
         bookLoanService.checkoutBookForUser(reservation.getUser().getId(),requestDTO);
+
+        // 5. Mark fulfilled and move everyone else up one place
+        Integer fulfilledPosition = reservation.getQueuePosition();
+        reservation.setStatus(ReservationStatus.FULFILLED);
+        reservation.setFulfilledAt(LocalDateTime.now());
+        reservation.setQueuePosition(null);
+
+        Reservation saveReservation = reservationRepository.save(reservation);
+
+        reservationRepository.updateQueuePosition(reservation.getBook().getId(), fulfilledPosition);
 
         return reservationMapper.toDTO(saveReservation);
     }
@@ -217,8 +234,16 @@ public class ReservationServiceImpl implements ReservationService {
 
     private Pageable createPageable(int page , int size , String sortBy, String sortDir)
     {
-        page = Math.min(page,10);
+        size = Math.min(Math.max(size,1),50);
         page = Math.max(page,0);
+
+        if (sortBy == null || sortBy.isBlank()) {
+            sortBy = "reservedAt";
+        }
+        if (sortDir == null || sortDir.isBlank()) {
+            sortDir = "DESC";
+        }
+
 
         Sort sort = sortDir.equalsIgnoreCase("ASC")
                 ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();

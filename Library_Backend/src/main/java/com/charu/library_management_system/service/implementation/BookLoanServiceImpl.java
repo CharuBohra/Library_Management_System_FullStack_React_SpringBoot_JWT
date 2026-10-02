@@ -21,6 +21,7 @@ import com.charu.library_management_system.models.BookLoan;
 import com.charu.library_management_system.models.User;
 import com.charu.library_management_system.repository.BookLoanRepository;
 import com.charu.library_management_system.repository.BookRepository;
+import com.charu.library_management_system.repository.ReservationRepository;
 import com.charu.library_management_system.repository.UserRepository;
 import com.charu.library_management_system.service.BookLoanService;
 import com.charu.library_management_system.service.BookService;
@@ -50,6 +51,7 @@ public class BookLoanServiceImpl implements BookLoanService {
     private final SubscriptionService subscriptionService;
     private final BookLoanMapper bookLoanMapper;
     private final BookRepository bookRepository;
+    private final ReservationRepository reservationRepository;
 
     @Override
     @Transactional
@@ -235,6 +237,14 @@ public class BookLoanServiceImpl implements BookLoanService {
         if(!bookLoan.canRenew())
         {
             throw new BookCannotBeRenewedException("Book cannot be renewed for id "+renewalRequest.getBookLoanId());
+        }
+
+        long waitingInQueueCount = reservationRepository.countPendingReservationsByBook(bookLoan.getBook().getId());
+
+        if(waitingInQueueCount>0)
+        {
+            throw new BookCannotBeRenewedException(
+                    "Book cannot be renewed because other members have reserved it");
         }
 
         SubscriptionDTO subscription = subscriptionService.getUsersActiveSubscription(user.getId());
