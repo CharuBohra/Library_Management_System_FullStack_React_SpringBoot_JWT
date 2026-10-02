@@ -21,6 +21,7 @@ import com.charu.library_management_system.models.BookLoan;
 import com.charu.library_management_system.models.User;
 import com.charu.library_management_system.repository.BookLoanRepository;
 import com.charu.library_management_system.repository.BookRepository;
+import com.charu.library_management_system.repository.UserRepository;
 import com.charu.library_management_system.service.BookLoanService;
 import com.charu.library_management_system.service.BookService;
 import com.charu.library_management_system.service.SubscriptionService;
@@ -45,10 +46,8 @@ public class BookLoanServiceImpl implements BookLoanService {
 
     private final BookLoanRepository bookLoanRepository;
     private final UserService userService;
-    private final UserMapper userMapper;
+    private final UserRepository userRepository;
     private final SubscriptionService subscriptionService;
-    private final BookService bookService;
-    private final BookMapper bookMapper;
     private final BookLoanMapper bookLoanMapper;
     private final BookRepository bookRepository;
 
@@ -56,17 +55,22 @@ public class BookLoanServiceImpl implements BookLoanService {
     @Transactional
     public BookLoanDTO checkoutBook(CheckoutBookRequestDTO checkoutBookRequest) {
         UserDTO user = userService.getCurrentUser();
-
-        return checkoutBookForUser(user.getId(),checkoutBookRequest);
+        return doCheckout(user.getId(),checkoutBookRequest);
     }
 
     @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     public BookLoanDTO checkoutBookForUser(Long userId, CheckoutBookRequestDTO checkoutBookRequest) {
+        return doCheckout(userId,checkoutBookRequest);
+    }
+
+    private BookLoanDTO doCheckout(Long userId,CheckoutBookRequestDTO checkoutBookRequest)
+    {
         // 1 ----->  Validate User exist
         UserDTO userDTO = userService.findById(userId);
-        User user = userMapper.toEntity(userDTO);
+        User user = userRepository.findById(userId)
+                .orElseThrow(()->new UserNotFoundException("User not found for id "+ userId));
 
         //2 -------> Validate user has active subscription
         SubscriptionDTO subscriptionDTO = subscriptionService.getUsersActiveSubscription(userId);

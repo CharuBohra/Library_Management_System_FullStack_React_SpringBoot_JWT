@@ -52,13 +52,18 @@ public class ReservationServiceImpl implements ReservationService {
     @Transactional
     public ReservationDTO createReservation(ReservationRequestDTO reservationRequest) {
         UserDTO userDTO = userService.getCurrentUser();
-        return createReservationForUser(userDTO.getId(),reservationRequest);
+        return doReservation(userDTO.getId(),reservationRequest);
     }
 
     @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     public ReservationDTO createReservationForUser(Long userId, ReservationRequestDTO reservationRequest) {
+        return doReservation(userId,reservationRequest);
+    }
+
+    private ReservationDTO doReservation(Long userId, ReservationRequestDTO reservationRequest)
+    {
         //Check if user already has loan
         boolean hasActiveLoan = bookLoanRepository.existsByUserIdAndBookIdAndStatus(
                 userId,reservationRequest.getBookId(), BookLoanStatus.CHECKED_OUT);
@@ -181,13 +186,18 @@ public class ReservationServiceImpl implements ReservationService {
     public PageResponseDTO<ReservationDTO> getMyReservations(ReservationSearchRequestDTO reservationSearchRequest) {
         UserDTO user = userService.getCurrentUser();
         reservationSearchRequest.setUserId(user.getId());
-        return searchReservations(reservationSearchRequest);
+        return doSearchReservations(reservationSearchRequest);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public PageResponseDTO<ReservationDTO> searchReservations(ReservationSearchRequestDTO reservationSearchRequest) {
-         Pageable pageable = createPageable(reservationSearchRequest.getPage(),
+         return doSearchReservations(reservationSearchRequest);
+    }
+
+    private PageResponseDTO<ReservationDTO> doSearchReservations(ReservationSearchRequestDTO reservationSearchRequest)
+    {
+        Pageable pageable = createPageable(reservationSearchRequest.getPage(),
                 reservationSearchRequest.getSize(),
                 reservationSearchRequest.getSortBy(),
                 reservationSearchRequest.getSortDirection());
