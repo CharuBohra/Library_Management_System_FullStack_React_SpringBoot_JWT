@@ -68,7 +68,6 @@ public class BookLoanServiceImpl implements BookLoanService {
     private BookLoanDTO doCheckout(Long userId,CheckoutBookRequestDTO checkoutBookRequest)
     {
         // 1 ----->  Validate User exist
-        UserDTO userDTO = userService.findById(userId);
         User user = userRepository.findById(userId)
                 .orElseThrow(()->new UserNotFoundException("User not found for id "+ userId));
 
@@ -115,13 +114,27 @@ public class BookLoanServiceImpl implements BookLoanService {
 
         //7 -----> Create Book loan
         LocalDateTime checkoutDate = LocalDateTime.now();
+
+        int maxDaysPerBook = subscriptionDTO.getMaxDaysPerBook();
+        Integer requestedDays = checkoutBookRequest.getCheckoutDays();
+
+        int loanDays;
+        if(requestedDays==null)
+        {
+            loanDays = maxDaysPerBook;
+        }else if(requestedDays>maxDaysPerBook)
+        {
+            throw new LoanPeriodExceededException("Your plan allows a maximum of "+maxDaysPerBook+" days per book.");
+        }else{
+            loanDays = requestedDays;
+        }
         BookLoan bookLoan = BookLoan.builder()
                 .user(user)
                 .book(book)
                 .type(BookLoanType.CHECKOUT)
                 .status(BookLoanStatus.CHECKED_OUT)
                 .checkoutDate(checkoutDate)
-                .dueDate(checkoutDate.plusDays(checkoutBookRequest.getCheckoutDays()))
+                .dueDate(checkoutDate.plusDays(loanDays))
                 .renewalCount(0)
                 .maxRenewals(2)
                 .notes("Book Loan taken by user "+user.getFullName())
@@ -224,8 +237,18 @@ public class BookLoanServiceImpl implements BookLoanService {
             throw new BookCannotBeRenewedException("Book cannot be renewed for id "+renewalRequest.getBookLoanId());
         }
 
+        SubscriptionDTO subscription = subscriptionService.getUsersActiveSubscription(user.getId());
+
+        int extensionDays = renewalRequest.getExtensionDays();
+        int maxDaysPerBook = subscription.getMaxDaysPerBook();
+
+        if(extensionDays>maxDaysPerBook)
+        {
+            throw new LoanPeriodExceededException("Your plan allows a maximum of "+maxDaysPerBook+" days per renewal");
+        }
+
         //3. update due date
-        bookLoan.setDueDate(bookLoan.getDueDate().plusDays(renewalRequest.getExtensionDays()));
+        bookLoan.setDueDate(bookLoan.getDueDate().plusDays(extensionDays));
         bookLoan.setRenewalCount(bookLoan.getRenewalCount()+1);
         bookLoan.setNotes(renewalRequest.getNotes()!=null
                         ? renewalRequest.getNotes()

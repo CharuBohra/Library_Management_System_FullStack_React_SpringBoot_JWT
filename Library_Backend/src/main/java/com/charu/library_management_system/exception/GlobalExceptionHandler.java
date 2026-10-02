@@ -374,4 +374,15 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
     }
+    @ExceptionHandler(LoanPeriodExceededException.class)
+    public ResponseEntity<ApiResponse> handleLoanPeriodExceeded(
+            LoanPeriodExceededException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage())
+                .status(false)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
+    }
 }
