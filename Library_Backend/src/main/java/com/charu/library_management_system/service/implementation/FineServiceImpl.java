@@ -27,6 +27,7 @@ import com.charu.library_management_system.service.BookLoanService;
 import com.charu.library_management_system.service.FineService;
 import com.charu.library_management_system.service.PaymentService;
 import com.charu.library_management_system.service.UserService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -39,6 +40,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -184,6 +186,48 @@ public class FineServiceImpl implements FineService {
         Page<Fine> finePage = fineRepository.findAllWithFilters(userId,status,type,pageable);
 
         return convertToPageResponse(finePage);
+    }
+
+    @Override
+    @Transactional
+    public void createSystemFine(BookLoan bookLoan, FineType type, BigDecimal amount, String reason) {
+
+        //never charge zero or negative as fine
+        if(amount == null || amount.compareTo(BigDecimal.ZERO)<=0)
+        {
+            return;
+        }
+
+        Optional<Fine> existingFine = fineRepository.findByBookLoanIdAndType(bookLoan.getId(),type);
+
+        if(existingFine.isPresent())
+        {
+            Fine fine = existingFine.get();
+            if(fine.getStatus() == FineStatus.PENDING)
+            {
+                fine.setAmount(amount);
+                fine.setReason(reason);
+                fineRepository.save(fine);
+            }
+            return;
+        }
+
+        Fine fine = Fine.builder()
+                .user(bookLoan.getUser())
+                .bookLoan(bookLoan)
+                .type(type)
+                .amount(amount)
+                .status(FineStatus.PENDING)
+                .reason(reason)
+                .notes("Created automatically by System")
+                .build();
+
+        fineRepository.save(fine);
+    }
+
+    @Override
+    public boolean hasUnpaidFine(Long userId) {
+        return fineRepository.existsByUserIdAndStatus(userId,FineStatus.PENDING);
     }
 
     public PageResponseDTO<FineDTO> convertToPageResponse(Page<Fine> finePage)

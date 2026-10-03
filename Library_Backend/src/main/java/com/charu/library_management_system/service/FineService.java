@@ -7,6 +7,7 @@ import com.charu.library_management_system.dto.responseDTO.PageResponseDTO;
 import com.charu.library_management_system.dto.responseDTO.PaymentInitiateResponse;
 import com.charu.library_management_system.enums.FineStatus;
 import com.charu.library_management_system.enums.FineType;
+import com.charu.library_management_system.models.BookLoan;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -26,4 +27,8 @@ public interface FineService {
     List<FineDTO> getMyFine(FineStatus status , FineType type);
 
     PageResponseDTO<FineDTO> getAllFine(FineStatus status , FineType type , Long userId, int page , int size);
+
+    void createSystemFine(BookLoan bookLoan, FineType type, BigDecimal amount , String reason);
+
+    boolean hasUnpaidFine(Long userId);
 }

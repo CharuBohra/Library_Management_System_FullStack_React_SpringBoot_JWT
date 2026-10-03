@@ -12,6 +12,7 @@ import com.charu.library_management_system.dto.responseDTO.PageResponseDTO;
 import com.charu.library_management_system.enums.BookLoanStatus;
 import com.charu.library_management_system.enums.BookLoanType;
 import com.charu.library_management_system.enums.BookReturnCondition;
+import com.charu.library_management_system.enums.FineType;
 import com.charu.library_management_system.exception.*;
 import com.charu.library_management_system.mapper.BookLoanMapper;
 import com.charu.library_management_system.mapper.BookMapper;
@@ -23,12 +24,10 @@ import com.charu.library_management_system.repository.BookLoanRepository;
 import com.charu.library_management_system.repository.BookRepository;
 import com.charu.library_management_system.repository.ReservationRepository;
 import com.charu.library_management_system.repository.UserRepository;
-import com.charu.library_management_system.service.BookLoanService;
-import com.charu.library_management_system.service.BookService;
-import com.charu.library_management_system.service.SubscriptionService;
-import com.charu.library_management_system.service.UserService;
+import com.charu.library_management_system.service.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -37,6 +36,8 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
@@ -52,6 +53,16 @@ public class BookLoanServiceImpl implements BookLoanService {
     private final BookLoanMapper bookLoanMapper;
     private final BookRepository bookRepository;
     private final ReservationRepository reservationRepository;
+    private final FineService fineService;
+
+    @Value("${app.fines.overdue-per-day}")
+    private BigDecimal overdueFinePerDay;
+
+    @Value("${app.fines.damage-percentage}")
+    private int damagePercentage;
+
+    @Value("${app.fines.default-book-price}")
+    private BigDecimal defaultBookPrice;
 
     @Override
     @Transactional
@@ -112,6 +123,11 @@ public class BookLoanServiceImpl implements BookLoanService {
             throw new OverdueBookExistsException(
                     "Please return your overdue book(s) before borrowing another book"
             );
+        }
+
+        if(fineService.hasUnpaidFine(userId))
+        {
+            throw new UnpaidFinesExistsException("Please pay your outstanding fines before borrowing new book");
         }
 
         //7 -----> Create Book loan
@@ -193,9 +209,10 @@ public class BookLoanServiceImpl implements BookLoanService {
         };
         bookLoan.setStatus(newStatus);
 
-        //5. Fine todo
-        bookLoan.setOverdueDays(0);
-        bookLoan.setIsOverdue(false);
+        //5. Work out how late the return is
+        int overdueDays = calculateOverdueDays(bookLoan.getDueDate(),bookLoan.getReturnDate());
+        bookLoan.setOverdueDays(overdueDays);
+        bookLoan.setIsOverdue(overdueDays>0);
 
         //6. Set Notes
         bookLoan.setNotes(checkInRequest.getNotes()!=null
@@ -215,6 +232,39 @@ public class BookLoanServiceImpl implements BookLoanService {
 
         //8. Save bookLoan
         BookLoan savedBookLoan = bookLoanRepository.save(bookLoan);
+
+        BigDecimal bookPrice = book.getPrice() != null ? book.getPrice() : defaultBookPrice;
+
+        //9a . overdueDays fine for book
+        //Late return: days late × daily rate, never more than the book's price
+        if(overdueDays>0)
+        {
+            BigDecimal overdueDaysAmount = overdueFinePerDay
+                    .multiply(BigDecimal.valueOf(overdueDays))
+                    .min(bookPrice);
+
+            fineService.createSystemFine(savedBookLoan, FineType.OVERDUE,overdueDaysAmount ,
+                    "Returned "+overdueDays+ " day(s) late");
+        }
+
+        //9b.Fines for Different condition of book
+        switch(condition)
+        {
+            case DAMAGED -> {
+                BigDecimal damageAmount = bookPrice
+                        .multiply(BigDecimal.valueOf(damagePercentage))
+                        .divide(BigDecimal.valueOf(100),2, RoundingMode.HALF_UP);
+
+                fineService.createSystemFine(savedBookLoan,FineType.DAMAGE,damageAmount,
+                        "Return Damaged Book");
+            }
+            case LOST -> {
+                fineService.createSystemFine(savedBookLoan,FineType.LOSS,bookPrice,
+                        "Book reported Lost");
+            }
+            case GOOD -> {}
+        }
+
         return bookLoanMapper.toDTO(savedBookLoan);
     }
 
@@ -245,6 +295,11 @@ public class BookLoanServiceImpl implements BookLoanService {
         {
             throw new BookCannotBeRenewedException(
                     "Book cannot be renewed because other members have reserved it");
+        }
+
+        if(fineService.hasUnpaidFine(user.getId()))
+        {
+            throw new UnpaidFinesExistsException("Please pay your outstanding fines before renewing new book");
         }
 
         SubscriptionDTO subscription = subscriptionService.getUsersActiveSubscription(user.getId());

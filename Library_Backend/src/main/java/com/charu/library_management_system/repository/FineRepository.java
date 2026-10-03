@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface FineRepository extends JpaRepository<Fine,Long> {
@@ -30,4 +31,8 @@ public interface FineRepository extends JpaRepository<Fine,Long> {
     List<Fine> findByUserId(Long userId);
 
     List<Fine> findByUserIdAndType(Long userId, FineType type);
+
+    Optional<Fine> findByBookLoanIdAndType(Long bookLoanId , FineType type);
+
+    boolean existsByUserIdAndStatus(Long userId, FineStatus status);
 }
