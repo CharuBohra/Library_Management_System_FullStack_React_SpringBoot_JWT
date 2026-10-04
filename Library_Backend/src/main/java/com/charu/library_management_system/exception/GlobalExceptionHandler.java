@@ -1,13 +1,25 @@
 package com.charu.library_management_system.exception;
 
 import com.charu.library_management_system.dto.responseDTO.ApiResponse;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSourceResolvable;
+import org.springframework.data.core.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.web.ErrorResponse;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.util.stream.Collectors;
+
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -417,5 +429,109 @@ public class GlobalExceptionHandler {
                 .build();
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
+    }
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiResponse> handleUnreadableBody(HttpMessageNotReadableException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message("Request body is missing or contains invalid JSON or values")
+                .status(false)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
+    }
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiResponse> handleValidation(MethodArgumentNotValidException ex)
+    {
+        String errors = ex.getBindingResult().getFieldErrors().stream()
+                .map(error -> error.getField() + ": " + error.getDefaultMessage())
+                .collect(Collectors.joining(", "));
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message("Validation failed: " + errors)
+                .status(false)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
+    }
+
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ResponseEntity<ApiResponse> handleMethodValidation(HandlerMethodValidationException ex)
+    {
+        String errors = ex.getAllErrors().stream()
+                .map(MessageSourceResolvable::getDefaultMessage)
+                .collect(Collectors.joining(", "));
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message("Validation failed: " + errors)
+                .status(false)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
+    }
+    @ExceptionHandler(PropertyReferenceException.class)
+    public ResponseEntity<ApiResponse> handleInvalidSortField(PropertyReferenceException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message("Invalid sort field: " + ex.getPropertyName())
+                .status(false)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<ApiResponse> handleTypeMismatch(MethodArgumentTypeMismatchException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message("Invalid value '" + ex.getValue() + "' for parameter '" + ex.getName() + "'")
+                .status(false)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
+    }
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public ResponseEntity<ApiResponse> handleMissingParam(MissingServletRequestParameterException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message("Missing required parameter: " + ex.getParameterName())
+                .status(false)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
+    }
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse> handleAccessDenied(AccessDeniedException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message("You do not have permission to access this resource")
+                .status(false)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiResponse);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse> handleUnexpected(Exception ex)
+    {
+        // Spring's own web errors (unknown URL → 404, wrong method → 405, …) keep their real status
+        if (ex instanceof ErrorResponse errorResponse) {
+            ApiResponse apiResponse = ApiResponse.builder()
+                    .message("Request could not be processed: " + ex.getMessage())
+                    .status(false)
+                    .build();
+            return ResponseEntity.status(errorResponse.getStatusCode()).body(apiResponse);
+        }
+
+        // Anything else is a genuine server-side problem: log the full detail, show a safe message
+        log.error("Unexpected error", ex);
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message("Something went wrong. Please try again later.")
+                .status(false)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
     }
 }
