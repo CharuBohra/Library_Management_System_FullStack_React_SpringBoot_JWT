@@ -10,6 +10,7 @@ import com.charu.library_management_system.enums.BookLoanStatus;
 import com.charu.library_management_system.service.BookLoanService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +25,7 @@ public class BookLoanController {
     public ResponseEntity<BookLoanDTO> checkoutBook(@Valid @RequestBody CheckoutBookRequestDTO checkoutBookRequestDTO)
     {
         BookLoanDTO bookLoanDTO = bookLoanService.checkoutBook(checkoutBookRequestDTO);
-        return ResponseEntity.ok(bookLoanDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(bookLoanDTO);
     }
 
     @PostMapping("/checkout/user/{userId}")
@@ -32,7 +33,7 @@ public class BookLoanController {
                                                            @Valid @RequestBody CheckoutBookRequestDTO checkoutBookRequestDTO)
     {
         BookLoanDTO bookLoanDTO = bookLoanService.checkoutBookForUser(userId,checkoutBookRequestDTO);
-        return ResponseEntity.ok(bookLoanDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(bookLoanDTO);
     }
 
     @PostMapping("/checkin")

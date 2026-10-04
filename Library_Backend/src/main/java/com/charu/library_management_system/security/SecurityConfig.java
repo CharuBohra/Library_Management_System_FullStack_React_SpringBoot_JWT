@@ -43,6 +43,16 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .headers(headers -> headers.frameOptions(frame-> frame.sameOrigin()))
                 .exceptionHandling(exception -> exception
+                        // Nobody logged in (no token, or no valid authentication) → 401
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("application/json");
+                            response.setCharacterEncoding("UTF-8");
+                            response.getWriter().write("""
+                         {"message": "Authentication required. Please log in.",
+                          "status": false},
+                            """);
+                        })
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
                             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
                             response.setContentType("application/json");
@@ -50,8 +60,8 @@ public class SecurityConfig {
 
                             response.getWriter().write("""
                 {
-                    "code": "FORBIDDEN",
-                    "message": "You do not have permission to access this resource"
+                    "message": "You do not have permission to access this resource",
+                    "status": false
                 }
                 """);
                         })
@@ -68,6 +78,45 @@ public class SecurityConfig {
                                 "/v3/api-docs/**"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/payments/payment_success/**").permitAll()
+
+                        // ---------- Admin only ----------
+                        // Books (search and reading stay open to all logged-in users)
+                        .requestMatchers(HttpMethod.POST, "/api/books", "/api/books/create/bulk").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/books/*/damaged-copies/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/books/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/books/**").hasRole("ADMIN")
+
+                        // Genres
+                        .requestMatchers(HttpMethod.POST, "/api/genres/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/genres/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/genres/**").hasRole("ADMIN")
+
+                        // Subscription plans (viewing plans stays open)
+                        .requestMatchers(HttpMethod.POST, "/api/subscription-plans/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/subscription-plans/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/subscription-plans/**").hasRole("ADMIN")
+
+                        // Fines (customers keep /my and /{id}/pay)
+                        .requestMatchers(HttpMethod.POST, "/api/fines", "/api/fines/waive").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/fines").hasRole("ADMIN")
+
+                        // Book loans (customers keep checkout, checkin, renew, /my)
+                        .requestMatchers(HttpMethod.POST,
+                                "/api/book-loans/checkout/user/**",
+                                "/api/book-loans/search",
+                                "/api/book-loans/update-overdue").hasRole("ADMIN")
+
+                        // Reservations (customers keep create, cancel, /my)
+                        .requestMatchers(HttpMethod.POST, "/api/reservations/create/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/reservations/*/fulfill").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET, "/api/reservations").hasRole("ADMIN")
+
+                        // Users, payments, subscriptions (admin lists)
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/user/list",
+                                "/api/payments",
+                                "/api/subscriptions",
+                                "/api/subscriptions/deactivate-expired").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .httpBasic(AbstractHttpConfigurer::disable)

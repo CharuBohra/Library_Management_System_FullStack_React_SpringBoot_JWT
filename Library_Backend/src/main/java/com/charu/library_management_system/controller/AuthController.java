@@ -8,6 +8,7 @@ import com.charu.library_management_system.dto.responseDTO.AuthResponse;
 import com.charu.library_management_system.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +23,7 @@ public class AuthController {
     ResponseEntity<ApiResponse> signup(@Valid @RequestBody UserDTO userReq)
     {
         ApiResponse apiResponse = authService.signup(userReq);
-        return ResponseEntity.ok(apiResponse);
+        return new ResponseEntity<>(apiResponse,HttpStatus.CREATED);
     }
 
     @PostMapping("/login")

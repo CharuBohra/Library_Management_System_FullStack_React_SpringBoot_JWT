@@ -6,16 +6,19 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 
 @Component
+@Slf4j
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
@@ -55,18 +58,16 @@ public class JwtFilter extends OncePerRequestFilter {
                             .getContext()
                             .setAuthentication(authenticationToken);
                 }
-            }catch (JwtException | IllegalArgumentException e){
-                System.out.println(
-                        "JWT_ERROR = "+ e.getMessage()
-                );
+            }catch (JwtException | IllegalArgumentException | UsernameNotFoundException e){
+                log.warn("JWT rejected: {}", e.getMessage());
 
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 response.setContentType("application/json");
 
                 response.getWriter().write("""
                     {
-                      "code": "UNAUTHORIZED",
-                      "message": "Invalid or expired JWT"
+                      "message": "Invalid or expired JWT",
+                      "status": false
                     }
                     """);
 

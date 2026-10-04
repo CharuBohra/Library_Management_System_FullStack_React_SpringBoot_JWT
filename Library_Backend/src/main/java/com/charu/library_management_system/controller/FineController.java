@@ -10,6 +10,7 @@ import com.charu.library_management_system.enums.FineType;
 import com.charu.library_management_system.service.FineService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +27,7 @@ public class FineController {
     public ResponseEntity<FineDTO> createFine(@Valid @RequestBody CreateFineRequestDTO createFineRequestDTO)
     {
         FineDTO fine = fineService.createFine(createFineRequestDTO);
-        return ResponseEntity.ok(fine);
+        return ResponseEntity.status(HttpStatus.CREATED).body(fine);
     }
 
     @PostMapping("/{id}/pay")

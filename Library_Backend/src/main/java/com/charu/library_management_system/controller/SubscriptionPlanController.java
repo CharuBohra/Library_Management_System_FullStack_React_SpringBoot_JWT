@@ -5,6 +5,7 @@ import com.charu.library_management_system.dto.responseDTO.ApiResponse;
 import com.charu.library_management_system.service.SubscriptionPlanService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +22,7 @@ public class SubscriptionPlanController {
     public ResponseEntity<SubscriptionPlanDTO> createSubscriptionPlan(@Valid @RequestBody SubscriptionPlanDTO subscriptionPlanDTO)
     {
         SubscriptionPlanDTO planDTO = subscriptionPlanService.createSubscriptionPlan(subscriptionPlanDTO);
-        return ResponseEntity.ok(planDTO);
+        return ResponseEntity.status(HttpStatus.CREATED).body(planDTO);
     }
 
     @PutMapping("/{id}")

@@ -9,6 +9,7 @@ import com.charu.library_management_system.dto.responseDTO.PageResponseDTO;
 import com.charu.library_management_system.service.BookService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -26,14 +27,14 @@ public class BookController {
     public ResponseEntity<BookDTO> addBook(@Valid @RequestBody BookDTO bookDTO)
     {
         BookDTO book = bookService.createBook(bookDTO);
-        return ResponseEntity.ok(book);
+        return ResponseEntity.status(HttpStatus.CREATED).body(book);
     }
 
     @PostMapping("/create/bulk")
     public ResponseEntity<List<BookDTO>> addBooksBulk( @RequestBody List<@Valid BookDTO> bookDTOS)
     {
         List<BookDTO> books = bookService.createBooksBulk(bookDTOS);
-        return ResponseEntity.ok(books);
+        return ResponseEntity.status(HttpStatus.CREATED).body(books);
     }
 
     @GetMapping("/{id}")
