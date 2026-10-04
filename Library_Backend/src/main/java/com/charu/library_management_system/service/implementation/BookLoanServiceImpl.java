@@ -177,18 +177,18 @@ public class BookLoanServiceImpl implements BookLoanService {
         BookLoan bookLoan = bookLoanRepository.findById(checkInRequest.getBookLoanId())
                 .orElseThrow(()->new BookLoanNotFoundException("Book Loan not found for id "+checkInRequest.getBookLoanId()));
 
-        //2. Check if book already returned
-        if(!bookLoan.isActive())
-        {
-            throw new BookAlreadyReturnedException("Book is already returned by user");
-        }
-
         //Check Ownership
         UserDTO user = userService.getCurrentUser();
 
         if(!user.getId().equals(bookLoan.getUser().getId()))
         {
             throw new AccessDeniedException("You do not have permission to return this book");
+        }
+
+        //2. Check if book already returned
+        if(!bookLoan.isActive())
+        {
+            throw new BookAlreadyReturnedException("Book is already returned by user");
         }
 
         //3. set return date

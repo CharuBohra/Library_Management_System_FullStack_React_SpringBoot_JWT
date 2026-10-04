@@ -11,12 +11,9 @@ import com.charu.library_management_system.enums.FineStatus;
 import com.charu.library_management_system.enums.FineType;
 import com.charu.library_management_system.enums.PaymentGateway;
 import com.charu.library_management_system.enums.PaymentType;
-import com.charu.library_management_system.exception.BookLoanNotFoundException;
-import com.charu.library_management_system.exception.FineAlreadyPaidException;
-import com.charu.library_management_system.exception.FineAlreadyWaivedException;
-import com.charu.library_management_system.exception.FineNotFoundException;
+import com.charu.library_management_system.exception.*;
 import com.charu.library_management_system.mapper.FineMapper;
-import com.charu.library_management_system.mapper.UserMapper;
+
 import com.charu.library_management_system.models.BookLoan;
 import com.charu.library_management_system.models.Fine;
 import com.charu.library_management_system.models.User;
@@ -51,15 +48,25 @@ public class FineServiceImpl implements FineService {
     private final BookLoanRepository bookLoanRepository;
     private final UserService userService;
     private final PaymentService paymentService;
-    private final UserMapper userMapper;
     private final UserRepository userRepository;
 
     @Override
+    @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     public FineDTO createFine(CreateFineRequestDTO createFineRequest) {
         BookLoan bookLoan = bookLoanRepository.findById(createFineRequest.getBookLoanId())
                 .orElseThrow(()->new BookLoanNotFoundException("Book Loan not found for ID "+createFineRequest.getBookLoanId()));
 
+        Optional<Fine> existingFine = fineRepository.findByBookLoanIdAndType(bookLoan.getId(),createFineRequest.getType());
+
+        if(existingFine.isPresent())
+        {
+            Fine existing = existingFine.get();
+            throw new DuplicateFineException(
+                    "Loan "+bookLoan.getId()+" already has a "+existing.getType()+
+                            " Fine (id "+existing.getId()+" , status "+existing.getStatus()+")"
+            );
+        }
         Fine fine = Fine.builder()
                 .user(bookLoan.getUser())
                 .bookLoan(bookLoan)
@@ -80,6 +87,14 @@ public class FineServiceImpl implements FineService {
         Fine fine = fineRepository.findById(fineId)
                 .orElseThrow(()-> new FineNotFoundException("Fine Entry not found for ID "+fineId));
 
+        UserDTO user = userService.getCurrentUser();
+
+        if (!fine.getUser().getId().equals(user.getId())) {
+            throw new AccessDeniedException(
+                    "You are not allowed to pay this fine"
+            );
+        }
+
         if(fine.getStatus().equals(FineStatus.PAID))
         {
             throw new FineAlreadyPaidException("Fine already paid for ID "+fineId);
@@ -87,14 +102,6 @@ public class FineServiceImpl implements FineService {
         if(fine.getStatus().equals(FineStatus.WAIVED))
         {
             throw new FineAlreadyWaivedException("Fine already waived for Id "+fineId);
-        }
-
-        UserDTO user = userService.getCurrentUser();
-
-        if (!fine.getUser().getId().equals(user.getId())) {
-            throw new AccessDeniedException(
-                    "You are not allowed to pay this fine"
-            );
         }
 
         PaymentInitiateRequest paymentRequest = PaymentInitiateRequest.builder()
@@ -110,19 +117,23 @@ public class FineServiceImpl implements FineService {
     }
 
     @Override
+    @Transactional
     public void markFineAsPaid(Long fineId, BigDecimal amount, String transactionId) {
         Fine fine = fineRepository.findById(fineId)
                 .orElseThrow(()-> new FineNotFoundException("Fine Entry not found for ID "+fineId));
 
+        if (fine.getStatus() != FineStatus.PENDING) {
+            return;
+        }
+
         fine.applyPayment(amount);
         fine.setTransactionId(transactionId);
-        fine.setStatus(FineStatus.PAID);
-        fine.setUpdatedAt(LocalDateTime.now());
 
         Fine saveFine = fineRepository.save(fine);
     }
 
     @Override
+    @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     public FineDTO waiveFine(WaiveFineRequestDTO waiveFineRequest) {
         Fine fine = fineRepository.findById(waiveFineRequest.getFineId())
@@ -137,7 +148,8 @@ public class FineServiceImpl implements FineService {
             throw new FineAlreadyWaivedException("Fine already waived for Id "+waiveFineRequest.getFineId());
         }
          UserDTO userDTO = userService.getCurrentUser();
-        User currentAdmin = userMapper.toEntity(userDTO);
+        User currentAdmin = userRepository.findById(userDTO.getId())
+                        .orElseThrow(()->new UserNotFoundException("User not found for id " + userDTO.getId()));
 
         fine.waive(currentAdmin, waiveFineRequest.getReason());
 
