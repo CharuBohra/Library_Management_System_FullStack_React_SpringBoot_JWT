@@ -45,4 +45,6 @@ public interface BookLoanRepository extends JpaRepository<BookLoan,Long> {
                                             Pageable pageable);
 
     boolean existsByUserIdAndBookIdAndStatus(Long userId, Long bookId, BookLoanStatus status);
+
+    boolean existsByBookId(Long bookId);
 }

@@ -8,6 +8,7 @@ import com.charu.library_management_system.exception.*;
 import com.charu.library_management_system.mapper.BookMapper;
 import com.charu.library_management_system.models.Book;
 import com.charu.library_management_system.models.Genre;
+import com.charu.library_management_system.repository.BookLoanRepository;
 import com.charu.library_management_system.repository.BookRepository;
 import com.charu.library_management_system.repository.GenreRepository;
 import com.charu.library_management_system.service.BookService;
@@ -30,6 +31,7 @@ public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
     private final GenreRepository genreRepository;
     private final BookMapper bookMapper;
+    private final BookLoanRepository bookLoanRepository;
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
@@ -132,7 +134,12 @@ public class BookServiceImpl implements BookService {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(()->new BookNotFoundException("Book does not exist with id "+bookId));
 
-        bookRepository.deleteById(bookId);
+        if(bookLoanRepository.existsByBookId(bookId))
+        {
+            throw new BookHasLoanHistoryException(
+                    "Book " + bookId + " has loan history and cannot be permanently deleted. Use soft delete instead.");
+        }
+        bookRepository.delete(book);
     }
 
     @Override

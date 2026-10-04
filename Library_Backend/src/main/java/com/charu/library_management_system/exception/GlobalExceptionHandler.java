@@ -3,6 +3,7 @@ package com.charu.library_management_system.exception;
 import com.charu.library_management_system.dto.responseDTO.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.core.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -430,6 +431,17 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
     }
+    @ExceptionHandler(BookHasLoanHistoryException.class)
+    public ResponseEntity<ApiResponse> handleBookHasLoanHistory(
+            BookHasLoanHistoryException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage())
+                .status(false)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
+    }
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiResponse> handleUnreadableBody(HttpMessageNotReadableException ex)
     {
@@ -533,5 +545,18 @@ public class GlobalExceptionHandler {
                 .build();
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResponse);
+    }
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiResponse> handleDataIntegrityViolation(DataIntegrityViolationException ex)
+    {
+        // Full detail (constraint names, SQL) goes to the log only
+        log.warn("Data integrity violation: {}", ex.getMostSpecificCause().getMessage());
+
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message("This operation conflicts with existing data. The record may still be in use.")
+                .status(false)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
     }
 }
