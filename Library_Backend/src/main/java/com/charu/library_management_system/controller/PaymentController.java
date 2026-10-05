@@ -6,6 +6,8 @@ import com.charu.library_management_system.dto.responseDTO.PageResponseDTO;
 import com.charu.library_management_system.service.PaymentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -14,12 +16,18 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/payments")
+@Slf4j
 public class PaymentController {
 
     private final PaymentService paymentService;
+
+    @Value("${app.frontend.url}")
+    private String frontendUrl;
 
     @PostMapping("/verify")
     public ResponseEntity<?> verifyPayments(@Valid @RequestBody PaymentVerifyRequest request)
@@ -48,14 +56,19 @@ public class PaymentController {
     }
 
     @GetMapping("/payment_success/{paymentId}")
-    public ResponseEntity<PaymentDTO> paymentSuccess(@PathVariable Long paymentId , @RequestParam("razorpay_payment_id") String razorpayPaymentId)
+    public ResponseEntity<Void> paymentSuccess(@PathVariable Long paymentId , @RequestParam("razorpay_payment_id") String razorpayPaymentId)
     {
-        PaymentVerifyRequest paymentVerifyRequest = PaymentVerifyRequest.builder()
-                .razorPaymentId(razorpayPaymentId)
-                .build();
+        String target;
+        try {
+            PaymentDTO payment = paymentService.verifyPayment(
+                    PaymentVerifyRequest.builder().razorPaymentId(razorpayPaymentId).build());
+            target = frontendUrl + "/payment/result?status=" + payment.getPaymentStatus()
+                    + "&paymentId=" + payment.getId();
+        } catch (Exception e) {
+            log.warn("Payment callback failed for paymentId {}: {}", paymentId, e.getMessage());
+            target = frontendUrl + "/payment/result?status=FAILURE&paymentId=" + paymentId;
+        }
 
-        PaymentDTO paymentDTO = paymentService.verifyPayment(paymentVerifyRequest);
-
-        return ResponseEntity.ok(paymentDTO);
+        return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(target)).build();
     }
 }

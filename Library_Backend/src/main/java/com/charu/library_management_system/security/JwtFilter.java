@@ -24,6 +24,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final CustomUserDetailsService customUserDetailsService;
+
     @Override
     protected void doFilterInternal(
             HttpServletRequest request,
@@ -63,6 +64,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
 
                 response.getWriter().write("""
                     {
@@ -75,5 +77,11 @@ public class JwtFilter extends OncePerRequestFilter {
             }
 
             filterChain.doFilter(request,response);
+    }
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getServletPath();
+        return path.startsWith("/auth/")
+                || path.startsWith("/api/payments/payment_success/");
     }
 }

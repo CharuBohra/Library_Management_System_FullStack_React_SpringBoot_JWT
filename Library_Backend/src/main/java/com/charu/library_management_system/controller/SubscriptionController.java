@@ -48,7 +48,7 @@ public class SubscriptionController {
         return ResponseEntity.ok(subscriptions);
     }
 
-    @GetMapping("/deactivate-expired")
+    @PostMapping("/deactivate-expired")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse> deactivateExpiredSubscriptions()
     {

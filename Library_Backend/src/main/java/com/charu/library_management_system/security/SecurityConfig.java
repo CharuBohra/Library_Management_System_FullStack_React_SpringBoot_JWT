@@ -2,6 +2,7 @@ package com.charu.library_management_system.security;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -50,7 +51,7 @@ public class SecurityConfig {
                             response.setCharacterEncoding("UTF-8");
                             response.getWriter().write("""
                          {"message": "Authentication required. Please log in.",
-                          "status": false},
+                          "status": false}
                             """);
                         })
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
@@ -95,6 +96,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/subscription-plans/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "/api/subscription-plans/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "/api/subscription-plans/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/subscriptions/deactivate-expired").hasRole("ADMIN")
 
                         // Fines (customers keep /my and /{id}/pay)
                         .requestMatchers(HttpMethod.POST, "/api/fines", "/api/fines/waive").hasRole("ADMIN")
@@ -115,8 +117,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET,
                                 "/api/user/list",
                                 "/api/payments",
-                                "/api/subscriptions",
-                                "/api/subscriptions/deactivate-expired").hasRole("ADMIN")
+                                "/api/subscriptions").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .httpBasic(AbstractHttpConfigurer::disable)
@@ -137,14 +138,14 @@ public class SecurityConfig {
     }
 
     @Bean
-    public CorsConfigurationSource corsConfigurationSource(){
+    public CorsConfigurationSource corsConfigurationSource(@Value("${cors.allowed-origins}") List<String> allowedOrigins){
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
         corsConfiguration.setAllowCredentials(true);
 
         corsConfiguration.setAllowedHeaders(List.of("*"));
 
-        corsConfiguration.setAllowedOrigins(List.of("http://localhost:5173"));
+        corsConfiguration.setAllowedOrigins(allowedOrigins);
 
         corsConfiguration.setAllowedMethods(List.of("GET","POST","PUT","PATCH","DELETE","OPTIONS"));
 

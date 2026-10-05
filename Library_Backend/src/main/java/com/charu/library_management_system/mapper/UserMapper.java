@@ -13,7 +13,7 @@ public interface UserMapper {
     UserDTO toDTO(User user);
 
     @Mapping(target = "password",ignore = true)
-    @Mapping(target = "id", source = "id")
+    @Mapping(target = "id",ignore = true)
     @Mapping(target = "role",ignore = true)
     @Mapping(target = "authProvider", ignore = true)
     @Mapping(target = "googleId", ignore = true)

@@ -21,6 +21,7 @@ import com.charu.library_management_system.service.AuthService;
 import com.charu.library_management_system.service.EmailService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -41,6 +42,9 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
     private final PasswordResetTokenRepository passwordResetTokenRepository;
     private final EmailService emailService;
+
+    @Value("${app.frontend.url}")
+    private String frontendUrl;
 
     @Override
     public ApiResponse signup(UserDTO req) {
@@ -100,7 +104,6 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void createResetPasswordToken(String email) {
-        String frontendUrl = "http://localhost:5173/";
 
         User user = userRepository.findByEmail(email)
                 .orElseThrow(()->new UserNotFoundException("User does not exist with email "+email));
@@ -115,7 +118,7 @@ public class AuthServiceImpl implements AuthService {
 
         PasswordResetToken savedToken = passwordResetTokenRepository.save(passwordResetToken);
 
-        String resetToken = frontendUrl+rstToken;
+        String resetToken = frontendUrl+"/reset-password?token=" +rstToken;
 
         String subject = "Password Reset Link";
 
