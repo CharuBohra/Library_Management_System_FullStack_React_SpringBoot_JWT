@@ -4,6 +4,7 @@ import com.charu.library_management_system.dto.responseDTO.ApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.data.core.PropertyReferenceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -476,6 +477,16 @@ public class GlobalExceptionHandler {
                 .build();
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResponse);
+    }
+
+    @ExceptionHandler(OptimisticLockingFailureException.class)   // org.springframework.dao
+    public ResponseEntity<ApiResponse> handleOptimisticLock(OptimisticLockingFailureException ex) {
+        log.warn("Optimistic lock conflict: {}", ex.getMessage());
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message("This item was just updated by another request. Please refresh and try again.")
+                .status(false)
+                .build();
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
     }
 
     @ExceptionHandler(HandlerMethodValidationException.class)

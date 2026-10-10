@@ -54,6 +54,9 @@ public class Book {
     @Column(precision=8 , scale = 2)
     private BigDecimal price;
 
+    @Version
+    private Long version;
+
     @Builder.Default
     @Column(nullable = false)
     private Integer damagedCopies = 0;
