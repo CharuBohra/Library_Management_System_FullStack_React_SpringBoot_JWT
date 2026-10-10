@@ -19,7 +19,6 @@ import com.charu.library_management_system.models.User;
 import com.charu.library_management_system.repository.BookLoanRepository;
 import com.charu.library_management_system.repository.FineRepository;
 import com.charu.library_management_system.repository.UserRepository;
-import com.charu.library_management_system.service.BookLoanService;
 import com.charu.library_management_system.service.FineService;
 import com.charu.library_management_system.service.PaymentService;
 import com.charu.library_management_system.service.UserService;
@@ -34,7 +33,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 

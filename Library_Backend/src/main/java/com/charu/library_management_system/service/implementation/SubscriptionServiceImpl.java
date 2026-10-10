@@ -9,7 +9,6 @@ import com.charu.library_management_system.enums.PaymentGateway;
 import com.charu.library_management_system.enums.PaymentType;
 import com.charu.library_management_system.exception.*;
 import com.charu.library_management_system.mapper.SubscriptionMapper;
-import com.charu.library_management_system.mapper.UserMapper;
 import com.charu.library_management_system.models.Subscription;
 import com.charu.library_management_system.models.SubscriptionPlan;
 import com.charu.library_management_system.models.User;
