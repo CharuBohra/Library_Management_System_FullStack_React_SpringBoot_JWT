@@ -56,8 +56,14 @@ public class PaymentController {
     }
 
     @GetMapping("/payment_success/{paymentId}")
-    public ResponseEntity<Void> paymentSuccess(@PathVariable Long paymentId , @RequestParam("razorpay_payment_id") String razorpayPaymentId)
+    public ResponseEntity<Void> paymentSuccess(@PathVariable Long paymentId , @RequestParam(value = "razorpay_payment_id",required = false) String razorpayPaymentId)
     {
+        if (razorpayPaymentId == null || razorpayPaymentId.isBlank()) {
+            log.warn("Payment callback for paymentId {} arrived without razorpay_payment_id", paymentId);
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(URI.create(frontendUrl + "/payment/result?status=FAILURE&paymentId=" + paymentId))
+                    .build();
+        }
         String target;
         try {
             PaymentDTO payment = paymentService.verifyPayment(

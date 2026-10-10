@@ -17,7 +17,7 @@ public interface SubscriptionMapper {
     @Mapping(target = "planId" , source = "plan.id")
     SubscriptionDTO toDTO(Subscription subscription);
 
-    @Mapping(target = "id", source = "subscriptionDTO.id")
+    @Mapping(target = "id", ignore = true)
     @Mapping(target = "user", source = "user")
     @Mapping(target = "plan", source = "plan")
     @Mapping(target = "planName", ignore = true)
@@ -27,6 +27,7 @@ public interface SubscriptionMapper {
     @Mapping(target = "maxDaysPerBook", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "startDate",ignore = true)
     @Mapping(target = "endDate", ignore = true)
     @Mapping(target = "currency" , ignore = true)
     @Mapping(target = "active",ignore = true)

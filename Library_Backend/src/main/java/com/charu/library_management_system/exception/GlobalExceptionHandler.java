@@ -442,6 +442,17 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
     }
+    @ExceptionHandler(ActiveSubscriptionExistsException.class)
+    public ResponseEntity<ApiResponse> handleActiveSubscriptionExists(
+            ActiveSubscriptionExistsException ex)
+    {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getMessage())
+                .status(false)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(apiResponse);
+    }
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiResponse> handleUnreadableBody(HttpMessageNotReadableException ex)
     {

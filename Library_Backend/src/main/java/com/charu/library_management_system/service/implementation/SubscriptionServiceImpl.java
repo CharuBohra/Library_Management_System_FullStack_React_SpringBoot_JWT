@@ -7,10 +7,7 @@ import com.charu.library_management_system.dto.responseDTO.PageResponseDTO;
 import com.charu.library_management_system.dto.responseDTO.PaymentInitiateResponse;
 import com.charu.library_management_system.enums.PaymentGateway;
 import com.charu.library_management_system.enums.PaymentType;
-import com.charu.library_management_system.exception.ActiveSubscriptionNotFoundException;
-import com.charu.library_management_system.exception.SubscriptionAlreadyInactiveException;
-import com.charu.library_management_system.exception.SubscriptionNotFoundException;
-import com.charu.library_management_system.exception.SubscriptionPlanNotFoundException;
+import com.charu.library_management_system.exception.*;
 import com.charu.library_management_system.mapper.SubscriptionMapper;
 import com.charu.library_management_system.mapper.UserMapper;
 import com.charu.library_management_system.models.Subscription;
@@ -18,6 +15,7 @@ import com.charu.library_management_system.models.SubscriptionPlan;
 import com.charu.library_management_system.models.User;
 import com.charu.library_management_system.repository.SubscriptionPlanRepository;
 import com.charu.library_management_system.repository.SubscriptionRepository;
+import com.charu.library_management_system.repository.UserRepository;
 import com.charu.library_management_system.service.PaymentService;
 import com.charu.library_management_system.service.SubscriptionService;
 import com.charu.library_management_system.service.UserService;
@@ -41,14 +39,20 @@ public class SubscriptionServiceImpl implements SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
     private final UserService userService;
     private final SubscriptionPlanRepository subscriptionPlanRepository;
-    private final UserMapper userMapper;
+    private final UserRepository userRepository;
     private final PaymentService paymentService;
 
     @Override
     @Transactional
     public PaymentInitiateResponse subscribe(SubscriptionDTO subscriptionDTO) {
         UserDTO userDTO = userService.getCurrentUser();
-        User user = userMapper.toEntity(userDTO);
+        User user = userRepository.findById(userDTO.getId())
+                .orElseThrow(()->new UserNotFoundException("User not found with id "+userDTO.getId()));
+
+        if (subscriptionRepository.getUsersActiveSubscription(user.getId(), LocalDate.now()).isPresent()) {
+            throw new ActiveSubscriptionExistsException(
+                    "You already have an active subscription. Cancel it before subscribing to a new plan.");
+        }
 
         SubscriptionPlan plan = subscriptionPlanRepository.findById(subscriptionDTO.getPlanId())
                 .orElseThrow(()->new SubscriptionPlanNotFoundException("Subscription plan not found for id "+subscriptionDTO.getPlanId()));
