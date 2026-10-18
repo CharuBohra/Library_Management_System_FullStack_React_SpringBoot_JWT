@@ -4,6 +4,10 @@ import { AutoAwesome, BorderBottom, BorderColor, LibraryBooks } from '@mui/icons
 import { statsConfig } from './StateConfig'
 import { LinearProgress , Box, Tabs , Tab } from '@mui/material'
 import { useState } from 'react'
+import CurrentLoans from './CurrentLoans'
+import Reservations from './Reservations'
+import ReadingHistory from './ReadingHistory'
+import Recommandations from './Recommandations'
 
 const Dashboard = () => {
 
@@ -82,7 +86,7 @@ const Dashboard = () => {
                     <Tabs 
                         value={activeTab} 
                         onChange={handleTabChange}
-                        aria-label = "Basic Loans Table"
+                        aria-label = "Basic Tabs Example"
                         sx={{
                             "& .MuiTab-root" : {
                                 fontSize: "1rem" ,
@@ -104,6 +108,18 @@ const Dashboard = () => {
                        </Tabs>
                 </Box>
             </div>
+
+            {/* Current Loans Tab */}
+            {activeTab ==0 && <CurrentLoans/>}
+
+            {/* Reservation Tab */}
+            {activeTab==1 && <Reservations/>}
+
+            {/* Reading History Tab */}
+            {activeTab==2 && <ReadingHistory/>}
+
+            {/* Recommandations Tab */}
+            {activeTab==4 && <Recommandations/>}
         </div>
     </div>
   )
