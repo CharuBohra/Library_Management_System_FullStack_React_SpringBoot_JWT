@@ -6,10 +6,10 @@ const StateCard = ({bgColor,icon, value,title,subtitle,textColor}) => {
     <Card>
         <CardContent>
             <div className='flex items-center justify-between mb-4'>
-                <div className={`p-4 rounded-lg {bgColor}`}>
+                <div className={`p-4 rounded-lg ${bgColor}`}>
                     {icon}
                 </div>
-                <span className={`text-3xl font-bold {textColor}`}>
+                <span className={`text-3xl font-bold ${textColor}`}>
                     {value}
                 </span>
             </div>
