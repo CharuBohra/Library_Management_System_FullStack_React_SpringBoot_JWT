@@ -1,10 +1,17 @@
 import React from 'react'
 import StateCard from './StateCard'
-import { AutoAwesome, LibraryBooks } from '@mui/icons-material'
+import { AutoAwesome, BorderBottom, BorderColor, LibraryBooks } from '@mui/icons-material'
 import { statsConfig } from './StateConfig'
-import { LinearProgress } from '@mui/material'
+import { LinearProgress , Box, Tabs , Tab } from '@mui/material'
+import { useState } from 'react'
 
 const Dashboard = () => {
+
+    const [activeTab , setActiveTab] = useState(0);
+
+    const handleTabChange = (event,newValue)=>{
+        setActiveTab(newValue);
+    }
 
   const stateData = statsConfig({
     myLoans:[1,2,3,4,5,6,7,8],
@@ -44,7 +51,7 @@ const Dashboard = () => {
                             <h3 className='text-xl font-bold text-gray-900 mb-1'>2026 Reading Goals</h3>
                             <p className='text-gray-600'>{250} of 30 books read.</p>
                         </div>
-                        <div className='p-3 bg-gradient-to-br from bg-indigo-100 to-purple-100 rounded-full'>
+                        <div className='p-3 bg-linear-to-br from-indigo-100 to-purple-100 rounded-full'>
                             <AutoAwesome sx={{
                                 fontSize : 32,
                                 color:"#4F46E5"
@@ -67,6 +74,35 @@ const Dashboard = () => {
                     />
 
                     <p className='text-sm text-gray-600 mt-2'>70%</p>
+            </div>
+
+            {/* Tab Section */}
+            <div className='bg-white rounded-2xl shadow-2xl mb-8 overflow-hidden'>
+                <Box sx={{borderBottom : 1,borderColor: "divider"}}>
+                    <Tabs 
+                        value={activeTab} 
+                        onChange={handleTabChange}
+                        aria-label = "Basic Loans Table"
+                        sx={{
+                            "& .MuiTab-root" : {
+                                fontSize: "1rem" ,
+                                textTransform : "none",
+                                fontWeight : 600
+                            },
+                            "& .Mui-selected" : {
+                                color : "#4F46E5"
+                            },
+                            "& .MuiTabs-indicator" :{
+                                backgroundColor : "#4F46E5"
+                            }
+                        }}
+                    >
+                            <Tab label = "Current Loans" /> 
+                            <Tab label = "Reservations"/>
+                            <Tab label = "Reading History"/>
+                            <Tab label = "Recommendations"/>
+                       </Tabs>
+                </Box>
             </div>
         </div>
     </div>
