@@ -3,12 +3,14 @@ import { Box, Toolbar } from '@mui/material'
 import React from 'react'
 import UserSidebar from './UserSidebar'
 import { Outlet } from 'react-router'
+import Navbar from './Navbar'
 
 const drawerWidth = 240
 const UserLayout = () => {
   return (
     <Box sx={{display:"flex" , minHeight:"100vh" , bgcolor : "white"}}>
         {/* App bar */}
+        <Navbar/>
 
         {/* Profile Menu  */}
 

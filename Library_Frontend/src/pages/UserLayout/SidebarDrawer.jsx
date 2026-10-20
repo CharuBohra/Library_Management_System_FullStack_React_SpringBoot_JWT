@@ -3,19 +3,12 @@ import { alpha, Avatar, Box, Divider, List, ListItem, ListItemButton, ListItemIc
 import React from 'react'
 import { navigationItems ,secondaryItems} from './NavigationItems'
 import { useLocation, useNavigate } from 'react-router'
+import { isActive } from './utils'
 
 const SidebarDrawer = () => {
 
     const location = useLocation();
     const navigate = useNavigate();
-
-    const isActive = (path) =>{
-        if(path=="/")
-        {
-            return location.pathname==="/";
-        }
-        return location.pathname.startsWith(path);
-    }
 
     const handleChangePath =(path) => {
         navigate(path);
@@ -143,7 +136,7 @@ const SidebarDrawer = () => {
 
                 <Divider sx={{borderColor:'rgba(255,255,255,0.05)' , mx:2}}/>
                 {secondaryItems.map((item,index)=>{
-                    const active = isActive(item.path);
+                    const active = isActive(item.path,location);
 
                     return <ListItem key={index}>
                         <Tooltip title={item.description} placement='right'>
@@ -158,7 +151,7 @@ const SidebarDrawer = () => {
                                     backgroundColor: active? 'linear-gradient(135deg , rgba(99,102,241,0.25) 0% , rgba(168,85,247,0.25) 100%)': 'transparent',
                                     border:active? '1px solid rgba(99,102,241,0.3)':'1px solid transparent',
                                     backdropFilter : active? 'blur(10px)':'none',
-                                    "& :hover":{
+                                    "&:hover":{
                                         bgColor:active? alpha("#6366f1",0.3) : 'rgba(255,255,255,0.05)',
                                         transform:'translateX(6px)',
                                         border:'1px solid rgba(255,255,255,0.08)'
@@ -189,20 +182,20 @@ const SidebarDrawer = () => {
                         </Tooltip>
                     </ListItem>
                 })}
-                <Box>
+                <Box sx={{p:2}}>
                     <ListItemButton
                                 onClick={handleLogout}
                                 sx={{
                                     borderRadius:2.5,
                                     py:1.5,
                                     px:2,
-                                    transition:'all 0.3s ease',
-                                    backgroundColor: 'linear-gradient(135deg , rgba(239,68,68,0.15) 0% , rgba(220,38,38,0.15) 100%)',
+                                    background: 'linear-gradient(135deg , rgba(239,68,68,0.15) 0% , rgba(220,38,38,0.15) 100%)',
                                     border: '1px solid rgba(239,68,68,0.2)',
-                                    "& :hover":{
-                                        backgroundColor: 'linear-gradient(135deg , rgba(239,68,68,0.25) 0% , rgba(220,38,38,0.25) 100%)',
-                                        transform:'translateY(-2px)',
+                                    transition:'all 0.3s ease',
+                                    "&:hover":{
+                                        background: 'linear-gradient(135deg , rgba(239,68,68,0.25) 0% , rgba(220,38,38,0.25) 100%)',
                                         border:'1px solid rgba(239,68,68,0.4)',
+                                        transform:'translateY(-2px)',
                                         boxShadow:'0 8px 24px rgba(239,68,68,0.25)'
                                     },
                                 }}
@@ -215,7 +208,9 @@ const SidebarDrawer = () => {
                                     }}
                                 ><Logout/></ListItemIcon>
                                 Logout
-                            </ListItemButton>
+                    </ListItemButton>
+
+                    <p className='pt-6 text-xs text-gray-600'>2026 ZoshBook ,All Rights Reserved</p>
                 </Box>
             </List>
         </Box>
