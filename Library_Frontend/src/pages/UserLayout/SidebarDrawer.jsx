@@ -1,13 +1,29 @@
-import { Dashboard, MenuBook } from '@mui/icons-material'
-import { Avatar, Box, List, ListItem, ListItemButton, ListItemIcon, Tooltip, Typography } from '@mui/material'
+import { Dashboard, Logout, MenuBook } from '@mui/icons-material'
+import { alpha, Avatar, Box, Divider, List, ListItem, ListItemButton, ListItemIcon, Tooltip, Typography } from '@mui/material'
 import React from 'react'
+import { navigationItems ,secondaryItems} from './NavigationItems'
+import { useLocation, useNavigate } from 'react-router'
 
-const navigaionItems = [{
-    'description':'User Dashboard',
-    'title':"Dashboard",
-    'icon':<Dashboard/>
-}]
 const SidebarDrawer = () => {
+
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    const isActive = (path) =>{
+        if(path=="/")
+        {
+            return location.pathname==="/";
+        }
+        return location.pathname.startsWith(path);
+    }
+
+    const handleChangePath =(path) => {
+        navigate(path);
+    }
+
+    const handleLogout = ()=>{
+        console.log('Logout');
+    }
   return (
     <Box sx={{
         height:"100%",
@@ -77,12 +93,13 @@ const SidebarDrawer = () => {
 
         <Box>
             <List>
-                {navigaionItems.map((item,index)=>{
-                    const active = true;
+                {navigationItems.map((item,index)=>{
+                    const active = isActive(item.path);
 
                     return <ListItem key={index}>
                         <Tooltip title={item.description} placement='right'>
                             <ListItemButton
+                                onClick={()=>{handleChangePath(item.path)}}
                                 sx={{
                                     borderRadius:2.5,
                                     py:1.5,
@@ -91,16 +108,115 @@ const SidebarDrawer = () => {
                                     position:'relative',
                                     backgroundColor: active? 'linear-gradient(135deg , rgba(99,102,241,0.25) 0% , rgba(168,85,247,0.25) 100%)': 'transparent',
                                     border:active? '1px solid rgba(99,102,241,0.3)':'1px solid transparent',
-                                    backdropFilter : active? 'blur(10px)':none;
-                                    
+                                    backdropFilter : active? 'blur(10px)':'none',
+                                    "& :hover":{
+                                        bgColor:active? alpha("#6366f1",0.3) : 'rgba(255,255,255,0.05)',
+                                        transform:'translateX(6px)',
+                                        border:'1px solid rgba(255,255,255,0.08)'
+                                    },
+                                    "&::before": active ? {
+                                        content :'""',
+                                        position:'absolute',
+                                        left:0,
+                                        top:'50%',
+                                        transform:'translateY(-50%)',
+                                        width:4,
+                                        height:'70%',
+                                        background:'linear-gradient(135deg , #667eea 0%, #764ba2 100%)',
+                                        borderRadius:'0 4px 4px 0',
+                                        boxShadow:'0 0 12px rgba(102,126,234,0.6)'
+                                    } : {}
                                 }}
                             >
-                                <ListItemIcon>{item.icon}</ListItemIcon>
+                                <ListItemIcon
+                                    sx={{
+                                        minWidth:48,
+                                        color:active? '#818cf8': 'rgba(255,255,255,0.7)',
+                                        transition:'all 0.3s ease'
+                                    }}
+                                >{item.icon}</ListItemIcon>
                                 {item.title}
                             </ListItemButton>
                         </Tooltip>
                     </ListItem>
                 })}
+
+                <Divider sx={{borderColor:'rgba(255,255,255,0.05)' , mx:2}}/>
+                {secondaryItems.map((item,index)=>{
+                    const active = isActive(item.path);
+
+                    return <ListItem key={index}>
+                        <Tooltip title={item.description} placement='right'>
+                            <ListItemButton
+                                onClick={()=>{handleChangePath(item.path)}}
+                                sx={{
+                                    borderRadius:2.5,
+                                    py:1.5,
+                                    px:2,
+                                    transition:'all 0.3s cubic-bezier(0.4,0,0.2,1)',
+                                    position:'relative',
+                                    backgroundColor: active? 'linear-gradient(135deg , rgba(99,102,241,0.25) 0% , rgba(168,85,247,0.25) 100%)': 'transparent',
+                                    border:active? '1px solid rgba(99,102,241,0.3)':'1px solid transparent',
+                                    backdropFilter : active? 'blur(10px)':'none',
+                                    "& :hover":{
+                                        bgColor:active? alpha("#6366f1",0.3) : 'rgba(255,255,255,0.05)',
+                                        transform:'translateX(6px)',
+                                        border:'1px solid rgba(255,255,255,0.08)'
+                                    },
+                                    "&::before": active ? {
+                                        content :'""',
+                                        position:'absolute',
+                                        left:0,
+                                        top:'50%',
+                                        transform:'translateY(-50%)',
+                                        width:4,
+                                        height:'70%',
+                                        background:'linear-gradient(135deg , #667eea 0%, #764ba2 100%)',
+                                        borderRadius:'0 4px 4px 0',
+                                        boxShadow:'0 0 12px rgba(102,126,234,0.6)'
+                                    } : {}
+                                }}
+                            >
+                                <ListItemIcon
+                                    sx={{
+                                        minWidth:48,
+                                        color:active? '#818cf8': 'rgba(255,255,255,0.7)',
+                                        transition:'all 0.3s ease'
+                                    }}
+                                >{item.icon}</ListItemIcon>
+                                {item.title}
+                            </ListItemButton>
+                        </Tooltip>
+                    </ListItem>
+                })}
+                <Box>
+                    <ListItemButton
+                                onClick={handleLogout}
+                                sx={{
+                                    borderRadius:2.5,
+                                    py:1.5,
+                                    px:2,
+                                    transition:'all 0.3s ease',
+                                    backgroundColor: 'linear-gradient(135deg , rgba(239,68,68,0.15) 0% , rgba(220,38,38,0.15) 100%)',
+                                    border: '1px solid rgba(239,68,68,0.2)',
+                                    "& :hover":{
+                                        backgroundColor: 'linear-gradient(135deg , rgba(239,68,68,0.25) 0% , rgba(220,38,38,0.25) 100%)',
+                                        transform:'translateY(-2px)',
+                                        border:'1px solid rgba(239,68,68,0.4)',
+                                        boxShadow:'0 8px 24px rgba(239,68,68,0.25)'
+                                    },
+                                }}
+                            >
+                                <ListItemIcon
+                                    sx={{
+                                        minWidth:48,
+                                        color: '#f87171',
+                                        transition:'all 0.3s ease'
+                                    }}
+                                ><Logout/></ListItemIcon>
+                                Logout
+                            </ListItemButton>
+                </Box>
             </List>
         </Box>
     </Box>
