@@ -64,7 +64,8 @@ const SidebarDrawer = () => {
                             letterSpacing:0.5,
                             background:"linear-gradient(135deg , #ffffff 0% , #e0e7ff 100%)",
                             backgroundClip:"text",
-                            WebkitBackgroundClip:"text"
+                            WebkitBackgroundClip:"text",
+                            WebkitTextFillColor:"transparent"
                         }}
                     >
                         ZoshBook
@@ -87,7 +88,7 @@ const SidebarDrawer = () => {
         <Box>
             <List>
                 {navigationItems.map((item,index)=>{
-                    const active = isActive(item.path);
+                    const active = isActive(item.path,location);
 
                     return <ListItem key={index}>
                         <Tooltip title={item.description} placement='right'>
@@ -99,11 +100,11 @@ const SidebarDrawer = () => {
                                     px:2,
                                     transition:'all 0.3s cubic-bezier(0.4,0,0.2,1)',
                                     position:'relative',
-                                    backgroundColor: active? 'linear-gradient(135deg , rgba(99,102,241,0.25) 0% , rgba(168,85,247,0.25) 100%)': 'transparent',
+                                    background: active? 'linear-gradient(135deg , rgba(99,102,241,0.25) 0% , rgba(168,85,247,0.25) 100%)': 'transparent',
                                     border:active? '1px solid rgba(99,102,241,0.3)':'1px solid transparent',
                                     backdropFilter : active? 'blur(10px)':'none',
-                                    "& :hover":{
-                                        bgColor:active? alpha("#6366f1",0.3) : 'rgba(255,255,255,0.05)',
+                                    "&:hover":{
+                                        backgroundColor:active? alpha("#6366f1",0.3) : 'rgba(255,255,255,0.05)',
                                         transform:'translateX(6px)',
                                         border:'1px solid rgba(255,255,255,0.08)'
                                     },
@@ -148,11 +149,11 @@ const SidebarDrawer = () => {
                                     px:2,
                                     transition:'all 0.3s cubic-bezier(0.4,0,0.2,1)',
                                     position:'relative',
-                                    backgroundColor: active? 'linear-gradient(135deg , rgba(99,102,241,0.25) 0% , rgba(168,85,247,0.25) 100%)': 'transparent',
+                                    background: active? 'linear-gradient(135deg , rgba(99,102,241,0.25) 0% , rgba(168,85,247,0.25) 100%)': 'transparent',
                                     border:active? '1px solid rgba(99,102,241,0.3)':'1px solid transparent',
                                     backdropFilter : active? 'blur(10px)':'none',
                                     "&:hover":{
-                                        bgColor:active? alpha("#6366f1",0.3) : 'rgba(255,255,255,0.05)',
+                                        backgroundColor:active? alpha("#6366f1",0.3) : 'rgba(255,255,255,0.05)',
                                         transform:'translateX(6px)',
                                         border:'1px solid rgba(255,255,255,0.08)'
                                     },

@@ -71,7 +71,7 @@ const Dashboard = () => {
                             borderRadius:6,
                             backgroundColor:"#E0E7FF",
                             "& .MuiLinearProgress-bar" : {
-                                backgroundColor:"linear-gradient(90deg ,#4F46E5 0% , #9333EA 100% )",
+                                background:"linear-gradient(90deg ,#4F46E5 0% , #9333EA 100% )",
                                 borderRadius:6
                             }
                         }}
@@ -119,7 +119,7 @@ const Dashboard = () => {
             {activeTab==2 && <ReadingHistory/>}
 
             {/* Recommandations Tab */}
-            {activeTab==4 && <Recommandations/>}
+            {activeTab==3 && <Recommandations/>}
         </div>
     </div>
   )
