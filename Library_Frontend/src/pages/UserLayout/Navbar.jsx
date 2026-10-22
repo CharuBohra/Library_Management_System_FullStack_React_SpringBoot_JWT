@@ -32,7 +32,7 @@ const Navbar = ({handleDrawerToggle}) => {
                     mr:2,
                     display:{md:"none"}
                }}>
-                <Menu/>
+                <MenuIcon/>
             </IconButton>
 
             <Typography

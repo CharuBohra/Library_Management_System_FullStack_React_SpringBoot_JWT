@@ -5,7 +5,7 @@ import UserSidebar from './UserSidebar'
 import { Outlet } from 'react-router'
 import Navbar from './Navbar'
 
-const drawerWidth = 240
+const drawerWidth = 280
 const UserLayout = () => {
   return (
     <Box sx={{display:"flex" , minHeight:"100vh" , bgcolor : "white"}}>

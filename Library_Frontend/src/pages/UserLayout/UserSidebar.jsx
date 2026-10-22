@@ -2,7 +2,7 @@ import { Box, Drawer } from '@mui/material'
 import React from 'react'
 import SidebarDrawer from './SidebarDrawer'
 
-const drawerWidth = "240px"
+const drawerWidth = "280px"
 const UserSidebar = () => {
   return (
     <Box component={"nav"} sx={{ width:{md:drawerWidth},flexShrink:{md:0}}}>
