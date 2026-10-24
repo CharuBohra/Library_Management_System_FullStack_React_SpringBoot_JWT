@@ -1,7 +1,8 @@
 import React from 'react'
 import GenreFilter from './GenreFilter'
 import { useState } from 'react';
-import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
+import { FormControl, InputAdornment, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import { Search, Sort } from '@mui/icons-material';
 
 // Mirrors GenreDTO from the Spring Boot backend.
 // LocalDateTime serialises as an ISO-8601 string (Spring Boot default).
@@ -181,10 +182,23 @@ export const genres= [
 const BookPage = () => {
 
     const [selectedGenreId , setSelectedGenreId] = useState(null);
-    const [availability, setAvailability] = useState('ALL')
+    const [availability, setAvailability] = useState('ALL');
+    const [searchTerm , setSearchTerm] = useState('');
+    const [sortBy , setSortBy] = useState("createdAt");
+    const [sortDirection , setSortDirection] = useState("DESC");
 
     const handleGenreChange = (genreId) =>{
         setSelectedGenreId(genreId);
+    }
+
+    const handleSortChange = (value)=>{
+        const [field , direction] = value.split('-');
+        setSortBy(field);
+        setSortDirection(direction.toUpperCase());
+    }
+
+    const getCurrentSortValue=()=>{
+        return `${sortBy}-${sortDirection.toLowerCase()}`
     }
   return (
     <div className='min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50'>
@@ -250,8 +264,65 @@ const BookPage = () => {
                             </FormControl>
                         </div>
                     </div>
-                    
                 </aside>
+
+                {/* Main Content Area */}
+                <main className='flex-1 space-y-6'>
+                    <div className='flex flex-col md:flex-row gap-4'>
+                        <div className='flex-1'>
+                            <TextField
+                                fullWidth
+                                placeholder='Search by Title , Author or Category'
+                                value={searchTerm}
+                                onChange={(e)=>setSearchTerm(e.target.value)}
+                                slotProps={{
+                                    input:{
+                                        startAdornment:(
+                                            <InputAdornment position="start">
+                                                <Search className='text-gray-400'/>
+                                            </InputAdornment>
+                                        )   
+                                    }
+                                }}
+                                sx={{
+                                    '& .MuiOutlinedInput-root':{
+                                        '&:hover fieldset':{
+                                            borderColor:"#4F46E5"
+                                        }
+                                    },
+                                    '& .Mui-focused fieldset':{
+                                        borderColor:"#4F46E5"
+                                    }
+                                }}
+                            />
+                            
+                        </div>
+                        <div className='md:w-64'>
+                                <FormControl fullWidth>
+                                    <InputLabel id="demo-simple-select-label">Sort By</InputLabel>
+                                    <Select
+                                        labelId="demo-simple-select-label"
+                                        id="demo-simple-select"
+                                        value={getCurrentSortValue()}
+                                        label="Sort By"
+                                        onChange={(e)=> handleSortChange(e.target.value)}
+                                        startAdornment={
+                                            <InputAdornment position="start">
+                                                <Sort className='text-gray-400'/>
+                                            </InputAdornment>
+                                        }
+                                    >
+                                    <MenuItem value={'title-asc'}>Title(A-Z)</MenuItem>
+                                    <MenuItem value={'title-desc'}>Title(Z-A)</MenuItem>
+                                    <MenuItem value={'author-asc'}>Author(A-Z)</MenuItem>
+                                    <MenuItem value={'author-desc'}>Author(Z-A)</MenuItem>
+                                    <MenuItem value={'createdAt-asc'}>Newest First</MenuItem>
+                                    <MenuItem value={'createdAt-desc'}>Oldest First</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </div>
+                    </div>
+                </main>
             </div>
         </div>
     </div>
