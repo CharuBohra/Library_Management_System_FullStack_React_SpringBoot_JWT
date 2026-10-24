@@ -1,6 +1,189 @@
 import React from 'react'
+import GenreFilter from './GenreFilter'
+import { useState } from 'react';
 
+// Mirrors GenreDTO from the Spring Boot backend.
+// LocalDateTime serialises as an ISO-8601 string (Spring Boot default).
+export const genres= [
+  {
+    id: 1,
+    code: "FICTION",
+    name: "Fiction",
+    description: "Imaginative narratives including novels and short stories.",
+    displayOrder: 1,
+    active: true,
+    parentGenreId: null,
+    parentGenreName: null,
+    bookCount: 120,
+    createdAt: "2026-01-10T09:15:00",
+    updatedAt: "2026-09-02T14:30:00",
+    subGenres: [
+      {
+        id: 11,
+        code: "FICTION_FANTASY",
+        name: "Fantasy",
+        description: "Magic, mythical creatures and imaginary worlds.",
+        displayOrder: 1,
+        active: true,
+        parentGenreId: 1,
+        parentGenreName: "Fiction",
+        bookCount: 45,
+        createdAt: "2026-01-12T10:00:00",
+        updatedAt: "2026-08-20T11:45:00",
+        subGenres: []
+      },
+      {
+        id: 12,
+        code: "FICTION_MYSTERY",
+        name: "Mystery & Thriller",
+        description: "Crime, suspense and detective stories.",
+        displayOrder: 2,
+        active: true,
+        parentGenreId: 1,
+        parentGenreName: "Fiction",
+        bookCount: 38,
+        createdAt: "2026-01-12T10:05:00",
+        updatedAt: "2026-07-14T16:20:00",
+        subGenres: []
+      },
+      {
+        id: 13,
+        code: "FICTION_ROMANCE",
+        name: "Romance",
+        description: "Stories centred on relationships and love.",
+        displayOrder: 3,
+        active: true,
+        parentGenreId: 1,
+        parentGenreName: "Fiction",
+        bookCount: 37,
+        createdAt: "2026-01-12T10:10:00",
+        updatedAt: "2026-06-30T09:00:00",
+        subGenres: []
+      }
+    ]
+  },
+  {
+    id: 2,
+    code: "NON_FICTION",
+    name: "Non-Fiction",
+    description: "Factual writing: biographies, history, self-help and more.",
+    displayOrder: 2,
+    active: true,
+    parentGenreId: null,
+    parentGenreName: null,
+    bookCount: 95,
+    createdAt: "2026-01-10T09:20:00",
+    updatedAt: "2026-09-05T12:10:00",
+    subGenres: [
+      {
+        id: 21,
+        code: "NON_FICTION_BIOGRAPHY",
+        name: "Biography",
+        description: "Life stories of notable people.",
+        displayOrder: 1,
+        active: true,
+        parentGenreId: 2,
+        parentGenreName: "Non-Fiction",
+        bookCount: 30,
+        createdAt: "2026-01-15T08:30:00",
+        updatedAt: "2026-08-01T10:00:00",
+        subGenres: []
+      },
+      {
+        id: 22,
+        code: "NON_FICTION_SELF_HELP",
+        name: "Self-Help",
+        description: "Personal growth, productivity and wellbeing.",
+        displayOrder: 2,
+        active: true,
+        parentGenreId: 2,
+        parentGenreName: "Non-Fiction",
+        bookCount: 40,
+        createdAt: "2026-01-15T08:35:00",
+        updatedAt: "2026-09-10T15:25:00",
+        subGenres: []
+      }
+    ]
+  },
+  {
+    id: 3,
+    code: "SCIENCE_TECH",
+    name: "Science & Technology",
+    description: "Physics, computing, engineering and popular science.",
+    displayOrder: 3,
+    active: true,
+    parentGenreId: null,
+    parentGenreName: null,
+    bookCount: 64,
+    createdAt: "2026-01-11T11:00:00",
+    updatedAt: "2026-08-28T17:40:00",
+    subGenres: [
+      {
+        id: 31,
+        code: "SCIENCE_PROGRAMMING",
+        name: "Programming",
+        description: "Software engineering, languages and frameworks.",
+        displayOrder: 1,
+        active: true,
+        parentGenreId: 3,
+        parentGenreName: "Science & Technology",
+        bookCount: 28,
+        createdAt: "2026-01-18T13:00:00",
+        updatedAt: "2026-09-12T08:15:00",
+        subGenres: []
+      }
+    ]
+  },
+  {
+    id: 4,
+    code: "HISTORY",
+    name: "History",
+    description: "Events, civilisations and people of the past.",
+    displayOrder: 4,
+    active: true,
+    parentGenreId: null,
+    parentGenreName: null,
+    bookCount: 33,
+    createdAt: "2026-01-11T11:30:00",
+    updatedAt: "2026-07-22T10:50:00",
+    subGenres: []
+  },
+  {
+    id: 5,
+    code: "CHILDREN",
+    name: "Children's Books",
+    description: "Picture books and early readers for young audiences.",
+    displayOrder: 5,
+    active: true,
+    parentGenreId: null,
+    parentGenreName: null,
+    bookCount: 52,
+    createdAt: "2026-02-01T09:00:00",
+    updatedAt: "2026-09-18T13:35:00",
+    subGenres: []
+  },
+  {
+    id: 6,
+    code: "POETRY",
+    name: "Poetry",
+    description: "Collections of poems and verse.",
+    displayOrder: 6,
+    active: false,
+    parentGenreId: null,
+    parentGenreName: null,
+    bookCount: 0,
+    createdAt: "2026-03-05T14:00:00",
+    updatedAt: "2026-10-01T09:30:00",
+    subGenres: []
+  }
+];
 const BookPage = () => {
+
+    const [selectedGenreId , setSelectedGenreId] = useState(null);
+
+    const handleGenreChange = (genreId) =>{
+        setSelectedGenreId(genreId);
+    }
   return (
     <div className='min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50'>
         {/* header */}
@@ -24,7 +207,7 @@ const BookPage = () => {
                 <aside className='lg:w-72 space-y-6'>
                     {/* Filter Container */}
                     <div className='space-y-6'>
-                        {/* <GenreFilter/> */}
+                        <GenreFilter genres={genres} onGenreSelect={handleGenreChange} selectedGenreId={selectedGenreId}/>
                     </div>
                 </aside>
             </div>
