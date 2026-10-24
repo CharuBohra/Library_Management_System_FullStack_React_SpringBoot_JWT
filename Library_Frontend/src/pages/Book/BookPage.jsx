@@ -1,6 +1,7 @@
 import React from 'react'
 import GenreFilter from './GenreFilter'
 import { useState } from 'react';
+import { FormControl, InputLabel, MenuItem, Select } from '@mui/material';
 
 // Mirrors GenreDTO from the Spring Boot backend.
 // LocalDateTime serialises as an ISO-8601 string (Spring Boot default).
@@ -180,6 +181,7 @@ export const genres= [
 const BookPage = () => {
 
     const [selectedGenreId , setSelectedGenreId] = useState(null);
+    const [availability, setAvailability] = useState('ALL')
 
     const handleGenreChange = (genreId) =>{
         setSelectedGenreId(genreId);
@@ -208,7 +210,47 @@ const BookPage = () => {
                     {/* Filter Container */}
                     <div className='space-y-6'>
                         <GenreFilter genres={genres} onGenreSelect={handleGenreChange} selectedGenreId={selectedGenreId}/>
+                        {/* Availability Filter  */}
+                        <div className='bg-white rounded-xl shadow-md p-4 border border-gray-100'>
+                            <h3 className='text-lg font-bold text-gray-900 mb-4 pb-3 border-b border-gray-200'>
+                                Availability
+                            </h3>
+                            <FormControl fullWidth>
+                                <InputLabel id="demo-simple-select-label">Availability</InputLabel>
+                                <Select
+                                    labelId="demo-simple-select-label"
+                                    id="demo-simple-select"
+                                    value={availability}
+                                    label="Availability"
+                                    inputProps={{ 'aria-label': 'Availability' }}
+                                    onChange={(e)=>setAvailability(e.target.value)}
+                                    sx={{
+                                        fontSize: '0.875rem',     // 14px, same as text-sm
+                                        fontFamily: 'inherit',    // use the page font instead of Roboto
+                                        color: '#374151',         // text-gray-700
+                                    }}
+                                    MenuProps={{
+                                        slotProps:{
+                                            paper:{
+                                                sx:{
+                                                    '&. MuiMenuItem-root':{
+                                                        fontSize: '0.875rem',     // 14px, same as text-sm
+                                                        fontFamily: 'inherit',
+                                                        color: '#374151',
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }}
+                                >
+                                    <MenuItem value={'ALL'}>All Books</MenuItem>
+                                    <MenuItem value={'AVAILABLE'}>Available Books</MenuItem>
+                                    <MenuItem value={'CHECKED_OUT'}>Checked Out</MenuItem>
+                                </Select>
+                            </FormControl>
+                        </div>
                     </div>
+                    
                 </aside>
             </div>
         </div>
