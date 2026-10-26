@@ -10,6 +10,7 @@ import {
   TextField,
 } from "@mui/material";
 import { Search, Sort } from "@mui/icons-material";
+import BookCard from "./BookCard";
 
 // Mirrors GenreDTO from the Spring Boot backend.
 // LocalDateTime serialises as an ISO-8601 string (Spring Boot default).
@@ -186,12 +187,205 @@ export const genres = [
     subGenres: [],
   },
 ];
+
+const cover = (isbn) => `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg`;
+
+export const books = [
+  {
+    id: 1,
+    isbn: "9780132350884",
+    title: "Clean Code",
+    author: "Robert C. Martin",
+    genreId: 31,
+    genreCode: "SCIENCE_PROGRAMMING",
+    genreName: "Programming",
+    publisher: "Prentice Hall",
+    publicationDate: "2008-08-01",
+    language: "English",
+    pages: 464,
+    description:
+      "A handbook of agile software craftsmanship: writing code that is readable, maintainable and easy to change.",
+    totalCopies: 5,
+    availableCopies: 3,
+    damagedCopies: 0,
+    price: 32.99,
+    coverImageUrl: cover("9780132350884"),
+    active: true,
+    createdAt: "2026-02-10T10:00:00",
+    updatedAt: "2026-09-15T12:30:00",
+  },
+  {
+    id: 2,
+    isbn: "9780134685991",
+    title: "Effective Java",
+    author: "Joshua Bloch",
+    genreId: 31,
+    genreCode: "SCIENCE_PROGRAMMING",
+    genreName: "Programming",
+    publisher: "Addison-Wesley",
+    publicationDate: "2018-01-06",
+    language: "English",
+    pages: 412,
+    description:
+      "Best practices for the Java platform, covering generics, lambdas, streams and concurrency.",
+    totalCopies: 4,
+    availableCopies: 1,
+    damagedCopies: 1,
+    price: 39.99,
+    coverImageUrl: cover("9780134685991"),
+    active: true,
+    createdAt: "2026-02-12T09:30:00",
+    updatedAt: "2026-10-01T08:45:00",
+  },
+  {
+    id: 3,
+    isbn: "9780135957059",
+    title: "The Pragmatic Programmer",
+    author: "David Thomas, Andrew Hunt",
+    genreId: 31,
+    genreCode: "SCIENCE_PROGRAMMING",
+    genreName: "Programming",
+    publisher: "Addison-Wesley",
+    publicationDate: "2019-09-13",
+    language: "English",
+    pages: 352,
+    description:
+      "Your journey to mastery: practical advice on career, tools and writing flexible code.",
+    totalCopies: 3,
+    availableCopies: 3,
+    damagedCopies: 0,
+    price: 35.5,
+    coverImageUrl: cover("9780135957059"),
+    active: true,
+    createdAt: "2026-03-01T11:15:00",
+    updatedAt: "2026-08-20T16:00:00",
+  },
+  {
+    id: 4,
+    isbn: "9780547928227",
+    title: "The Hobbit",
+    author: "J.R.R. Tolkien",
+    genreId: 11,
+    genreCode: "FICTION_FANTASY",
+    genreName: "Fantasy",
+    publisher: "Houghton Mifflin Harcourt",
+    publicationDate: "2012-09-18",
+    language: "English",
+    pages: 300,
+    description:
+      "Bilbo Baggins is swept into an epic quest to reclaim the lost Dwarf Kingdom of Erebor.",
+    totalCopies: 6,
+    availableCopies: 4,
+    damagedCopies: 0,
+    price: 10.99,
+    coverImageUrl: cover("9780547928227"),
+    active: true,
+    createdAt: "2026-01-20T14:00:00",
+    updatedAt: "2026-09-30T10:10:00",
+  },
+  {
+    id: 5,
+    isbn: "9780747532699",
+    title: "Harry Potter and the Philosopher's Stone",
+    author: "J.K. Rowling",
+    genreId: 11,
+    genreCode: "FICTION_FANTASY",
+    genreName: "Fantasy",
+    publisher: "Bloomsbury",
+    publicationDate: "1997-06-26",
+    language: "English",
+    pages: 223,
+    description:
+      "An orphaned boy discovers he is a wizard and begins his first year at Hogwarts.",
+    totalCopies: 4,
+    availableCopies: 0,
+    damagedCopies: 0, // all checked out
+    price: 8.99,
+    coverImageUrl: cover("9780747532699"),
+    active: true,
+    createdAt: "2026-01-25T09:00:00",
+    updatedAt: "2026-10-20T18:20:00",
+  },
+  {
+    id: 6,
+    isbn: "9780307454546",
+    title: "The Girl with the Dragon Tattoo",
+    author: "Stieg Larsson",
+    genreId: 12,
+    genreCode: "FICTION_MYSTERY",
+    genreName: "Mystery & Thriller",
+    publisher: "Vintage",
+    publicationDate: "2009-06-23",
+    language: "English",
+    pages: 644,
+    description:
+      "A journalist and a brilliant hacker investigate a decades-old disappearance.",
+    totalCopies: 3,
+    availableCopies: 2,
+    damagedCopies: 1,
+    price: 12.5,
+    coverImageUrl: cover("9780307454546"),
+    active: true,
+    createdAt: "2026-04-05T13:45:00",
+    updatedAt: "2026-09-02T09:05:00",
+  },
+  {
+    id: 7,
+    isbn: "9780062316097",
+    title: "Sapiens: A Brief History of Humankind",
+    author: "Yuval Noah Harari",
+    genreId: 4,
+    genreCode: "HISTORY",
+    genreName: "History",
+    publisher: "Harper",
+    publicationDate: "2015-02-10",
+    language: "English",
+    pages: 443,
+    description:
+      "How Homo sapiens came to dominate the planet, from the Cognitive Revolution to today.",
+    totalCopies: 2,
+    availableCopies: 2,
+    damagedCopies: 0,
+    price: 18.99,
+    coverImageUrl: cover("9780062316097"),
+    active: false, // inactive, should be hidden
+    createdAt: "2026-05-11T10:30:00",
+    updatedAt: "2026-10-05T11:00:00",
+  },
+  {
+    id: 8,
+    isbn: "9780735211292",
+    title: "Atomic Habits",
+    author: "James Clear",
+    genreId: 22,
+    genreCode: "NON_FICTION_SELF_HELP",
+    genreName: "Self-Help",
+    publisher: "Avery",
+    publicationDate: "2018-10-16",
+    language: "English",
+    pages: 320,
+    description:
+      "A proven framework for building good habits and breaking bad ones through small changes.",
+    totalCopies: 5,
+    availableCopies: 5,
+    damagedCopies: 0,
+    price: 16.99,
+    coverImageUrl: cover("9780735211292"),
+    active: true,
+    createdAt: "2026-06-18T15:20:00",
+    updatedAt: "2026-10-22T14:40:00",
+  },
+];
+
 const BookPage = () => {
   const [selectedGenreId, setSelectedGenreId] = useState(null);
   const [availability, setAvailability] = useState("ALL");
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("createdAt");
   const [sortDirection, setSortDirection] = useState("DESC");
+
+  const activeBooks = books.filter((b) => b.active);
+  const activeGenres = genres.filter((g) => g.active);
 
   const handleGenreChange = (genreId) => {
     setSelectedGenreId(genreId);
@@ -230,7 +424,7 @@ const BookPage = () => {
             {/* Filter Container */}
             <div className="space-y-6">
               <GenreFilter
-                genres={genres}
+                genres={activeGenres}
                 onGenreSelect={handleGenreChange}
                 selectedGenreId={selectedGenreId}
               />
@@ -280,7 +474,9 @@ const BookPage = () => {
 
           {/* Main Content Area */}
           <main className="flex-1 space-y-6">
+            {/* Search and sort  */}
             <div className="flex flex-col md:flex-row gap-4">
+              {/* Search Bar */}
               <div className="flex-1">
                 <TextField
                   fullWidth
@@ -308,6 +504,7 @@ const BookPage = () => {
                   }}
                 />
               </div>
+              {/* Sort Dropdown */}
               <div className="md:w-64">
                 <FormControl fullWidth>
                   <InputLabel id="demo-simple-select-label">Sort By</InputLabel>
@@ -343,6 +540,13 @@ const BookPage = () => {
                   </Select>
                 </FormControl>
               </div>
+            </div>
+
+            {/* Books Grid  */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {activeBooks.map((book) => (
+                <BookCard key={book.id} book={book} />
+              ))}
             </div>
           </main>
         </div>
