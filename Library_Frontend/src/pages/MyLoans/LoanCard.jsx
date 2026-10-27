@@ -1,4 +1,4 @@
-import { MenuBook, Numbers, Person } from "@mui/icons-material";
+import { CalendarToday, MenuBook, Numbers, Person } from "@mui/icons-material";
 import { Box, Card, CardContent, Divider, Typography } from "@mui/material";
 import React from "react";
 
@@ -9,7 +9,7 @@ const LoanCard = ({ loan }) => {
         <Box
           sx={{
             display: "flex",
-            flexDirection: { sm: "col", md: "row" },
+            flexDirection: { sm: "column", md: "row" },
             gap: 3,
           }}
         >
@@ -55,6 +55,45 @@ const LoanCard = ({ loan }) => {
             sx={{ display: { xs: "none", md: "block" } }}
           />
           {/* Loan Details */}
+          <Box sx={{ flex: 1 }}>
+            <Box
+              sx={{
+                display: "grid",
+                gridTemplateColumns: "repeat(2,1fr)",
+                gap: 2,
+                mb: 2,
+              }}
+            >
+              <Box>
+                <Typography
+                  variant="caption"
+                  sx={{ color: "text.secondary", display: "block", mb: 0.5 }}
+                >
+                  Checkout Date
+                </Typography>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                  <CalendarToday sx={{ fontSize: 14, color: "#667eea" }} />
+                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                    {loan.checkoutDate}
+                  </Typography>
+                </Box>
+              </Box>
+              <Box>
+                <Typography
+                  variant="caption"
+                  sx={{ color: "text.secondary", display: "block", mb: 0.5 }}
+                >
+                  Due Date
+                </Typography>
+                <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                  <CalendarToday sx={{ fontSize: 14, color: "#667eea" }} />
+                  <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                    {loan.dueDate}
+                  </Typography>
+                </Box>
+              </Box>
+            </Box>
+          </Box>
         </Box>
       </CardContent>
     </Card>
