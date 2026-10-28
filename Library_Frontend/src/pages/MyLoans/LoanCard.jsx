@@ -1,6 +1,20 @@
-import { CalendarToday, MenuBook, Numbers, Person } from "@mui/icons-material";
-import { Box, Card, CardContent, Divider, Typography } from "@mui/material";
+import {
+  AssignmentReturn,
+  CalendarToday,
+  MenuBook,
+  Numbers,
+  Person,
+} from "@mui/icons-material";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Divider,
+  Typography,
+} from "@mui/material";
 import React from "react";
+import { formatDate } from "../../utils/formatDate";
 
 const LoanCard = ({ loan }) => {
   return (
@@ -9,7 +23,7 @@ const LoanCard = ({ loan }) => {
         <Box
           sx={{
             display: "flex",
-            flexDirection: { sm: "column", md: "row" },
+            flexDirection: { xs: "column", md: "row" },
             gap: 3,
           }}
         >
@@ -19,7 +33,7 @@ const LoanCard = ({ loan }) => {
               width: 80,
               height: 120,
               borderRadius: 2,
-              background: "linear-gradient(135deg , #6c7eea 0% , #764bc2 100%)",
+              background: "linear-gradient(135deg , #667eea 0% , #764ba2 100%)",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -37,7 +51,7 @@ const LoanCard = ({ loan }) => {
           <Box sx={{ flex: 1 }}>
             <Typography variant="h6">{loan.bookTitle}</Typography>
             <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
-              <Person sx={{ fontSize: 16 }} />
+              <Person sx={{ fontSize: 16, color: "text.secondary" }} />
               <Typography variant="body2" sx={{ color: "text.secondary" }}>
                 {loan.bookAuthor}
               </Typography>
@@ -74,7 +88,7 @@ const LoanCard = ({ loan }) => {
                 <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                   <CalendarToday sx={{ fontSize: 14, color: "#667eea" }} />
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                    {loan.checkoutDate}
+                    {formatDate(loan.checkoutDate)}
                   </Typography>
                 </Box>
               </Box>
@@ -88,12 +102,93 @@ const LoanCard = ({ loan }) => {
                 <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
                   <CalendarToday sx={{ fontSize: 14, color: "#667eea" }} />
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                    {loan.dueDate}
+                    {formatDate(loan.dueDate)}
                   </Typography>
                 </Box>
               </Box>
+              {loan.returnDate && (
+                <Box>
+                  <Typography
+                    variant="caption"
+                    sx={{ color: "text.secondary", display: "block", mb: 0.5 }}
+                  >
+                    Return Date
+                  </Typography>
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                    <AssignmentReturn sx={{ fontSize: 14, color: "#667eea" }} />
+                    <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                      {formatDate(loan.returnDate)}
+                    </Typography>
+                  </Box>
+                </Box>
+              )}
             </Box>
           </Box>
+        </Box>
+        {/* Note Section */}
+        {loan.notes && (
+          <Box
+            sx={{
+              mt: 3,
+              p: 2,
+              borderRadius: 2,
+              background: "rgba(59,130,246,0.05)",
+              border: "1px solid rgba(59,130,246,0.2)",
+            }}
+          >
+            <Typography
+              variant="body2"
+              sx={{ color: "text.secondary", fontStyle: "italic" }}
+            >
+              <strong>Note : </strong>
+              {loan.notes}
+            </Typography>
+          </Box>
+        )}
+        <Divider sx={{ my: 2 }} />
+        {/* Action Buttons */}
+        <Box
+          sx={{
+            display: "flex",
+            gap: 1.5,
+            flexWrap: "wrap",
+            justifyContent: "flex-end",
+          }}
+        >
+          <Button
+            variant="outlined"
+            sx={{
+              borderColor: "#667eea",
+              color: "#667eea",
+              textTransform: "none",
+              fontWeight: 600,
+              "&:hover": {
+                borderColor: "#764ba2",
+                bgcolor: "rgba(102,126,234,0.05)",
+              },
+            }}
+          >
+            View Book Details
+          </Button>
+          {["CHECKED_OUT", "OVERDUE"].includes(loan.status) &&
+            !loan.returnDate && (
+              <Button
+                variant="outlined"
+                sx={{
+                  textTransform: "none",
+                  fontWeight: 600,
+                  borderColor: "#667eea",
+                  color: "#667eea",
+                  transition: "all 0.3s",
+                  "&:hover": {
+                    transform: "translateY(-2px)",
+                    borderColor: "#764ba2",
+                  },
+                }}
+              >
+                Return Book
+              </Button>
+            )}
         </Box>
       </CardContent>
     </Card>
