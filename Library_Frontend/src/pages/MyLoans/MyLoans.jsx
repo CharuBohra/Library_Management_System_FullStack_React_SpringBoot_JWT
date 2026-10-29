@@ -1,5 +1,4 @@
 import { Box, Card, Tab, Tabs } from "@mui/material";
-import React from "react";
 import { tabs } from "./tabs";
 import { useState } from "react";
 import { loans } from "./loans";

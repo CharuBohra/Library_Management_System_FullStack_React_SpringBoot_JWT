@@ -1,4 +1,3 @@
-import React from "react";
 import StateCard from "./StateCard";
 import { AutoAwesome } from "@mui/icons-material";
 import { statsConfig } from "./StateConfig";

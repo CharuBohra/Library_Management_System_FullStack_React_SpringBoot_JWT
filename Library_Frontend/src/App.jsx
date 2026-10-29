@@ -4,6 +4,7 @@ import { Route, Routes } from "react-router";
 import UserLayout from "./pages/UserLayout/UserLayout";
 import BookPage from "./pages/Book/BookPage";
 import MyLoans from "./pages/MyLoans/MyLoans";
+import MyReservations from "./pages/MyReservations/MyReservations";
 
 function App() {
   return (
@@ -14,7 +15,7 @@ function App() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/books" element={<BookPage />} />
           <Route path="/my-loans" element={<MyLoans />} />
-          <Route path="/my-reservations" element={<Dashboard />} />
+          <Route path="/my-reservations" element={<MyReservations />} />
           <Route path="/my-fines" element={<Dashboard />} />
           <Route path="/subscriptions" element={<Dashboard />} />
           <Route path="/wishlist" element={<Dashboard />} />

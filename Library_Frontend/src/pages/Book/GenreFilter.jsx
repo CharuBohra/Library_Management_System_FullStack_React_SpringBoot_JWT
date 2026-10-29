@@ -1,66 +1,73 @@
-import { RadioButtonChecked, RadioButtonUnchecked } from '@mui/icons-material'
-import { FormControl, FormControlLabel, Radio, RadioGroup } from '@mui/material'
-import React from 'react'
+import { RadioButtonChecked, RadioButtonUnchecked } from "@mui/icons-material";
+import {
+  FormControl,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
+} from "@mui/material";
 
-const GenreFilter = ({genres,selectedGenreId , onGenreSelect}) => {
+const GenreFilter = ({ genres, selectedGenreId, onGenreSelect }) => {
   return (
-    <div className='bg-white rounded-xl shadow-md p-4 border border-gray-100'>
-        {/* Header */}
-        <div className='flex items-center justify-between mb-4 pb-3 border-b border-gray-200'>
-            <h3 className='text-lg font-bold text-gray-900'>Genres</h3>
-            {selectedGenreId && (
-                <button 
-                    onClick={()=>onGenreSelect(null)}
-                    className='text-sm text-indigo-600 hover:text-indigo-700 font-medium transition-colors'
-                >
-                        Clear
-                </button>
-            )}
-        </div>
-        {/* All Genre Option */}
-        <div className={`flex items-center space-x-2 py-2 px-3 mb-2 rounded-lg cursor-pointer 
+    <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-200">
+        <h3 className="text-lg font-bold text-gray-900">Genres</h3>
+        {selectedGenreId && (
+          <button
+            onClick={() => onGenreSelect(null)}
+            className="text-sm text-indigo-600 hover:text-indigo-700 font-medium transition-colors"
+          >
+            Clear
+          </button>
+        )}
+      </div>
+      {/* All Genre Option */}
+      <div
+        className={`flex items-center space-x-2 py-2 px-3 mb-2 rounded-lg cursor-pointer 
                 transition-all duration-200
-                 ${!selectedGenreId
-                    ? 'bg-indigo-50 text-indigo-700 font-semibold'
-                    : 'hover:bg-gray-50 text-gray-700'
-                }`}
-                onClick={()=> onGenreSelect(null)}
-        >
-            {!selectedGenreId 
-                ? <RadioButtonChecked sx={{fontSize:16 , color:'#4f46E5'}}/>
-                : <RadioButtonUnchecked sx={{fontSize:16}}/>
-            }
-            <span className='text-sm'>All Genres</span>
-        </div>
-        {/* Genre List */}
-        <div className='space-y-1 pl-9 max-h-96 overflow-y-auto'>
-            <FormControl>
-               <RadioGroup
-                    value={selectedGenreId ?? ''}                          // '' means nothing selected in this list
-                    onChange={(e) => onGenreSelect(Number(e.target.value))}
-                    aria-label="Genres"
-                    name="genre-filter"
-                >
-                    {genres?.map((genre)=>(
-                        <FormControlLabel
-                            key={genre.id}
-                            value={genre.id}
-                            control={<Radio/>}
-                            label={genre.name}
-                            sx={{
-                                '& .MuiFormControlLabel-label': {
-                                    fontSize: '0.875rem',     // 14px, same as text-sm
-                                    fontFamily: 'inherit',    // use the page font instead of Roboto
-                                    color: '#374151',         // text-gray-700
-                                },
-                            }}
-                        />
-                    ))}
-                </RadioGroup>
-            </FormControl>
-        </div>
+                 ${
+                   !selectedGenreId
+                     ? "bg-indigo-50 text-indigo-700 font-semibold"
+                     : "hover:bg-gray-50 text-gray-700"
+                 }`}
+        onClick={() => onGenreSelect(null)}
+      >
+        {!selectedGenreId ? (
+          <RadioButtonChecked sx={{ fontSize: 16, color: "#4f46E5" }} />
+        ) : (
+          <RadioButtonUnchecked sx={{ fontSize: 16 }} />
+        )}
+        <span className="text-sm">All Genres</span>
+      </div>
+      {/* Genre List */}
+      <div className="space-y-1 pl-9 max-h-96 overflow-y-auto">
+        <FormControl>
+          <RadioGroup
+            value={selectedGenreId ?? ""} // '' means nothing selected in this list
+            onChange={(e) => onGenreSelect(Number(e.target.value))}
+            aria-label="Genres"
+            name="genre-filter"
+          >
+            {genres?.map((genre) => (
+              <FormControlLabel
+                key={genre.id}
+                value={genre.id}
+                control={<Radio />}
+                label={genre.name}
+                sx={{
+                  "& .MuiFormControlLabel-label": {
+                    fontSize: "0.875rem", // 14px, same as text-sm
+                    fontFamily: "inherit", // use the page font instead of Roboto
+                    color: "#374151", // text-gray-700
+                  },
+                }}
+              />
+            ))}
+          </RadioGroup>
+        </FormControl>
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default GenreFilter
+export default GenreFilter;
