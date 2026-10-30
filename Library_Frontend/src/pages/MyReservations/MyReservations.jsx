@@ -2,6 +2,8 @@ import { AccessAlarm, Book, CalendarToday } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import { useState } from "react";
 import { tabs } from "./tabs";
+import { mockReservations } from "./reservations";
+import MyReservationCard from "./MyReservationCard";
 
 const MyReservations = () => {
   const [activeTab, setActiveTab] = useState("ALL");
@@ -97,6 +99,7 @@ const MyReservations = () => {
                     fontSize: "1rem",
                     gap: 2,
                     textTransform: "uppercase",
+                    letterSpacing: "0.05rem",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -117,6 +120,13 @@ const MyReservations = () => {
               );
             })}
           </div>
+        </div>
+
+        {/* content Reservation List */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {mockReservations.map((reservation) => (
+            <MyReservationCard key={reservation.id} reservation={reservation} />
+          ))}
         </div>
       </div>
     </div>
