@@ -7,7 +7,21 @@ import MyReservationCard from "./MyReservationCard";
 
 const MyReservations = () => {
   const [activeTab, setActiveTab] = useState("ALL");
-  const state = { total: 8, active: 2, available: 1 };
+
+  const currentTab = tabs.find((t) => t.value === activeTab);
+  const visible = mockReservations.filter(
+    (r) => !currentTab?.statuses || currentTab.statuses.includes(r.status),
+  );
+  //   const stats = { total: 8, active: 2, available: 1 };
+  const stats = {
+    total: mockReservations.length,
+    active: mockReservations.filter((r) =>
+      ["PENDING", "AVAILABLE"].includes(r.status),
+    ).length,
+    ready: mockReservations.filter(
+      (r) => r.status === "AVAILABLE" && !r.isExpired,
+    ).length,
+  };
   return (
     <div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50 py-8">
       <div className="px-4 sm:px-6 lg:px-8">
@@ -30,7 +44,7 @@ const MyReservations = () => {
           </p>
         </div>
 
-        {/* State */}
+        {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           {/* Total Reservation */}
           <div className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 bg-gradient-to-br from-indigo-100 to-purple-200">
@@ -40,7 +54,7 @@ const MyReservations = () => {
                   Total Reservations
                 </p>
                 <p className="text-4xl font-extrabold text-gray-900 mt-1">
-                  {state.total}
+                  {stats.total}
                 </p>
               </div>
               <div className="p-4 bg-linear-to-br from-indigo-500 to-purple-600 rounded-xl shadow-lg">
@@ -56,7 +70,7 @@ const MyReservations = () => {
                   Active Reservations
                 </p>
                 <p className="text-4xl font-extrabold text-gray-900 mt-1">
-                  {state.active}
+                  {stats.active}
                 </p>
               </div>
               <div className="p-4 bg-linear-to-br from-yellow-500 to-amber-600 rounded-xl shadow-lg">
@@ -72,7 +86,7 @@ const MyReservations = () => {
                   Ready to Pickup
                 </p>
                 <p className="text-4xl font-extrabold text-gray-900 mt-1">
-                  {state.available}
+                  {stats.available}
                 </p>
               </div>
               <div className="p-4 bg-linear-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg">
@@ -124,7 +138,7 @@ const MyReservations = () => {
 
         {/* content Reservation List */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {mockReservations.map((reservation) => (
+          {visible.map((reservation) => (
             <MyReservationCard key={reservation.id} reservation={reservation} />
           ))}
         </div>

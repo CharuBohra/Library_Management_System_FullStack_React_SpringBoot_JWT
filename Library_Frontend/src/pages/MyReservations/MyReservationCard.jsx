@@ -5,12 +5,20 @@ import {
   CheckCircle,
   Close,
   HourglassBottom,
+  MenuBook,
+  Notifications,
+  Replay,
 } from "@mui/icons-material";
 import { getStatusColor } from "./getStatusColor";
-import { Divider } from "@mui/material";
+import { Button, Divider } from "@mui/material";
+import { useNavigate } from "react-router";
 
 const MyReservationCard = ({ reservation }) => {
+  const navigate = useNavigate();
+
   const statusColors = getStatusColor(reservation.status);
+  const isFulfilled = reservation.status === "FULFILLED";
+  const canReserveAgain = ["CANCELLED", "EXPIRED"].includes(reservation.status);
 
   const getStatusIcon = (status) => {
     const iconClass = "w-5 h-5";
@@ -23,6 +31,10 @@ const MyReservationCard = ({ reservation }) => {
     };
 
     return icons[status] || <AccessAlarm className={iconClass} />;
+  };
+
+  const handleReserveAgain = () => {
+    console.log("Reserve Again - BookId ", reservation.bookId);
   };
   return (
     <div
@@ -61,7 +73,7 @@ const MyReservationCard = ({ reservation }) => {
         </div>
         <Divider />
         {/* Timeline */}
-        <div className="space-y-3 mt-3">
+        <div className="space-y-3 m-3">
           <div className="flex items-start gap-2">
             <AccessAlarm className="w-4 h-4 text-gray-400 mt-0.5" />
             <div>
@@ -88,7 +100,7 @@ const MyReservationCard = ({ reservation }) => {
           )}
           {reservation.expiredAt && (
             <div className="flex items-start gap-2">
-              <Notification className="w-4 h-4 text-red-400 mt-0.5" />
+              <Notifications className="w-4 h-4 text-red-400 mt-0.5" />
               <div>
                 <p className="text-xs font-semibold text-red-500 uppercase">
                   Expired
@@ -111,6 +123,72 @@ const MyReservationCard = ({ reservation }) => {
                 </p>
               </div>
             </div>
+          )}
+        </div>
+        <Divider />
+        {/* Action Buttons */}
+        <div className="space-y-3 mt-3">
+          {reservation.canBeCancelled && (
+            <Button
+              variant="outlined"
+              fullWidth
+              color="error"
+              startIcon={<Close />}
+              sx={{
+                height: "50px",
+                // borderColor: "#667eea",
+                // color: "#667eea",
+                textTransform: "none",
+                fontWeight: 600,
+                // "&:hover": {
+                //   borderColor: "#764ba2",
+                //   bgcolor: "rgba(102,126,234,0.05)",
+                // },
+              }}
+            >
+              Cancel Reservation
+            </Button>
+          )}
+          {isFulfilled && (
+            <Button
+              variant="outlined"
+              fullWidth
+              startIcon={<MenuBook />}
+              onClick={() => navigate("/my-loans")}
+              sx={{
+                height: "50px",
+                borderColor: "#4F46E5",
+                color: "#4F46E5",
+                textTransform: "none",
+                fontWeight: 600,
+                "&:hover": {
+                  borderColor: "#4338CA",
+                  bgcolor: "rgba(102,126,234,0.05)",
+                },
+              }}
+            >
+              View Loan
+            </Button>
+          )}
+          {canReserveAgain && (
+            <Button
+              variant="contained"
+              fullWidth
+              startIcon={<Replay />}
+              onClick={() => handleReserveAgain()}
+              sx={{
+                height: "50px",
+                bgcolor: "#4F46E5",
+                textTransform: "none",
+                fontWeight: 600,
+                "&:hover": {
+                  bgcolor: "#4338CA",
+                  //   bgcolor: "rgba(102,126,234,0.05)",
+                },
+              }}
+            >
+              Reserve Again
+            </Button>
           )}
         </div>
       </div>
