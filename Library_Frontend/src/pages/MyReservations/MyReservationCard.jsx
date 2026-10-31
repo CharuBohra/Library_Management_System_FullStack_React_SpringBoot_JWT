@@ -12,6 +12,7 @@ import {
 import { getStatusColor } from "./getStatusColor";
 import { Button, Divider } from "@mui/material";
 import { useNavigate } from "react-router";
+import { formatDate } from "../../utils/formatDate";
 
 const MyReservationCard = ({ reservation }) => {
   const navigate = useNavigate();
@@ -39,7 +40,7 @@ const MyReservationCard = ({ reservation }) => {
   return (
     <div
       className="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1
-                    overflow-hidden border border-gray-200"
+                    overflow-hidden border border-gray-200 flex flex-col h-full"
     >
       {/* Status Banner */}
       <div
@@ -57,7 +58,7 @@ const MyReservationCard = ({ reservation }) => {
         </div>
       </div>
       {/* Book details */}
-      <div className="p-4">
+      <div className="p-4 flex flex-col flex-1">
         {/* book header */}
         <div className="mb-4">
           <div className="flex items-center gap-3 mb-2">
@@ -65,15 +66,21 @@ const MyReservationCard = ({ reservation }) => {
               <Book className="w-6 h-6 text-white" />
             </div>
             <div className="min-w-0">
-              <p>Book Id </p>
-              <h3># {reservation.bookId}</h3>
+              <h3 className="font-bold text-gray-900 leading-snug line-clamp-2">
+                {reservation.bookTitle}
+              </h3>
+              <p className="text-sm text-gray-600 mt-0.5">
+                {reservation.bookAuthor}
+              </p>
+              <p className="text-xs text-gray-400 mt-1">
+                ISBN {reservation.bookIsbn}
+              </p>
             </div>
           </div>
-          <p>{reservation.bookTitle}</p>
         </div>
         <Divider />
         {/* Timeline */}
-        <div className="space-y-3 m-3">
+        <div className="space-y-3 my-3">
           <div className="flex items-start gap-2">
             <AccessAlarm className="w-4 h-4 text-gray-400 mt-0.5" />
             <div>
@@ -81,7 +88,7 @@ const MyReservationCard = ({ reservation }) => {
                 Reserved
               </p>
               <p className="text-sm font-semibold text-gray-700">
-                {reservation.reservedAt}
+                {formatDate(reservation.reservedAt)}
               </p>
             </div>
           </div>
@@ -93,12 +100,12 @@ const MyReservationCard = ({ reservation }) => {
                   Available At
                 </p>
                 <p className="text-sm font-semibold text-green-700">
-                  {reservation.availableAt}
+                  {formatDate(reservation.availableAt)}
                 </p>
               </div>
             </div>
           )}
-          {reservation.expiredAt && (
+          {reservation.expiredAt && !reservation.isExpired && (
             <div className="flex items-start gap-2">
               <Notifications className="w-4 h-4 text-red-400 mt-0.5" />
               <div>
@@ -106,7 +113,7 @@ const MyReservationCard = ({ reservation }) => {
                   Expired
                 </p>
                 <p className="text-sm font-semibold text-red-700">
-                  {reservation.expiredAt}
+                  {formatDate(reservation.expiredAt)}
                 </p>
               </div>
             </div>
@@ -119,7 +126,7 @@ const MyReservationCard = ({ reservation }) => {
                   Fulfilled
                 </p>
                 <p className="text-sm font-semibold text-blue-700">
-                  {reservation.fulfilledAt}
+                  {formatDate(reservation.fulfilledAt)}
                 </p>
               </div>
             </div>
@@ -127,7 +134,7 @@ const MyReservationCard = ({ reservation }) => {
         </div>
         <Divider />
         {/* Action Buttons */}
-        <div className="space-y-3 mt-3">
+        <div className="space-y-3 mt-auto">
           {reservation.canBeCancelled && (
             <Button
               variant="outlined"
