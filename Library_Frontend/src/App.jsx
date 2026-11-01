@@ -5,6 +5,7 @@ import UserLayout from "./pages/UserLayout/UserLayout";
 import BookPage from "./pages/Book/BookPage";
 import MyLoans from "./pages/MyLoans/MyLoans";
 import MyReservations from "./pages/MyReservations/MyReservations";
+import BookDetails from "./pages/Book/BookDetails";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route element={<UserLayout />}>
           <Route path="/" element={<Dashboard />} />
           <Route path="/books" element={<BookPage />} />
+          <Route path="/books/:id" element={<BookDetails />} />
           <Route path="/my-loans" element={<MyLoans />} />
           <Route path="/my-reservations" element={<MyReservations />} />
           <Route path="/my-fines" element={<Dashboard />} />

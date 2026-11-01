@@ -3,13 +3,14 @@ import { tabs } from "./tabs";
 import { useState } from "react";
 import { loans } from "./loans";
 import LoanCard from "./LoanCard";
+import PageContainer from "../components/PageContainer";
 
 const MyLoans = () => {
   const [activeTab, setActiveTab] = useState("");
   return (
     <div>
       <div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50 py-8">
-        <div className="px-4 sm:px-6 lg:px-8">
+        <PageContainer>
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-4xl font-bold text-gray-900 mb-2 flex items-center space-x-4">
@@ -47,12 +48,12 @@ const MyLoans = () => {
             </Box>
           </Card>
           {/* Loan List  */}
-          <div className="space-y-4">
+          <div className="space-y-4 grid grid-cols-1 xl:grid-cols-2 gap-8">
             {loans.map((loan) => (
               <LoanCard key={loan.id} loan={loan} />
             ))}
           </div>
-        </div>
+        </PageContainer>
       </div>
     </div>
   );

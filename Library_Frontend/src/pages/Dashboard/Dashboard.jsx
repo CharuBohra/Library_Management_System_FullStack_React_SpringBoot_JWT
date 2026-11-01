@@ -7,6 +7,7 @@ import CurrentLoans from "./CurrentLoans";
 import Reservations from "./Reservations";
 import ReadingHistory from "./ReadingHistory";
 import Recommendations from "./Recommendations";
+import PageContainer from "../components/PageContainer";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -22,7 +23,7 @@ const Dashboard = () => {
   });
   return (
     <div className="min-h-screen bg-linear-to-br from-indigo-100 via-white to-purple-600 py-8">
-      <div className="max-w-7xl px-4 sm:px-6 lg:px-8 mx-auto">
+      <PageContainer>
         <div className="mb-8 animate-fade-in-up">
           <h1 className="text-4xl font-bold text-indigo-400 mb-2">
             My{" "}
@@ -131,7 +132,7 @@ const Dashboard = () => {
 
         {/* Recommandations Tab */}
         {activeTab == 3 && <Recommendations />}
-      </div>
+      </PageContainer>
     </div>
   );
 };

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { tabs } from "./tabs";
 import { mockReservations } from "./reservations";
 import MyReservationCard from "./MyReservationCard";
+import PageContainer from "../components/PageContainer";
 
 const MyReservations = () => {
   const [activeTab, setActiveTab] = useState("ALL");
@@ -24,7 +25,7 @@ const MyReservations = () => {
   };
   return (
     <div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50 py-8">
-      <div className="px-4 sm:px-6 lg:px-8">
+      <PageContainer>
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2 flex items-center space-x-4">
@@ -86,7 +87,7 @@ const MyReservations = () => {
                   Ready to Pickup
                 </p>
                 <p className="text-4xl font-extrabold text-gray-900 mt-1">
-                  {stats.available}
+                  {stats.ready}
                 </p>
               </div>
               <div className="p-4 bg-linear-to-br from-green-500 to-emerald-600 rounded-xl shadow-lg">
@@ -142,7 +143,7 @@ const MyReservations = () => {
             <MyReservationCard key={reservation.id} reservation={reservation} />
           ))}
         </div>
-      </div>
+      </PageContainer>
     </div>
   );
 };

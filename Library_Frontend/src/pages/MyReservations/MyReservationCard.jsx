@@ -12,7 +12,7 @@ import {
 import { getStatusColor } from "./getStatusColor";
 import { Button, Divider } from "@mui/material";
 import { useNavigate } from "react-router";
-import { formatDate } from "../../utils/formatDate";
+import { formatDate, formatDateTime } from "../../utils/formatDate";
 
 const MyReservationCard = ({ reservation }) => {
   const navigate = useNavigate();
@@ -105,15 +105,37 @@ const MyReservationCard = ({ reservation }) => {
               </div>
             </div>
           )}
-          {reservation.expiredAt && !reservation.isExpired && (
+          {reservation.status === "PENDING" && (
             <div className="flex items-start gap-2">
-              <Notifications className="w-4 h-4 text-red-400 mt-0.5" />
+              <HourglassBottom
+                sx={{ fontSize: 16 }}
+                className="text-amber-500 mt-0.5"
+              />
               <div>
-                <p className="text-xs font-semibold text-red-500 uppercase">
-                  Expired
+                <p className="text-xs font-semibold text-amber-600 uppercase">
+                  Queue
+                </p>
+                <p className="text-sm font-semibold text-gray-700">
+                  {reservation.queuePosition === 1
+                    ? "You're next"
+                    : `#${reservation.queuePosition} in queue`}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {reservation.status === "AVAILABLE" && !reservation.isExpired && (
+            <div className="flex items-start gap-2">
+              <Notifications
+                sx={{ fontSize: 16 }}
+                className="text-red-500 mt-0.5"
+              />
+              <div>
+                <p className="text-xs font-semibold text-red-600 uppercase">
+                  Collect by
                 </p>
                 <p className="text-sm font-semibold text-red-700">
-                  {formatDate(reservation.expiredAt)}
+                  {formatDateTime(reservation.availableUntil)}
                 </p>
               </div>
             </div>

@@ -1,9 +1,11 @@
 import { Person } from "@mui/icons-material";
 import { Button } from "@mui/material";
+import { useNavigate } from "react-router";
 
 const BookCard = ({ book }) => {
+  const navigate = useNavigate();
   const handleViewDetails = () => {
-    console.log("Detail panel clicked for : ", book.title);
+    navigate(`/books/${book.id}`);
   };
   return (
     <div
