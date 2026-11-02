@@ -5,7 +5,7 @@ import UserLayout from "./pages/UserLayout/UserLayout";
 import BookPage from "./pages/Book/BookPage";
 import MyLoans from "./pages/MyLoans/MyLoans";
 import MyReservations from "./pages/MyReservations/MyReservations";
-import BookDetails from "./pages/Book/BookDetails";
+import BookDetails from "./pages/BookDetails/BookDetails";
 
 function App() {
   return (

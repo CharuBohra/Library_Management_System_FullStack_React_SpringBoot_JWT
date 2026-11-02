@@ -2,7 +2,7 @@ import { AccessAlarm, Book, CalendarToday } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import { useState } from "react";
 import { tabs } from "./tabs";
-import { mockReservations } from "./reservations";
+import { mockReservations } from "../../data/reservations";
 import MyReservationCard from "./MyReservationCard";
 import PageContainer from "../components/PageContainer";
 

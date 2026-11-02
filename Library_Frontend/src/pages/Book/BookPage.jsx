@@ -10,8 +10,8 @@ import {
 } from "@mui/material";
 import { Search, Sort } from "@mui/icons-material";
 import BookCard from "./BookCard";
-import { books } from "./books";
-import { genres } from "./genres";
+import { books } from "../../data/books";
+import { genres } from "../../data/genres";
 import PageContainer from "../components/PageContainer";
 
 const BookPage = () => {
