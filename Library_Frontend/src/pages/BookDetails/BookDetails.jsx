@@ -347,16 +347,30 @@ const BookDetails = () => {
                   p: 3,
                 }}
               >
-                <div className="flex flex-row items-center">
-                  <div className="md:w-56">
-                    <div className="flex items-center">
-                      <span className="text-4xl font-semibold text-gray-900">
-                        <strong>{avgRating}</strong>
+                {reviewCount === 0 ? (
+                  <p className="text-gray-500">
+                    No reviews yet. Be the first to review this book.
+                  </p>
+                ) : (
+                  <div className="flex flex-wrap items-start">
+                    <div className="flex flex-col gap-1 shrink-0 mb-2">
+                      <div className="flex items-baseline gap-1 mb-2">
+                        <span className="text-4xl font-extrabold text-gray-900">
+                          {avgRating.toFixed(1)}
+                        </span>
+                        <span className="text-gray-600 space-x-1">/5</span>
+                      </div>
+                      <Rating
+                        value={avgRating}
+                        precision={0.5}
+                        readOnly
+                        size="small"
+                      />
+                      <span className="text-sm text-gray-500">
+                        {reviewCount} {reviewCount === 1 ? "review" : "reviews"}
                       </span>
-                      <span className="text-gray-600 space-x-1">/</span>
-                      <span className="text-gray-600 gap-1">5</span>
                     </div>
-                    <div className="flex flex-col gap-2 w-full max-w-xs space-y-0.5">
+                    <div className="flex flex-col gap-2 w-full max-w-sm">
                       {[5, 4, 3, 2, 1].map((stars) => (
                         <div
                           key={stars}
@@ -378,7 +392,7 @@ const BookDetails = () => {
                       ))}
                     </div>
                   </div>
-                </div>
+                )}
               </Box>
             </CardContent>
           </Card>
