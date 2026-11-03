@@ -1,10 +1,23 @@
-import { useParams } from "react-router";
+import { Link, useParams } from "react-router";
 import { books } from "../../data/books";
 import PageContainer from "../components/PageContainer";
-import { ArrowLeft } from "@mui/icons-material";
-import { Box, Card, CardContent, Rating, Typography } from "@mui/material";
+import { ChevronLeft, FavoriteBorderOutlined } from "@mui/icons-material";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Rating,
+  Select,
+  Typography,
+} from "@mui/material";
 import { reviews } from "../../data/reviews";
 import { formatDate } from "../../utils/formatDate";
+import { activeSubscription } from "../../data/subscription";
+import { useState } from "react";
 
 const BookDetails = () => {
   const { id } = useParams();
@@ -17,13 +30,48 @@ const BookDetails = () => {
       ? 0
       : review.reduce((sum, r) => sum + r.rating, 0) / reviewCount;
   if (!book) return <p>Book Not Found</p>;
+
+  const subscription = activeSubscription;
+
+  const maxDays = subscription?.maxDaysPerBook ?? 14;
+
+  const dayOptions = [...new Set([7, 14, maxDays])]
+    .filter((d) => d <= maxDays)
+    .sort((a, b) => a - b);
+
+  const [checkoutDays, setCheckoutDays] = useState(maxDays);
+
+  const countFor = (stars) => review.filter((r) => r.rating === stars).length;
+
+  const percentFor = (stars) =>
+    reviewCount === 0 ? 0 : (countFor(stars) / reviewCount) * 100;
   return (
     <div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50 py-8">
       <PageContainer>
         <div className="mb-8">
           <div>
-            <ArrowLeft sx={{ fontSize: 24 }} />
-            <span>Browse Books / {book.title}</span>
+            <nav aria-label="Breadcrumb" className="mb-6">
+              <ol className="flex items-center gap-2 text-sm min-w-0">
+                <li>
+                  <Link
+                    to="/books"
+                    className="inline-flex items-center gap-1 font-semibold text-indigo-600 hover:text-indigo-800 hover:underline"
+                  >
+                    <ChevronLeft sx={{ fontSize: 20 }} />
+                    Browse Books
+                  </Link>
+                </li>
+                <li aria-hidden="true" className="text-gray-400">
+                  /
+                </li>
+                <li
+                  aria-current="page"
+                  className="text-gray-700 truncate min-w-0"
+                >
+                  {book.title}
+                </li>
+              </ol>
+            </nav>
           </div>
           <Card sx={{ m: 2 }}>
             <CardContent>
@@ -92,8 +140,10 @@ const BookDetails = () => {
                       {book.availableCopies} of {book.totalCopies} available
                     </span>
                   </div>
-                  <h1 className="font-bold">{book.title}</h1>
-                  <div className="text-sm font-semibold">by {book.author}</div>
+                  <h1 className="font-bold text-4xl">{book.title}</h1>
+                  <div className="text-base font-semibold text-gray-600">
+                    by {book.author}
+                  </div>
                   <div className="flex items-center gap-2">
                     <Rating
                       value={avgRating}
@@ -115,14 +165,16 @@ const BookDetails = () => {
                     )}
                   </div>
                   <div>
-                    <p className="text-sm">{book.description}</p>
+                    <p className="text-sm leading-relaxed text-gray-700">
+                      {book.description}
+                    </p>
                   </div>
                   <div className="grid grid-cols-[repeat(auto-fill,minmax(110px,1fr))] gap-x-5 gap-y-4 bg-gray-50 rounded-xl p-4">
                     <div className="flex flex-col gap-1">
                       <div className="text-xs font-semibold uppercase tracking-wide">
                         Publisher
                       </div>
-                      <div className="text-sm font-semibold">
+                      <div className="text-sm font-semibold text-gray-500">
                         {book.publisher}
                       </div>
                     </div>
@@ -130,7 +182,7 @@ const BookDetails = () => {
                       <div className="text-xs font-semibold uppercase tracking-wide">
                         Published
                       </div>
-                      <div className="text-sm font-semibold">
+                      <div className="text-sm font-semibold text-gray-500">
                         {formatDate(book.publicationDate)}
                       </div>
                     </div>
@@ -138,7 +190,7 @@ const BookDetails = () => {
                       <div className="text-xs font-semibold uppercase tracking-wide">
                         Language
                       </div>
-                      <div className="text-sm font-semibold">
+                      <div className="text-sm font-semibold text-gray-500">
                         {book.language}
                       </div>
                     </div>
@@ -146,13 +198,184 @@ const BookDetails = () => {
                       <div className="text-xs font-semibold uppercase tracking-wide">
                         Pages
                       </div>
-                      <div className="text-sm font-semibold">{book.pages}</div>
+                      <div className="text-sm font-semibold text-gray-500">
+                        {book.pages}
+                      </div>
                     </div>
                     <div className="flex flex-col gap-1">
                       <div className="text-xs font-semibold uppercase tracking-wide">
                         ISBN
                       </div>
-                      <div className="text-sm font-semibold">{book.isbn}</div>
+                      <div className="text-sm font-semibold text-gray-500">
+                        {book.isbn}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex flex-row gap-4 text-sm text-gray-900 mt-3 w-full">
+                    <div className="flex items-center gap-2 md:w-64">
+                      <InputLabel
+                        id="demo-simple-select-label"
+                        sx={{ overflow: "visible", fontSize: "0.85rem" }}
+                        fullWidth
+                      >
+                        Browse Books
+                      </InputLabel>
+                      <FormControl fullWidth>
+                        <InputLabel id="demo-simple-select-label">
+                          Select
+                        </InputLabel>
+                        <Select
+                          labelId="demo-simple-select-label"
+                          id="demo-simple-select"
+                          value={checkoutDays}
+                          label="Browse for"
+                          inputProps={{ "aria-label": "Checkout Days" }}
+                          onChange={(e) =>
+                            setCheckoutDays(Number(e.target.value))
+                          }
+                          sx={{
+                            fontSize: "0.875rem", // 14px, same as text-sm
+                            fontFamily: "inherit", // use the page font instead of Roboto
+                            color: "#374151", // text-gray-700
+                          }}
+                          MenuProps={{
+                            slotProps: {
+                              paper: {
+                                sx: {
+                                  "&. MuiMenuItem-root": {
+                                    fontSize: "0.875rem", // 14px, same as text-sm
+                                    fontFamily: "inherit",
+                                    color: "#374151",
+                                  },
+                                },
+                              },
+                            },
+                          }}
+                        >
+                          {dayOptions.map((d) => (
+                            <MenuItem key={d} value={d}>
+                              {d} days {d === maxDays ? "(plan max)" : ""}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </div>
+                    <div className="md:w-48">
+                      <Button
+                        variant="contained"
+                        fullWidth
+                        // onClick={() => handleBorrowBook()}
+                        sx={{
+                          height: "50px",
+                          bgcolor: "#4F46E5",
+                          textTransform: "none",
+                          fontWeight: 600,
+                          "&:hover": {
+                            bgcolor: "#4338CA",
+                            //   bgcolor: "rgba(102,126,234,0.05)",
+                          },
+                        }}
+                      >
+                        Borrow this book
+                      </Button>
+                    </div>
+                    <div className="md:w-48">
+                      <Button
+                        variant="outlined"
+                        fullWidth
+                        // onClick={() => handleBorrowBook()}
+                        startIcon={<FavoriteBorderOutlined />}
+                        sx={{
+                          height: "50px",
+                          bgcolor: "white",
+                          textTransform: "none",
+                          fontWeight: 600,
+                          "&:hover": {
+                            bgcolor: "whitesmoke",
+                            //   bgcolor: "rgba(102,126,234,0.05)",
+                          },
+                        }}
+                      >
+                        Add to Wishlist
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </Box>
+            </CardContent>
+          </Card>
+          <Card sx={{ m: 2 }}>
+            <CardContent>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: { xs: "column", md: "row" },
+                  gap: 3,
+                  p: 3,
+                }}
+              >
+                <div className="flex flex-1 flex-wrap items-center justify-between gap-3">
+                  <h1 className="text-3xl font-bold text-gray-900">Reviews</h1>
+                  <div>
+                    <Button
+                      variant="outlined"
+                      fullWidth
+                      // onClick={() => handleBorrowBook()}
+                      sx={{
+                        height: "50px",
+                        bgcolor: "white",
+                        textTransform: "none",
+                        fontWeight: 600,
+                        px: 4,
+                        py: 2,
+                        "&:hover": {
+                          bgcolor: "whitesmoke",
+                          //   bgcolor: "rgba(102,126,234,0.05)",
+                        },
+                      }}
+                    >
+                      Write a Review
+                    </Button>
+                  </div>
+                </div>
+              </Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: { xs: "column", md: "row" },
+                  gap: 3,
+                  p: 3,
+                }}
+              >
+                <div className="flex flex-row items-center">
+                  <div className="md:w-56">
+                    <div className="flex items-center">
+                      <span className="text-4xl font-semibold text-gray-900">
+                        <strong>{avgRating}</strong>
+                      </span>
+                      <span className="text-gray-600 space-x-1">/</span>
+                      <span className="text-gray-600 gap-1">5</span>
+                    </div>
+                    <div className="flex flex-col gap-2 w-full max-w-xs space-y-0.5">
+                      {[5, 4, 3, 2, 1].map((stars) => (
+                        <div
+                          key={stars}
+                          className="flex items-center gap-2 text-sm text-gray-700"
+                        >
+                          <span className="w-8 shrink-0">{stars}★</span>
+                          {/* track light */}
+                          <div className="flex-1 h-2 bg-indigo-50 rounded-full overflow-hidden">
+                            {/* Fill inside */}
+                            <div
+                              className="h-full bg-indigo-600 rounded-full"
+                              style={{ width: `${percentFor(stars)}%` }}
+                            />
+                          </div>
+                          <span className="w-6 text-right shrink-0">
+                            {countFor(stars)}
+                          </span>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
