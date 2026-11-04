@@ -305,54 +305,38 @@ const BookDetails = () => {
             </CardContent>
           </Card>
           <Card sx={{ m: 2 }}>
-            <CardContent>
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: { xs: "column", md: "row" },
-                  gap: 3,
-                  p: 3,
-                }}
-              >
-                <div className="flex flex-1 flex-wrap items-center justify-between gap-3">
-                  <h1 className="text-3xl font-bold text-gray-900">Reviews</h1>
-                  <div>
-                    <Button
-                      variant="outlined"
-                      fullWidth
-                      // onClick={() => handleBorrowBook()}
-                      sx={{
-                        height: "50px",
-                        bgcolor: "white",
-                        textTransform: "none",
-                        fontWeight: 600,
-                        px: 4,
-                        py: 2,
-                        "&:hover": {
-                          bgcolor: "whitesmoke",
-                          //   bgcolor: "rgba(102,126,234,0.05)",
-                        },
-                      }}
-                    >
-                      Write a Review
-                    </Button>
-                  </div>
+            <CardContent sx={{ p: 3 }}>
+              <div className="flex flex-1 flex-wrap items-center justify-between gap-3 mb-4">
+                <h1 className="text-3xl font-bold text-gray-900">Reviews</h1>
+                <div>
+                  <Button
+                    variant="outlined"
+                    fullWidth
+                    // onClick={() => handleBorrowBook()}
+                    sx={{
+                      height: "50px",
+                      bgcolor: "white",
+                      textTransform: "none",
+                      fontWeight: 600,
+                      px: 4,
+                      py: 2,
+                      "&:hover": {
+                        bgcolor: "whitesmoke",
+                        //   bgcolor: "rgba(102,126,234,0.05)",
+                      },
+                    }}
+                  >
+                    Write a Review
+                  </Button>
                 </div>
-              </Box>
-              <Box
-                sx={{
-                  display: "flex",
-                  flexDirection: { xs: "column", md: "row" },
-                  gap: 3,
-                  p: 3,
-                }}
-              >
-                {reviewCount === 0 ? (
-                  <p className="text-gray-500">
-                    No reviews yet. Be the first to review this book.
-                  </p>
-                ) : (
-                  <div className="flex flex-wrap items-start">
+              </div>
+              {reviewCount === 0 ? (
+                <p className="text-gray-500">
+                  No reviews yet. Be the first to review this book.
+                </p>
+              ) : (
+                <div className="flex flex-wrap gap-10">
+                  <div className="flex flex-col gap-6 w-60">
                     <div className="flex flex-col gap-1 shrink-0 mb-2">
                       <div className="flex items-baseline gap-1 mb-2">
                         <span className="text-4xl font-extrabold text-gray-900">
@@ -392,8 +376,48 @@ const BookDetails = () => {
                       ))}
                     </div>
                   </div>
-                )}
-              </Box>
+                  <div className="flex flex-col flex-1 min-w-0 basis-80">
+                    {review.map((bookReview) => (
+                      <article
+                        key={review.id}
+                        className="flex flex-col gap-1.5 p-5 border border-gray-100 first:pt-0"
+                      >
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-bold text-gray-900 text-xl">
+                            {bookReview.userName}
+                          </span>
+                          {bookReview.isVerifiedReader && (
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs text-green-700 whitespace-nowrap bg-green-50">
+                              Verified Reader
+                            </span>
+                          )}
+                          <span className="ml-auto text-gray-500 text-xs">
+                            {formatDate(bookReview.createdAt)}
+                          </span>
+                        </div>
+                        <Rating
+                          value={bookReview.rating}
+                          readOnly
+                          size="small"
+                        />
+                        <div className="space-y-1">
+                          {bookReview.title && (
+                            <span className="text-xl font-bold text-gray-900 my-1">
+                              {bookReview.title}
+                            </span>
+                          )}
+                          <p className="text-sm text-gray-700 my-1">
+                            {bookReview.reviewText}
+                          </p>
+                          <span className="text-xs text-gray-500">
+                            {bookReview.helpfulCount} found this helpful
+                          </span>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
