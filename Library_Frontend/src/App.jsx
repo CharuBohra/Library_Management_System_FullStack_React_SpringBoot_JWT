@@ -6,6 +6,7 @@ import BookPage from "./pages/Book/BookPage";
 import MyLoans from "./pages/MyLoans/MyLoans";
 import MyReservations from "./pages/MyReservations/MyReservations";
 import BookDetails from "./pages/BookDetails/BookDetails";
+import Wishlist from "./pages/Wishlist/Wishlist";
 
 function App() {
   return (
@@ -20,7 +21,7 @@ function App() {
           <Route path="/my-reservations" element={<MyReservations />} />
           <Route path="/my-fines" element={<Dashboard />} />
           <Route path="/subscriptions" element={<Dashboard />} />
-          <Route path="/wishlist" element={<Dashboard />} />
+          <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/profile" element={<Dashboard />} />
           <Route path="/settings" element={<Dashboard />} />
         </Route>
