@@ -1,10 +1,16 @@
-import { AccessAlarm, Book, CalendarToday } from "@mui/icons-material";
+import {
+  AccessAlarm,
+  Book,
+  CalendarToday,
+  ReceiptLong,
+} from "@mui/icons-material";
 import { Button } from "@mui/material";
 import { useState } from "react";
 import { tabs } from "./tabs";
 import { mockReservations } from "../../data/reservations";
 import MyReservationCard from "./MyReservationCard";
 import PageContainer from "../components/PageContainer";
+import PageHeader from "../components/PageHeader";
 
 const MyReservations = () => {
   const [activeTab, setActiveTab] = useState("ALL");
@@ -27,23 +33,11 @@ const MyReservations = () => {
     <div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50 py-8">
       <PageContainer>
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2 flex items-center space-x-4">
-            <span>
-              <img
-                src="https://cdn-icons-png.flaticon.com/128/5832/5832416.png"
-                alt="Book Icon"
-                className="w-8 h-8 gap-2"
-              />
-            </span>
-            <span className="bg-linear-to-br from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-1">
-              My Reservations
-            </span>
-          </h1>
-          <p className="text-lg text-gray-600">
-            Manage and track your book reservations
-          </p>
-        </div>
+        <PageHeader
+          title="My Reservations"
+          subtitle="Manage and track your book reservations"
+          icon={<AccessAlarm sx={{ fontSize: 36, color: "#4F46E5" }} />}
+        />
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
