@@ -103,7 +103,7 @@ const MyFines = () => {
                 variant="outlined"
                 onClick={() => {
                   setStatusFilter("PENDING");
-                  setTypeFilter("");
+                  setTypeFilter(null);
                 }}
                 sx={{
                   background: "white",

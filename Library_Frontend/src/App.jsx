@@ -8,6 +8,7 @@ import MyReservations from "./pages/MyReservations/MyReservations";
 import BookDetails from "./pages/BookDetails/BookDetails";
 import Wishlist from "./pages/Wishlist/Wishlist";
 import MyFines from "./pages/MyFines/MyFines";
+import Subscription from "./pages/Subscription/Subscription";
 
 function App() {
   return (
@@ -21,7 +22,7 @@ function App() {
           <Route path="/my-loans" element={<MyLoans />} />
           <Route path="/my-reservations" element={<MyReservations />} />
           <Route path="/my-fines" element={<MyFines />} />
-          <Route path="/subscriptions" element={<Dashboard />} />
+          <Route path="/subscriptions" element={<Subscription />} />
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/profile" element={<Dashboard />} />
           <Route path="/settings" element={<Dashboard />} />
