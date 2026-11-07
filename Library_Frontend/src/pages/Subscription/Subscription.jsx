@@ -3,10 +3,11 @@ import PageContainer from "../components/PageContainer";
 import PageHeader from "../components/PageHeader";
 import { activeSubscription } from "../../data/subscription";
 import { formatDate } from "../../utils/formatDate";
-import { daysInBetween } from "../../utils/dateUtils";
 import { loans } from "../../data/loans";
 import { LinearProgress } from "@mui/material";
 import { formatMoney } from "../../utils/formatMoney";
+import { plans } from "../../data/plans";
+import PlanCard from "./PlanCard";
 
 const Subscription = () => {
   const getSubscriptionStatus = (sub) => {
@@ -31,6 +32,8 @@ const Subscription = () => {
     ? Math.min((activeLoanCount / maxBooks) * 100, 100)
     : 0;
   const atLimit = activeLoanCount >= maxBooks;
+
+  const visiblePlans = plans.filter((p) => p.active !== false);
   return (
     <div className="min-h-screen bg-linear-to-br from-indigo-100 via-white to-purple-100 py-8">
       <PageContainer>
@@ -133,6 +136,18 @@ const Subscription = () => {
               </div>
             </div>
           </div>
+        </div>
+        <div className="text-3xl font-bold text-gray-900 my-3">
+          Available Plans
+        </div>
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(350px,1fr))] gap-5 mt-2">
+          {visiblePlans.map((plan) => (
+            <PlanCard
+              key={plan.id}
+              plan={plan}
+              currentPlanId={activeSubscription?.planId}
+            />
+          ))}
         </div>
       </PageContainer>
     </div>
