@@ -10,6 +10,7 @@ import Wishlist from "./pages/Wishlist/Wishlist";
 import MyFines from "./pages/MyFines/MyFines";
 import Subscription from "./pages/Subscription/Subscription";
 import UserProfile from "./pages/UserProfile/UserProfile";
+import Login from "./pages/Login/Login";
 
 function App() {
   return (
@@ -28,6 +29,7 @@ function App() {
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/settings" element={<Dashboard />} />
         </Route>
+        <Route path="/login" element={<Login />} />
       </Routes>
     </>
   );
