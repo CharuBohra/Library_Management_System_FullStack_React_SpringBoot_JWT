@@ -10,12 +10,14 @@ const PlanCard = ({ plan, currentPlanId }) => {
                     overflow-hidden border ${plan.isFeatured ? "border-indigo-500" : "border-gray-200"} flex flex-col h-full`}
     >
       <div className="flex flex-col flex-1 gap-2 p-5">
-        {plan.badgeText && (
-          <span className="self-start px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-600 text-white">
-            {plan.badgeText}
-          </span>
-        )}
-        <h3 className="font-bold text-gray-900 text-xl">{plan.name}</h3>
+        <div className="h-6">
+          {plan.badgeText && (
+            <span className="self-start px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-600 text-white">
+              {plan.badgeText}
+            </span>
+          )}
+        </div>
+        <h2 className="font-bold text-gray-900 text-xl">{plan.name}</h2>
         <p className="text-sm text-gray-500">{plan.description}</p>
         <div>
           <span className="text-4xl font-extrabold text-gray-900 ">

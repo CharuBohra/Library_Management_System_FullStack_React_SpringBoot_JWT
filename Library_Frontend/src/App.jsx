@@ -9,6 +9,7 @@ import BookDetails from "./pages/BookDetails/BookDetails";
 import Wishlist from "./pages/Wishlist/Wishlist";
 import MyFines from "./pages/MyFines/MyFines";
 import Subscription from "./pages/Subscription/Subscription";
+import UserProfile from "./pages/UserProfile/UserProfile";
 
 function App() {
   return (
@@ -24,7 +25,7 @@ function App() {
           <Route path="/my-fines" element={<MyFines />} />
           <Route path="/subscriptions" element={<Subscription />} />
           <Route path="/wishlist" element={<Wishlist />} />
-          <Route path="/profile" element={<Dashboard />} />
+          <Route path="/profile" element={<UserProfile />} />
           <Route path="/settings" element={<Dashboard />} />
         </Route>
       </Routes>
