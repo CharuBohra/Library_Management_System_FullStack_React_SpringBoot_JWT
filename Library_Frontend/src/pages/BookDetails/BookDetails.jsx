@@ -1,7 +1,7 @@
 import { Link, useParams } from "react-router";
 import { books } from "../../data/books";
 import PageContainer from "../components/PageContainer";
-import { ChevronLeft, FavoriteBorderOutlined } from "@mui/icons-material";
+import { ArrowBack, FavoriteBorderOutlined } from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -57,7 +57,7 @@ const BookDetails = () => {
                     to="/books"
                     className="inline-flex items-center gap-1 font-semibold text-indigo-600 hover:text-indigo-800 hover:underline"
                   >
-                    <ChevronLeft sx={{ fontSize: 20 }} />
+                    <ArrowBack sx={{ fontSize: 20 }} />
                     Browse Books
                   </Link>
                 </li>

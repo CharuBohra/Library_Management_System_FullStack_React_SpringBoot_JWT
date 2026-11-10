@@ -1,4 +1,4 @@
-import { ChevronRight } from "@mui/icons-material";
+import { ArrowForward } from "@mui/icons-material";
 import { Link } from "react-router";
 
 const ProfileStateCard = ({ profileTab }) => {
@@ -19,7 +19,7 @@ const ProfileStateCard = ({ profileTab }) => {
           className={`inline-flex items-center gap-1 font-semibold ${profileTab.classes} hover:underline`}
         >
           {profileTab.linkText}
-          <ChevronRight sx={{ fontSize: 16 }} />
+          <ArrowForward sx={{ fontSize: 16 }} />
         </Link>
       </span>
     </div>

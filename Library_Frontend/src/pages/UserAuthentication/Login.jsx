@@ -143,7 +143,7 @@ const Login = () => {
           </Typography>
         </Box>
         <div className="text-gray-300 text-xl ">
-          <p>© 2026 ZoshBook ,All Rights Reserved</p>
+          <p>© 2026 ZoshBook.All Rights Reserved</p>
         </div>
       </div>
       <div className="min-w-0 basis-80 flex flex-1 items-center justify-center p-6  bg-white">
