@@ -1,6 +1,8 @@
 import { AccessTimeFilled } from "@mui/icons-material";
 import GetStatusChip from "./GetStatusChip";
 import { Button, Chip } from "@mui/material";
+import { formatDate } from "../../utils/formatDate";
+import { Link } from "react-router";
 
 const CurrentLoanCard = ({ loan }) => {
   return (
@@ -21,12 +23,11 @@ const CurrentLoanCard = ({ loan }) => {
           <div className="flex items-center space-x-4 text-sm">
             <div className="flex items-center space-x-1 text-sm">
               <AccessTimeFilled sx={{ fontSize: 16 }} />
-              <span>Due: {new Date(loan.dueDate).toLocaleDateString()}</span>
+              <span>Due: {formatDate(loan.dueDate)}</span>
             </div>
             <GetStatusChip status={loan.status} />
             <Chip
-              label={`${loan.remainingDays > 0 ? loan.remainingDays : loan.overDueDays} days 
-                        ${loan.remainingDays > 0 ? "remaining" : "overdue"}`}
+              label={`${loan.remainingDays > 0 ? loan.remainingDays : loan.overdueDays} days ${loan.remainingDays > 0 ? "remaining" : "overdue"}`}
               size="small"
               variant="outlined"
             />
@@ -34,7 +35,13 @@ const CurrentLoanCard = ({ loan }) => {
         </div>
       </div>
       <div>
-        <Button variant="outlined">View</Button>
+        <Button
+          variant="outlined"
+          component={Link}
+          to={`/books/${loan.bookId}`}
+        >
+          View
+        </Button>
       </div>
     </div>
   );
