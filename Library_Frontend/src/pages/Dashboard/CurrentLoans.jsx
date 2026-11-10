@@ -1,17 +1,20 @@
+import { Link } from "react-router";
 import CurrentLoanCard from "./CurrentLoanCard";
 
-const loan = {
-  bookTitle: "Too good to be true",
-  bookCoverImageUrl:
-    "https://cdn.pixabay.com/photo/2019/02/15/11/04/book-3998252_1280.jpg",
-  bookAuthor: "Prajakta Koli",
-  status: "ACTIVATED",
-  dueDate: "2026-10-01",
-  remainingDays: 10,
-  overDueDays: 5,
-};
-
-const CurrentLoans = () => {
+const CurrentLoans = ({ loans }) => {
+  if (loans.length === 0) {
+    return (
+      <div className="p-6 text-center text-gray-600">
+        <p className="mb-3">No books on loan right now.</p>
+        <Link
+          to="/books"
+          className="font-semibold text-indigo-600 hover:underline"
+        >
+          Browse books
+        </Link>
+      </div>
+    );
+  }
   return (
     <div className="p-6">
       <h3 className="text-2xl font-bold text-gray-900 mb-2">
@@ -19,8 +22,8 @@ const CurrentLoans = () => {
       </h3>
       <div>
         {/* List of current loans */}
-        {[1, 1, 1, 1].map((item, index) => (
-          <CurrentLoanCard key={index} loan={loan} />
+        {loans.map((loan) => (
+          <CurrentLoanCard key={loan.id} loan={loan} />
         ))}
       </div>
     </div>

@@ -2,15 +2,22 @@ import {
   EventAvailable,
   History,
   LibraryBooks,
-  TrendingUp,
+  ReceiptLong,
 } from "@mui/icons-material";
+import { formatMoney } from "../../utils/formatMoney";
 
-export const statsConfig = ({ myLoans, reservations, stats }) => [
+export const statsConfig = ({
+  currentLoans,
+  activeReservations,
+  booksRead,
+  outstandingFines,
+  unpaidFinesCount,
+}) => [
   {
     id: "loans",
     title: "Current Loans",
     subtitle: "Books you are reading",
-    value: myLoans.length,
+    value: currentLoans,
     icon: <LibraryBooks sx={{ fontSize: 32, color: "#4F46E5" }} />,
     bgColor: "bg-indigo-100",
     textColor: "text-indigo-600",
@@ -19,7 +26,7 @@ export const statsConfig = ({ myLoans, reservations, stats }) => [
     id: "reservations",
     title: "Reservations",
     subtitle: "Books on hold",
-    value: reservations?.length || 0,
+    value: activeReservations,
     icon: <EventAvailable sx={{ fontSize: 32, color: "#9333EA" }} />,
     bgColor: "bg-purple-100",
     textColor: "text-purple-600",
@@ -27,19 +34,19 @@ export const statsConfig = ({ myLoans, reservations, stats }) => [
   {
     id: "read",
     title: "Books Read",
-    subtitle: "This year",
-    value: myLoans.length,
+    subtitle: "Returned books",
+    value: booksRead,
     icon: <History sx={{ fontSize: 32, color: "#10B981" }} />,
     bgColor: "bg-green-100",
     textColor: "text-green-600",
   },
   {
-    id: "streak",
-    title: "Day Streak",
-    subtitle: "Keep it going!!",
-    value: stats.readingStreak,
-    icon: <TrendingUp sx={{ fontSize: 32, color: "#F59E0B" }} />,
-    bgColor: "bg-orange-100",
-    textColor: "text-orange-600",
+    id: "fines",
+    title: "Outstanding Fines",
+    subtitle: `${unpaidFinesCount} unpaid ${unpaidFinesCount === 1 ? "fine" : "fines"}`,
+    value: formatMoney(outstandingFines),
+    icon: <ReceiptLong sx={{ fontSize: 32, color: "#DC2626" }} />,
+    bgColor: "bg-red-100",
+    textColor: "text-red-600",
   },
 ];

@@ -1,5 +1,12 @@
 import { Card, CardContent } from "@mui/material";
-const StateCard = ({ bgColor, icon, value, title, subtitle, textColor }) => {
+const DashboardStatCard = ({
+  bgColor,
+  icon,
+  value,
+  title,
+  subtitle,
+  textColor,
+}) => {
   return (
     <Card>
       <CardContent>
@@ -14,4 +21,4 @@ const StateCard = ({ bgColor, icon, value, title, subtitle, textColor }) => {
   );
 };
 
-export default StateCard;
+export default DashboardStatCard;

@@ -1,4 +1,3 @@
-import StateCard from "./StateCard";
 import { AutoAwesome } from "@mui/icons-material";
 import { statsConfig } from "./StateConfig";
 import { LinearProgress, Box, Tabs, Tab } from "@mui/material";
@@ -6,9 +5,13 @@ import { useState } from "react";
 import CurrentLoans from "./CurrentLoans";
 import Reservations from "./Reservations";
 import ReadingHistory from "./ReadingHistory";
-import Recommendations from "./Recommendations";
 import PageContainer from "../components/PageContainer";
+import DashboardStatCard from "./DashboardStatCard";
+import { loans } from "../../data/loans";
+import { mockReservations } from "../../data/reservations";
+import { fines } from "../../data/fines";
 
+const READING_GOAL = 30;
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState(0);
 
@@ -16,13 +19,34 @@ const Dashboard = () => {
     setActiveTab(newValue);
   };
 
+  const currentLoans = loans.filter((l) =>
+    ["CHECKED_OUT", "OVERDUE"].includes(l.status),
+  );
+  const activeReservations = mockReservations.filter(
+    (r) => r.status === "PENDING" || (r.status === "AVAILABLE" && !r.isExpired),
+  );
+  const returnedLoans = loans.filter((l) => ["RETURNED"].includes(l.status));
+  const unpaidFines = fines.filter(
+    (f) => f.status !== "WAIVED" && f.amountOutstanding > 0,
+  );
+  const outstandingFines = unpaidFines.reduce(
+    (sum, f) => sum + f.amountOutstanding,
+    0,
+  );
+
+  const booksRead = returnedLoans.length;
+
   const stateData = statsConfig({
-    myLoans: [1, 2, 3, 4, 5, 6, 7, 8],
-    reservations: [6, 7, 8],
-    stats: { readingStreak: 5 },
+    currentLoans: currentLoans.length,
+    activeReservations: activeReservations.length,
+    booksRead,
+    outstandingFines,
+    unpaidFinesCount: unpaidFines.length,
   });
+
+  const percent = Math.min(100, Math.round((booksRead / READING_GOAL) * 100));
   return (
-    <div className="min-h-screen bg-linear-to-br from-indigo-100 via-white to-purple-600 py-8">
+    <div className="min-h-screen bg-linear-to-br from-indigo-200 via-white to-purple-100 py-8">
       <PageContainer>
         <div className="mb-8 animate-fade-in-up">
           <h1 className="text-4xl font-bold text-indigo-400 mb-2">
@@ -43,7 +67,7 @@ const Dashboard = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {stateData.map((item) => (
-            <StateCard
+            <DashboardStatCard
               bgColor={item.bgColor}
               textColor={item.textColor}
               icon={item.icon}
@@ -62,7 +86,9 @@ const Dashboard = () => {
               <h3 className="text-xl font-bold text-gray-900 mb-1">
                 2026 Reading Goals
               </h3>
-              <p className="text-gray-600">{250} of 30 books read.</p>
+              <p className="text-gray-600">
+                {booksRead} of {READING_GOAL} books read.
+              </p>
             </div>
             <div className="p-3 bg-linear-to-br from-indigo-100 to-purple-100 rounded-full">
               <AutoAwesome
@@ -76,7 +102,7 @@ const Dashboard = () => {
 
           <LinearProgress
             variant="determinate"
-            value={30}
+            value={percent}
             sx={{
               height: 12,
               borderRadius: 6,
@@ -89,7 +115,7 @@ const Dashboard = () => {
             }}
           />
 
-          <p className="text-sm text-gray-600 mt-2">70%</p>
+          <p className="text-sm text-gray-600 mt-2">{percent}%</p>
         </div>
 
         {/* Tab Section */}
@@ -116,22 +142,18 @@ const Dashboard = () => {
               <Tab label="Current Loans" />
               <Tab label="Reservations" />
               <Tab label="Reading History" />
-              <Tab label="Recommendations" />
             </Tabs>
           </Box>
         </div>
 
         {/* Current Loans Tab */}
-        {activeTab == 0 && <CurrentLoans />}
+        {activeTab === 0 && <CurrentLoans loans={currentLoans} />}
 
         {/* Reservation Tab */}
-        {activeTab == 1 && <Reservations />}
+        {activeTab === 1 && <Reservations reservations={activeReservations} />}
 
         {/* Reading History Tab */}
-        {activeTab == 2 && <ReadingHistory />}
-
-        {/* Recommandations Tab */}
-        {activeTab == 3 && <Recommendations />}
+        {activeTab === 2 && <ReadingHistory loans={returnedLoans} />}
       </PageContainer>
     </div>
   );

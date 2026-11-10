@@ -4,10 +4,10 @@ import PageHeader from "../components/PageHeader";
 import { fines } from "../../data/fines";
 import { formatMoney } from "../../utils/formatMoney";
 import { Button, FormControl, MenuItem, Select } from "@mui/material";
-import FineStateCard from "./FineStateCard";
 import FineRow from "./FineRow";
 import { useState } from "react";
 import { FINE_TYPES } from "./fineConfig";
+import StatCard from "../components/StatCard";
 
 const MyFines = () => {
   const [statusFilter, setStatusFilter] = useState(null);
@@ -121,7 +121,7 @@ const MyFines = () => {
         )}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
           {stateCards.map((card) => (
-            <FineStateCard
+            <StatCard
               key={card.id}
               label={card.label}
               value={card.value}
@@ -154,7 +154,8 @@ const MyFines = () => {
             </div>
             <div className="flex items-center gap-2 md:w-64">
               <label
-                htmlFor="fine-type-label"
+                id="fine-type-label"
+                htmlFor="fine-type-select"
                 className="text-base font-semibold text-gray-600"
               >
                 Type

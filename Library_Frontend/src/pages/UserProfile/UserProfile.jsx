@@ -8,8 +8,8 @@ import { wishlist } from "../../data/wishlist";
 import { formatDate, formatDateTime } from "../../utils/formatDate";
 import { getInitials } from "../../utils/getInitials";
 import PageContainer from "../components/PageContainer";
-import ProfileStateCard from "./ProfileStateCard";
 import { formatMoney } from "../../utils/formatMoney";
+import StatCard from "../components/StatCard";
 
 const UserProfile = () => {
   const activeLoanCount = loans.filter((l) =>
@@ -100,7 +100,14 @@ const UserProfile = () => {
         </div>
         <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-5 mt-8">
           {profileStats.map((profileTab) => (
-            <ProfileStateCard key={profileTab.id} profileTab={profileTab} />
+            <StatCard
+              key={profileTab.id}
+              label={profileTab.label}
+              value={profileTab.value}
+              valueClass={profileTab.classes}
+              to={profileTab.to}
+              linkText={profileTab.linkText}
+            />
           ))}
         </div>
         <div className="flex flex-wrap mt-8 gap-6 w-full ">
