@@ -10,7 +10,9 @@ import Wishlist from "./pages/Wishlist/Wishlist";
 import MyFines from "./pages/MyFines/MyFines";
 import Subscription from "./pages/Subscription/Subscription";
 import UserProfile from "./pages/UserProfile/UserProfile";
-import Login from "./pages/Login/Login";
+import Login from "./pages/UserAuthentication/Login";
+import ForgotPassword from "./pages/UserAuthentication/ForgotPassword";
+import ResetPassword from "./pages/UserAuthentication/ResetPassword";
 
 function App() {
   return (
@@ -30,6 +32,8 @@ function App() {
           <Route path="/settings" element={<Dashboard />} />
         </Route>
         <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
       </Routes>
     </>
   );
