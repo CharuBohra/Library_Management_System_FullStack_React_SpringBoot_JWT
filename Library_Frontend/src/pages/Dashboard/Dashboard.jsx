@@ -1,4 +1,3 @@
-import StateCard from "./StateCard";
 import { AutoAwesome } from "@mui/icons-material";
 import { statsConfig } from "./StateConfig";
 import { LinearProgress, Box, Tabs, Tab } from "@mui/material";
@@ -8,6 +7,7 @@ import Reservations from "./Reservations";
 import ReadingHistory from "./ReadingHistory";
 import Recommendations from "./Recommendations";
 import PageContainer from "../components/PageContainer";
+import DashboardStatCard from "./DashboardStatCard";
 
 const Dashboard = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -43,7 +43,7 @@ const Dashboard = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           {stateData.map((item) => (
-            <StateCard
+            <DashboardStatCard
               bgColor={item.bgColor}
               textColor={item.textColor}
               icon={item.icon}

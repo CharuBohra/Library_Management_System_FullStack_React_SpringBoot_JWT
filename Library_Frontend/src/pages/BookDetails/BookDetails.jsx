@@ -215,7 +215,6 @@ const BookDetails = () => {
                   <div className="flex flex-row gap-4 text-sm text-gray-900 mt-3 w-full">
                     <div className="flex items-center gap-2 md:w-64">
                       <InputLabel
-                        id="checkout-days"
                         sx={{ overflow: "visible", fontSize: "0.85rem" }}
                         fullWidth
                       >
@@ -225,9 +224,9 @@ const BookDetails = () => {
                         <InputLabel id="checkout-days-label">Select</InputLabel>
                         <Select
                           labelId="checkout-days-label"
-                          id="checkout-days"
+                          id="checkout-days-select"
                           value={checkoutDays}
-                          label="Browse for"
+                          label="Browse Books"
                           inputProps={{ "aria-label": "Checkout Days" }}
                           onChange={(e) =>
                             setCheckoutDays(Number(e.target.value))
