@@ -13,6 +13,7 @@ import UserProfile from "./pages/UserProfile/UserProfile";
 import Login from "./pages/UserAuthentication/Login";
 import ForgotPassword from "./pages/UserAuthentication/ForgotPassword";
 import ResetPassword from "./pages/UserAuthentication/ResetPassword";
+import PaymentResult from "./pages/Payments/PaymentResult";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
           <Route path="/wishlist" element={<Wishlist />} />
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/settings" element={<Dashboard />} />
+          <Route path="/payment/result" element={<PaymentResult />} />
         </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
