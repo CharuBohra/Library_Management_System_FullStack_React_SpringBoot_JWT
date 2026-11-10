@@ -29,7 +29,6 @@ const BookDetails = () => {
     reviewCount === 0
       ? 0
       : review.reduce((sum, r) => sum + r.rating, 0) / reviewCount;
-  if (!book) return <p>Book Not Found</p>;
 
   const subscription = activeSubscription;
 
@@ -45,6 +44,8 @@ const BookDetails = () => {
 
   const percentFor = (stars) =>
     reviewCount === 0 ? 0 : (countFor(stars) / reviewCount) * 100;
+
+  if (!book) return <p>Book Not Found</p>;
   return (
     <div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50 py-8">
       <PageContainer>
@@ -214,19 +215,17 @@ const BookDetails = () => {
                   <div className="flex flex-row gap-4 text-sm text-gray-900 mt-3 w-full">
                     <div className="flex items-center gap-2 md:w-64">
                       <InputLabel
-                        id="demo-simple-select-label"
+                        id="checkout-days"
                         sx={{ overflow: "visible", fontSize: "0.85rem" }}
                         fullWidth
                       >
                         Browse Books
                       </InputLabel>
                       <FormControl fullWidth>
-                        <InputLabel id="demo-simple-select-label">
-                          Select
-                        </InputLabel>
+                        <InputLabel id="checkout-days-label">Select</InputLabel>
                         <Select
-                          labelId="demo-simple-select-label"
-                          id="demo-simple-select"
+                          labelId="checkout-days-label"
+                          id="checkout-days"
                           value={checkoutDays}
                           label="Browse for"
                           inputProps={{ "aria-label": "Checkout Days" }}

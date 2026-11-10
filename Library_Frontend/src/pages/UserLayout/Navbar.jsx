@@ -12,8 +12,9 @@ import { navigationItems, secondaryItems } from "./NavigationItems";
 import { isActive } from "./utils";
 import { Contrast, Notifications, Search } from "@mui/icons-material";
 import { useLocation } from "react-router";
+import { DRAWER_WIDTH } from "../../constants/layout";
 
-const drawerWidth = 280;
+const drawerWidth = DRAWER_WIDTH;
 const user = {
   fullName: "John Doe",
   profile:

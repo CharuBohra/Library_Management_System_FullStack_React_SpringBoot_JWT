@@ -1,9 +1,5 @@
-import React from 'react'
-
 const ReadingHistory = () => {
-  return (
-    <div>ReadingHistory</div>
-  )
-}
+  return <div>ReadingHistory</div>;
+};
 
-export default ReadingHistory
+export default ReadingHistory;

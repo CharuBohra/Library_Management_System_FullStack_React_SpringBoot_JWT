@@ -154,15 +154,15 @@ const MyFines = () => {
             </div>
             <div className="flex items-center gap-2 md:w-64">
               <label
-                htmlFor="fine-type-select"
+                htmlFor="fine-type-label"
                 className="text-base font-semibold text-gray-600"
               >
                 Type
               </label>
               <FormControl fullWidth>
                 <Select
-                  labelId="fine-type-select"
-                  id="demo-simple-select"
+                  labelId="fine-type-label"
+                  id="fine-type-select"
                   value={typeFilter ?? ""}
                   displayEmpty
                   label="Type"

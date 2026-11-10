@@ -72,12 +72,12 @@ const BookPage = () => {
                     Availability
                   </h3>
                   <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">
+                    <InputLabel id="availability-label">
                       Availability
                     </InputLabel>
                     <Select
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
+                      labelId="availability-label"
+                      id="availability-select"
                       value={availability}
                       label="Availability"
                       inputProps={{ "aria-label": "Availability" }}
@@ -145,12 +145,10 @@ const BookPage = () => {
                 {/* Sort Dropdown */}
                 <div className="md:w-64">
                   <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">
-                      Sort By
-                    </InputLabel>
+                    <InputLabel id="sort-label">Sort By</InputLabel>
                     <Select
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
+                      labelId="sort-label"
+                      id="sort-select"
                       value={getCurrentSortValue()}
                       label="Sort By"
                       onChange={(e) => handleSortChange(e.target.value)}
@@ -175,8 +173,8 @@ const BookPage = () => {
                       <MenuItem value={"title-desc"}>Title(Z-A)</MenuItem>
                       <MenuItem value={"author-asc"}>Author(A-Z)</MenuItem>
                       <MenuItem value={"author-desc"}>Author(Z-A)</MenuItem>
-                      <MenuItem value={"createdAt-asc"}>Newest First</MenuItem>
-                      <MenuItem value={"createdAt-desc"}>Oldest First</MenuItem>
+                      <MenuItem value={"createdAt-desc"}>Newest First</MenuItem>
+                      <MenuItem value={"createdAt-asc"}>Oldest First</MenuItem>
                     </Select>
                   </FormControl>
                 </div>

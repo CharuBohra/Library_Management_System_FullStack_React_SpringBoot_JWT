@@ -1,16 +1,14 @@
-import { Chip } from '@mui/material'
-import React from 'react'
-
-const GetStatusChip = ({status}) => {
+import { Chip } from "@mui/material";
+const GetStatusChip = ({ status }) => {
   const configs = {
-    ACTIVE : {label:'Active' , color:"success"},
-    OVERDUE: {label:'Overdue' , color : "error"},
-    PENDING : {label:'Pending' , color:"warning"},
-    READY : {label:'Ready for pickup' , color:"success"}
-  }
+    ACTIVE: { label: "Active", color: "success" },
+    OVERDUE: { label: "Overdue", color: "error" },
+    PENDING: { label: "Pending", color: "warning" },
+    READY: { label: "Ready for pickup", color: "success" },
+  };
 
-  const config = configs[status] || {label:status , color:'default'}
-  return <Chip label={config.label} color={config.color} size='small'/>
-}
+  const config = configs[status] || { label: status, color: "default" };
+  return <Chip label={config.label} color={config.color} size="small" />;
+};
 
-export default GetStatusChip
+export default GetStatusChip;
