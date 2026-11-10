@@ -2,8 +2,9 @@ import { Box, Toolbar } from "@mui/material";
 import UserSidebar from "./UserSidebar";
 import { Outlet } from "react-router";
 import Navbar from "./Navbar";
+import { DRAWER_WIDTH } from "../../constants/layout";
 
-const drawerWidth = 280;
+const drawerWidth = DRAWER_WIDTH;
 const UserLayout = () => {
   return (
     <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: "white" }}>

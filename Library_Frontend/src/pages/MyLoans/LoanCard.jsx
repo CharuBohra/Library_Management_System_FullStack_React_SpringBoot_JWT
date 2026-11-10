@@ -13,8 +13,8 @@ import {
   Divider,
   Typography,
 } from "@mui/material";
-import React from "react";
 import { formatDate } from "../../utils/formatDate";
+import { Link } from "react-router";
 
 const LoanCard = ({ loan }) => {
   return (
@@ -157,6 +157,8 @@ const LoanCard = ({ loan }) => {
         >
           <Button
             variant="outlined"
+            component={Link}
+            to={`/books/${loan.bookId}`}
             sx={{
               borderColor: "#667eea",
               color: "#667eea",

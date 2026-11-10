@@ -1,9 +1,4 @@
-import {
-  AccessAlarm,
-  Book,
-  CalendarToday,
-  ReceiptLong,
-} from "@mui/icons-material";
+import { AccessAlarm, Book, CalendarToday } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import { useState } from "react";
 import { tabs } from "./tabs";
