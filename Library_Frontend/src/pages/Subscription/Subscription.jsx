@@ -140,7 +140,7 @@ const Subscription = () => {
         <div className="text-3xl font-bold text-gray-900 my-3">
           Available Plans
         </div>
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(350px,1fr))] gap-5 mt-2">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,300px),1fr))] gap-5 mt-2">
           {visiblePlans.map((plan) => (
             <PlanCard
               key={plan.id}

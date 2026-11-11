@@ -2,7 +2,7 @@ import { AccessAlarm, Book, CheckCircle } from "@mui/icons-material";
 
 export const tabs = [
   {
-    label: "All Reservations",
+    label: "All",
     value: "ALL",
     icon: <Book className="w-5 h-5" />,
   },

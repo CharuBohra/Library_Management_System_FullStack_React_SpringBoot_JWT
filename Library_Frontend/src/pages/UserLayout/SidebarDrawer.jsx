@@ -15,17 +15,19 @@ import { navigationItems, secondaryItems } from "./NavigationItems";
 import { useLocation, useNavigate } from "react-router";
 import { isActive } from "./utils";
 
-const SidebarDrawer = () => {
+const SidebarDrawer = ({ onNavigate }) => {
   const location = useLocation();
   const navigate = useNavigate();
 
   const handleChangePath = (path) => {
     navigate(path);
+    onNavigate?.();
   };
 
   const handleLogout = () => {
     console.log("Logout");
   };
+
   return (
     <Box
       sx={{
@@ -263,7 +265,7 @@ const SidebarDrawer = () => {
             </ListItemButton>
 
             <p className="pt-6 text-xs text-gray-600">
-              2026 ZoshBook ,All Rights Reserved
+              © {new Date().getFullYear()} ZoshBook. All rights reserved
             </p>
           </Box>
         </List>

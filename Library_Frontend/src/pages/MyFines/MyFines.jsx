@@ -198,7 +198,7 @@ const MyFines = () => {
               </FormControl>
             </div>
           </div>
-          <div className="overflow-x-auto">
+          <div className="relative overflow-x-auto">
             {visibleFines.length === 0 ? (
               <p className="p-8 text-center text-gray-500">
                 No fines match these filters.

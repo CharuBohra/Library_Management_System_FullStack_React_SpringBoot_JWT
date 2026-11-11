@@ -1,5 +1,5 @@
 import { AccessAlarm, Book, CalendarToday } from "@mui/icons-material";
-import { Button } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { useState } from "react";
 import { tabs } from "./tabs";
 import { mockReservations } from "../../data/reservations";
@@ -97,13 +97,13 @@ const MyReservations = () => {
                   onClick={() => setActiveTab(tab.value)}
                   sx={{
                     flex: 1,
-                    px: 4,
-                    py: 2,
+                    minWidth: 0,
+                    px: { xs: 1, sm: 4 },
+                    py: { xs: 1.5, sm: 2 },
                     fontWeight: 600,
-                    fontSize: "1rem",
-                    gap: 2,
-                    textTransform: "uppercase",
-                    letterSpacing: "0.05rem",
+                    fontSize: { xs: "0.875rem", sm: "1rem" },
+                    gap: { xs: 0, sm: 2 },
+                    textTransform: "none",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -118,7 +118,12 @@ const MyReservations = () => {
                     },
                   }}
                 >
-                  {tab.icon}
+                  <Box
+                    component="span"
+                    sx={{ display: { xs: "none", sm: "inline-flex" } }}
+                  >
+                    {tab.icon}
+                  </Box>
                   {tab.label}
                 </Button>
               );
