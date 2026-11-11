@@ -8,7 +8,12 @@ import { RequestQuote } from "@mui/icons-material";
 import PageHeader from "../components/PageHeader";
 
 const MyLoans = () => {
-  const [activeTab, setActiveTab] = useState("");
+  const [activeTab, setActiveTab] = useState("ALL");
+  const currentTab = tabs.find((t) => t.value === activeTab);
+  const visibleLoans = loans.filter(
+    (loan) =>
+      !currentTab?.statuses || currentTab.statuses.includes(loan.status),
+  );
   return (
     <div>
       <div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50 py-8">
@@ -24,6 +29,9 @@ const MyLoans = () => {
             <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
               <Tabs
                 value={activeTab}
+                variant="scrollable"
+                scrollButtons="auto"
+                allowScrollButtonsMobile
                 onChange={(e, newValue) => setActiveTab(newValue)}
                 aria-label="loans-tab"
               >
@@ -31,6 +39,7 @@ const MyLoans = () => {
                   <Tab
                     key={tab.label}
                     label={tab.label}
+                    value={tab.value}
                     sx={{ fontWeight: 600, textTransform: "none" }}
                   />
                 ))}
@@ -38,11 +47,17 @@ const MyLoans = () => {
             </Box>
           </Card>
           {/* Loan List  */}
-          <div className="space-y-4 grid grid-cols-1 xl:grid-cols-2 gap-8">
-            {loans.map((loan) => (
-              <LoanCard key={loan.id} loan={loan} />
-            ))}
-          </div>
+          {visibleLoans.length === 0 ? (
+            <p className="p-8 text-center text-gray-500">
+              No loans in this category.
+            </p>
+          ) : (
+            <div className=" grid grid-cols-1 xl:grid-cols-2 gap-8">
+              {visibleLoans.map((loan) => (
+                <LoanCard key={loan.id} loan={loan} />
+              ))}
+            </div>
+          )}
         </PageContainer>
       </div>
     </div>
