@@ -124,7 +124,10 @@ const Dashboard = () => {
             <Tabs
               value={activeTab}
               onChange={handleTabChange}
-              aria-label="Basic Tabs Example"
+              variant="scrollable"
+              scrollButtons="auto"
+              allowScrollButtonsMobile
+              aria-label="Dashboard Sections"
               sx={{
                 "& .MuiTab-root": {
                   fontSize: "1rem",
