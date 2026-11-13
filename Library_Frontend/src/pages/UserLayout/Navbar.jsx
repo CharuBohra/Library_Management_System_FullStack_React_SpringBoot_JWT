@@ -13,12 +13,9 @@ import { isActive } from "./utils";
 import { Contrast, Notifications, Search } from "@mui/icons-material";
 import { useLocation } from "react-router";
 import { DRAWER_WIDTH } from "../../constants/layout";
+import { getInitials } from "../../utils/getInitials";
+import { currentUser } from "../../data/user";
 
-const user = {
-  fullName: "John Doe",
-  profile:
-    "https://media.istockphoto.com/id/2199471016/photo/close-up-hands-of-unrecognizable-man-holding-and-using-smartphone-standing-on-city-street.jpg?s=1024x1024&w=is&k=20&c=krRxRFK-DldtAvf9BoPiQJYhP1RSYDtvFUMO7ujg1wg=",
-};
 const Navbar = ({ handleDrawerToggle }) => {
   const location = useLocation();
   return (
@@ -75,8 +72,16 @@ const Navbar = ({ handleDrawerToggle }) => {
             //  onClick={handleProfileMenuDropdown}
             sx={{ ml: 1 }}
           >
-            <Avatar src={user?.profile} sx={{ width: 36, height: 36 }}>
-              {user?.fullName?.charAt(0)}
+            <Avatar
+              sx={{
+                width: 36,
+                height: 36,
+                bgcolor: "#4F46E5",
+                fontSize: "0.9rem",
+                fontWeight: 600,
+              }}
+            >
+              {getInitials(currentUser.fullName)}
             </Avatar>
           </IconButton>
         </Tooltip>

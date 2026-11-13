@@ -13,15 +13,22 @@ import BookCard from "./BookCard";
 import { books } from "../../data/books";
 import { genres } from "../../data/genres";
 import PageContainer from "../components/PageContainer";
+import { filterAndSortBooks } from "./bookFilters";
 
 const BookPage = () => {
   const [selectedGenreId, setSelectedGenreId] = useState(null);
-  const [availability, setAvailability] = useState("ALL");
+  const [availableOnly, setAvailableOnly] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("createdAt");
   const [sortDirection, setSortDirection] = useState("DESC");
 
-  const activeBooks = books.filter((b) => b.active);
+  const visibleBooks = filterAndSortBooks(books, genres, {
+    genreId: selectedGenreId,
+    availableOnly,
+    searchTerm,
+    sortBy,
+    sortDirection,
+  });
   const activeGenres = genres.filter((g) => g.active);
 
   const handleGenreChange = (genreId) => {
@@ -66,22 +73,24 @@ const BookPage = () => {
                   onGenreSelect={handleGenreChange}
                   selectedGenreId={selectedGenreId}
                 />
-                {/* Availability Filter  */}
+                {/* availableOnly Filter  */}
                 <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100">
                   <h3 className="text-lg font-bold text-gray-900 mb-4 pb-3 border-b border-gray-200">
-                    Availability
+                    availableOnly
                   </h3>
                   <FormControl fullWidth>
-                    <InputLabel id="availability-label">
-                      Availability
+                    <InputLabel id="availableOnly-label">
+                      availableOnly
                     </InputLabel>
                     <Select
-                      labelId="availability-label"
-                      id="availability-select"
-                      value={availability}
-                      label="Availability"
-                      inputProps={{ "aria-label": "Availability" }}
-                      onChange={(e) => setAvailability(e.target.value)}
+                      labelId="availableOnly-label"
+                      id="availableOnly-select"
+                      value={availableOnly ? "AVAILABLE" : "ALL"}
+                      label="availableOnly"
+                      inputProps={{ "aria-label": "availableOnly" }}
+                      onChange={(e) =>
+                        setAvailableOnly(e.target.value === "AVAILABLE")
+                      }
                       sx={{
                         fontSize: "0.875rem", // 14px, same as text-sm
                         fontFamily: "inherit", // use the page font instead of Roboto
@@ -103,7 +112,6 @@ const BookPage = () => {
                     >
                       <MenuItem value={"ALL"}>All Books</MenuItem>
                       <MenuItem value={"AVAILABLE"}>Available Books</MenuItem>
-                      <MenuItem value={"CHECKED_OUT"}>Checked Out</MenuItem>
                     </Select>
                   </FormControl>
                 </div>
@@ -181,11 +189,21 @@ const BookPage = () => {
               </div>
 
               {/* Books Grid  */}
-              <div className="grid gap-6 grid-cols-[repeat(auto-fill,minmax(300px,1fr))]">
-                {activeBooks.map((book) => (
-                  <BookCard key={book.id} book={book} />
-                ))}
-              </div>
+              <p className="text-sm text-gray-600">
+                Showing {visibleBooks.length}{" "}
+                {visibleBooks.length === 1 ? "book" : "books"}
+              </p>
+              {visibleBooks.length === 0 ? (
+                <p className="p-8 text-center text-gray-500">
+                  No books match these filters.
+                </p>
+              ) : (
+                <div className="grid gap-6 grid-cols-[repeat(auto-fill,minmax(min(100%,300px),1fr))]">
+                  {visibleBooks.map((book) => (
+                    <BookCard key={book.id} book={book} />
+                  ))}
+                </div>
+              )}
             </main>
           </div>
         </div>
