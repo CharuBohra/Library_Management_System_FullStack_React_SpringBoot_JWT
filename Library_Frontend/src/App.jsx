@@ -15,6 +15,7 @@ import ForgotPassword from "./pages/UserAuthentication/ForgotPassword";
 import ResetPassword from "./pages/UserAuthentication/ResetPassword";
 import PaymentResult from "./pages/Payments/PaymentResult";
 import Settings from "./pages/Settings/Settings";
+import NotFound from "./pages/PageNotFound/NotFound";
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );

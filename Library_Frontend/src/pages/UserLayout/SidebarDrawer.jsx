@@ -110,7 +110,7 @@ const SidebarDrawer = ({ onNavigate }) => {
             const active = isActive(item.path, location);
 
             return (
-              <ListItem key={index}>
+              <ListItem key={item.path}>
                 <Tooltip title={item.description} placement="right">
                   <ListItemButton
                     onClick={() => {
@@ -174,7 +174,7 @@ const SidebarDrawer = ({ onNavigate }) => {
             const active = isActive(item.path, location);
 
             return (
-              <ListItem key={index}>
+              <ListItem key={item.path}>
                 <Tooltip title={item.description} placement="right">
                   <ListItemButton
                     onClick={() => {

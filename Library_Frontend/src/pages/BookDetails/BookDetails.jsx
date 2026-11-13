@@ -216,7 +216,6 @@ const BookDetails = () => {
                     <div className="flex items-center gap-2 md:w-64">
                       <InputLabel
                         sx={{ overflow: "visible", fontSize: "0.85rem" }}
-                        fullWidth
                       >
                         Browse Books
                       </InputLabel>
@@ -377,7 +376,7 @@ const BookDetails = () => {
                   <div className="flex flex-col flex-1 min-w-0 basis-80">
                     {review.map((bookReview) => (
                       <article
-                        key={review.id}
+                        key={bookReview.id}
                         className="flex flex-col gap-1.5 p-5 border border-gray-100 first:pt-0"
                       >
                         <div className="flex flex-wrap items-center gap-2">
