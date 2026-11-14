@@ -1,5 +1,5 @@
 export const tabs = [
-  { label: "ALL", value: "ALL" },
+  { label: "All", value: "ALL" },
   { label: "Active", value: "ACTIVE", statuses: ["CHECKED_OUT"] },
   { label: "Overdue", value: "OVERDUE", statuses: ["OVERDUE"] },
   { label: "Returned", value: "RETURNED", statuses: ["RETURNED"] },
