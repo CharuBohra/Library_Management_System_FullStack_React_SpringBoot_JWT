@@ -217,7 +217,7 @@ const BookDetails = () => {
                       <InputLabel
                         sx={{ overflow: "visible", fontSize: "0.85rem" }}
                       >
-                        Browse Books
+                        Borrow for
                       </InputLabel>
                       <FormControl fullWidth>
                         <InputLabel id="checkout-days-label">Select</InputLabel>
@@ -225,7 +225,7 @@ const BookDetails = () => {
                           labelId="checkout-days-label"
                           id="checkout-days-select"
                           value={checkoutDays}
-                          label="Browse Books"
+                          label="Borrow for"
                           inputProps={{ "aria-label": "Checkout Days" }}
                           onChange={(e) =>
                             setCheckoutDays(Number(e.target.value))

@@ -76,18 +76,18 @@ const BookPage = () => {
                 {/* availableOnly Filter  */}
                 <div className="bg-white rounded-xl shadow-md p-4 border border-gray-100">
                   <h3 className="text-lg font-bold text-gray-900 mb-4 pb-3 border-b border-gray-200">
-                    availableOnly
+                    Availability
                   </h3>
                   <FormControl fullWidth>
-                    <InputLabel id="availableOnly-label">
-                      availableOnly
+                    <InputLabel id="availability-label">
+                      Availability
                     </InputLabel>
                     <Select
-                      labelId="availableOnly-label"
-                      id="availableOnly-select"
+                      labelId="availability-label"
+                      id="availability-select"
                       value={availableOnly ? "AVAILABLE" : "ALL"}
-                      label="availableOnly"
-                      inputProps={{ "aria-label": "availableOnly" }}
+                      label="availability"
+                      inputProps={{ "aria-label": "availability" }}
                       onChange={(e) =>
                         setAvailableOnly(e.target.value === "AVAILABLE")
                       }
@@ -100,7 +100,7 @@ const BookPage = () => {
                         slotProps: {
                           paper: {
                             sx: {
-                              "&. MuiMenuItem-root": {
+                              "& .MuiMenuItem-root": {
                                 fontSize: "0.875rem", // 14px, same as text-sm
                                 fontFamily: "inherit",
                                 color: "#374151",
@@ -202,6 +202,7 @@ const BookPage = () => {
                   {visibleBooks.map((book) => (
                     <BookCard key={book.id} book={book} />
                   ))}
+                  s
                 </div>
               )}
             </main>

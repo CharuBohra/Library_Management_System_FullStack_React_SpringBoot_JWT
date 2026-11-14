@@ -106,7 +106,7 @@ const SidebarDrawer = ({ onNavigate }) => {
 
       <Box>
         <List>
-          {navigationItems.map((item, index) => {
+          {navigationItems.map((item) => {
             const active = isActive(item.path, location);
 
             return (
@@ -170,7 +170,7 @@ const SidebarDrawer = ({ onNavigate }) => {
           })}
 
           <Divider sx={{ borderColor: "rgba(255,255,255,0.05)", mx: 2 }} />
-          {secondaryItems.map((item, index) => {
+          {secondaryItems.map((item) => {
             const active = isActive(item.path, location);
 
             return (
