@@ -2,6 +2,9 @@ import { Button } from "@mui/material";
 import { useState } from "react";
 import { Link } from "react-router";
 import AuthSidePanel from "./AuthSidePanel";
+import { login } from "../../api/authApi";
+import api, { TOKEN_KEY } from "../../api/client";
+import { getErrorMessage } from "../../utils/getErrorMessage";
 
 const Login = () => {
   const [form, setForm] = useState({
@@ -25,7 +28,7 @@ const Login = () => {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (isSignUp) {
@@ -38,10 +41,16 @@ const Login = () => {
       });
     } else {
       const { email, password } = form;
-      console.log("POST /auth/signup", {
-        email,
-        password,
-      });
+      try {
+        const data = await login(email, password);
+        console.log("LOGIN.OK", data.user);
+        localStorage.setItem(TOKEN_KEY, data.jwt);
+
+        const profile = await api.get("/api/user/profile");
+        console.log("PROFILE.OK", profile.data);
+      } catch (error) {
+        console.log(getErrorMessage(error));
+      }
     }
   };
 
