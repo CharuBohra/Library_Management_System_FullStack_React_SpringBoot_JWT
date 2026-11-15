@@ -83,6 +83,8 @@ public class WishlistServiceImpl implements WishlistService {
 
         UserDTO user = userService.getCurrentUser();
 
+        page = Math.max(page, 0);
+        size = Math.min(Math.max(size, 1), 50);
         Pageable pageable = PageRequest.of(page , size, Sort.by("addedAt").descending());
 
         Page<Wishlist> wishlistPage = wishlistRepository.findByUserId(user.getId(),pageable);

@@ -118,6 +118,8 @@ public class BookReviewServiceImpl implements BookReviewService {
         Book book = bookRepository.findById(bookId)
                 .orElseThrow(()-> new BookNotFoundException("Book not found with id "+bookId));
 
+        page = Math.max(page, 0);
+        size = Math.min(Math.max(size, 1), 50);
         Pageable pageable = PageRequest.of(page,size, Sort.by("createdAt").descending());
 
         Page<BookReview> bookReviewPage = bookReviewRepository.findByBook(book,pageable);

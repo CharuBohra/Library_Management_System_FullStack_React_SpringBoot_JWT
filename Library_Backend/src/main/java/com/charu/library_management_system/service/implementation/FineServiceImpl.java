@@ -190,6 +190,8 @@ public class FineServiceImpl implements FineService {
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public PageResponseDTO<FineDTO> getAllFine(FineStatus status, FineType type, Long userId, int page, int size) {
+        page = Math.max(page, 0);
+        size = Math.min(Math.max(size, 1), 50);
         Pageable pageable = PageRequest.of(page,size, Sort.by("createdAt").descending());
 
         Page<Fine> finePage = fineRepository.findAllWithFilters(userId,status,type,pageable);

@@ -26,11 +26,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +50,8 @@ public class ReservationServiceImpl implements ReservationService {
 
     private static final int MAX_RESERVATIONS = 5;
 
+    private static final Set<String> ALLOWED_SORT_FIELDS =
+            Set.of("reservedAt", "createdAt", "status", "queuePosition");
 
     @Override
     @Transactional
@@ -239,6 +245,9 @@ public class ReservationServiceImpl implements ReservationService {
 
         if (sortBy == null || sortBy.isBlank()) {
             sortBy = "reservedAt";
+        }
+        if (!ALLOWED_SORT_FIELDS.contains(sortBy)) {                                          // ← new
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid sort field: " + sortBy);  // ← new
         }
         if (sortDir == null || sortDir.isBlank()) {
             sortDir = "DESC";

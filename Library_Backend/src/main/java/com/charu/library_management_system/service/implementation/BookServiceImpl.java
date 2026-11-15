@@ -18,11 +18,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +35,9 @@ public class BookServiceImpl implements BookService {
     private final GenreRepository genreRepository;
     private final BookMapper bookMapper;
     private final BookLoanRepository bookLoanRepository;
+
+    private static final Set<String> ALLOWED_SORT_FIELDS =
+            Set.of("createdAt", "title", "author", "publicationDate", "availableCopies");
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
@@ -211,8 +217,13 @@ public class BookServiceImpl implements BookService {
 
     private Pageable createPageable(int page , int pageSize , String sortBy , String sortDirection)
     {
-        pageSize = Math.min(pageSize,10);
+        page = Math.max(page, 0);
+        pageSize = Math.min(pageSize,50);
         pageSize = Math.max(pageSize,1);
+
+        if (!ALLOWED_SORT_FIELDS.contains(sortBy)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid sort field: " + sortBy);
+        }
 
         Sort sort = sortDirection.equalsIgnoreCase("ASC")
                 ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();

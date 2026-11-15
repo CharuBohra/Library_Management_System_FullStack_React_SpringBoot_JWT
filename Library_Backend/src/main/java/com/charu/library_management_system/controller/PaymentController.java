@@ -15,8 +15,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.net.URI;
+import java.util.Set;
 
 @RestController
 @RequiredArgsConstructor
@@ -45,6 +47,11 @@ public class PaymentController {
             @RequestParam(defaultValue = "DESC") String sortDirection
     )
     {
+        page = Math.max(page, 0);
+        pageSize = Math.min(Math.max(pageSize, 1), 50);
+        if (!Set.of("createdAt", "amount", "completedAt").contains(sortBy)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid sort field: " + sortBy);
+        }
         Sort sort = sortDirection.equalsIgnoreCase("DESC")
                 ?Sort.by(sortBy).descending()
                 :Sort.by(sortBy).ascending();
