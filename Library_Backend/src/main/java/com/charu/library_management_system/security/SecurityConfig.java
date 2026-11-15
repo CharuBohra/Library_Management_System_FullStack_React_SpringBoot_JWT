@@ -76,7 +76,8 @@ public class SecurityConfig {
                                 "/auth/reset-password/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
-                                "/v3/api-docs/**"
+                                "/v3/api-docs/**",
+                                "/actuator/health"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/payments/payment_success/**").permitAll()
 
