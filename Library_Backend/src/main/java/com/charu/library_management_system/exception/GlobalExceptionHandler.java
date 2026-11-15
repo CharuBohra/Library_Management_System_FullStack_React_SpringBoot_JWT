@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.stream.Collectors;
 
@@ -95,7 +96,7 @@ public class GlobalExceptionHandler {
             BadCredentialsException e) {
 
         ApiResponse apiResponse = ApiResponse.builder()
-                .message(e.getMessage())
+                .message("Invalid email or password")
                 .status(false)
                 .build();
 
@@ -544,6 +545,15 @@ public class GlobalExceptionHandler {
                 .build();
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiResponse);
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    public ResponseEntity<ApiResponse> handleResponseStatus(ResponseStatusException ex) {
+        ApiResponse apiResponse = ApiResponse.builder()
+                .message(ex.getReason())     // just "Invalid sort field 'x'. Allowed: [...]"
+                .status(false)
+                .build();
+        return ResponseEntity.status(ex.getStatusCode()).body(apiResponse);
     }
 
     @ExceptionHandler(Exception.class)

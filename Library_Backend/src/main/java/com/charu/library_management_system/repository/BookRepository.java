@@ -17,12 +17,15 @@ public interface BookRepository extends JpaRepository<Book,Long> {
 
     Boolean existsByIsbn(String isbn);
 
-    @Query("select b from Book b where "+
+    @Query("select b from Book b "+
+            "left join b.genre g " +
+            "left join g.parentGenre pg " +
+            "where " +
             "(:searchTerm is null OR "+
-                "lower(title) like lower(concat('%', :searchTerm, '%')) OR "+
-                "lower(isbn) like lower(concat('%', :searchTerm, '%')) OR "+
-                "lower(author) like lower(concat('%', :searchTerm, '%'))) AND " +
-            "(:genreId is null or b.genre.id = :genreId) AND "+
+                "lower(b.title) like lower(concat('%', :searchTerm, '%')) OR "+
+                "lower(b.isbn) like lower(concat('%', :searchTerm, '%')) OR "+
+                "lower(b.author) like lower(concat('%', :searchTerm, '%'))) AND " +
+            "(:genreId is null or b.genre.id = :genreId OR pg.id = :genreId) AND "+
             "(:availableOnly = false or b.availableCopies > 0) AND "+
             "b.active = true")
     Page<Book> searchBooksWithFilters(
