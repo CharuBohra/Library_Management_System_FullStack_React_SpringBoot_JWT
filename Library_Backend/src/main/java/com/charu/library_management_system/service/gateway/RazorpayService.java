@@ -113,11 +113,9 @@ public class RazorpayService {
         }
     }
 
-    public boolean isValidPayment(String paymentId)
+    public boolean isValidPayment(JSONObject paymentDetails)
     {
         try{
-            JSONObject paymentDetails = fetchPaymentDetails(paymentId);
-
             String status = paymentDetails.optString("status");
             long amount = paymentDetails.optLong("amount");
             BigDecimal amountInRupees = BigDecimal.valueOf(amount).divide(BigDecimal.valueOf(100));

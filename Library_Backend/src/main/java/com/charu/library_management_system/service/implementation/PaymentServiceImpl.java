@@ -141,7 +141,12 @@ public class PaymentServiceImpl implements PaymentService {
         Payment payment = paymentRepository.findById(paymentId)
                 .orElseThrow(()->new PaymentNotFoundException("Payment not found for Id "+paymentId));
 
-        boolean isValid = razorpayService.isValidPayment(paymentVerifyRequest.getRazorPaymentId());
+        // Already processed: don't re-check or change anything
+        if (payment.getPaymentStatus() == PaymentStatus.SUCCESS) {
+            return paymentMapper.toDTO(payment);
+        }
+
+        boolean isValid = razorpayService.isValidPayment(paymentDetails);
 
         if(PaymentGateway.RAZORPAY == payment.getPaymentGateway())
         {
