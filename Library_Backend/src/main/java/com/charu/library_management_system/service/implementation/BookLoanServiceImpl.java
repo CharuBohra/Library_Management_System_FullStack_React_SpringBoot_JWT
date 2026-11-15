@@ -32,15 +32,18 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -63,6 +66,9 @@ public class BookLoanServiceImpl implements BookLoanService {
 
     @Value("${app.fines.default-book-price}")
     private BigDecimal defaultBookPrice;
+
+    private static final Set<String> ALLOWED_SORT_FIELDS =
+            Set.of("createdAt", "dueDate", "checkoutDate", "returnDate", "status");
 
     @Override
     @Transactional
@@ -426,11 +432,15 @@ public class BookLoanServiceImpl implements BookLoanService {
     {
         page = Math.max(page, 0);
 
-        pageSize = Math.min(pageSize,10);
+        pageSize = Math.min(pageSize,50);
         pageSize = Math.max(pageSize,1);
 
         if (sortBy == null || sortBy.isBlank()) {
             sortBy = "createdAt";
+        }
+
+        if (!ALLOWED_SORT_FIELDS.contains(sortBy)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid sort field: " + sortBy);
         }
 
         if (sortDirection == null || sortDirection.isBlank()) {
