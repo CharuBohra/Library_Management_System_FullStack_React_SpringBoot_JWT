@@ -1,12 +1,13 @@
 import { Button } from "@mui/material";
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import AuthSidePanel from "./AuthSidePanel";
-import { login } from "../../api/authApi";
-import api, { TOKEN_KEY } from "../../api/client";
 import { getErrorMessage } from "../../utils/getErrorMessage";
+import { useAuth } from "../../hooks/useAuth";
 
 const Login = () => {
+  const navigate = useNavigate();
+  const { login } = useAuth();
   const [form, setForm] = useState({
     fullName: "",
     email: "",
@@ -42,12 +43,8 @@ const Login = () => {
     } else {
       const { email, password } = form;
       try {
-        const data = await login(email, password);
-        console.log("LOGIN.OK", data.user);
-        localStorage.setItem(TOKEN_KEY, data.jwt);
-
-        const profile = await api.get("/api/user/profile");
-        console.log("PROFILE.OK", profile.data);
+        await login(email, password);
+        navigate("/");
       } catch (error) {
         console.log(getErrorMessage(error));
       }

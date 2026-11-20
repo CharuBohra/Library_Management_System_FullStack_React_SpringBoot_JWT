@@ -14,9 +14,10 @@ import { Contrast, Notifications, Search } from "@mui/icons-material";
 import { useLocation } from "react-router";
 import { DRAWER_WIDTH } from "../../constants/layout";
 import { getInitials } from "../../utils/getInitials";
-import { currentUser } from "../../data/user";
+import { useAuth } from "../../hooks/useAuth";
 
 const Navbar = ({ handleDrawerToggle }) => {
+  const { user } = useAuth();
   const location = useLocation();
   return (
     <AppBar
@@ -81,7 +82,7 @@ const Navbar = ({ handleDrawerToggle }) => {
                 fontWeight: 600,
               }}
             >
-              {getInitials(currentUser.fullName)}
+              {getInitials(user?.fullName ?? "")}
             </Avatar>
           </IconButton>
         </Tooltip>
