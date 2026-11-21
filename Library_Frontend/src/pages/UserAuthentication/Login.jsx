@@ -1,12 +1,13 @@
 import { Button } from "@mui/material";
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import AuthSidePanel from "./AuthSidePanel";
-import { login } from "../../api/authApi";
-import api, { TOKEN_KEY } from "../../api/client";
 import { getErrorMessage } from "../../utils/getErrorMessage";
+import { useAuth } from "../../hooks/useAuth";
 
 const Login = () => {
+  const navigate = useNavigate();
+  const { login } = useAuth();
   const [form, setForm] = useState({
     fullName: "",
     email: "",
@@ -14,6 +15,8 @@ const Login = () => {
     phone: "",
   });
 
+  const [error, setError] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [mode, setMode] = useState("login");
 
@@ -21,11 +24,13 @@ const Login = () => {
 
   const toggleMode = () => {
     setMode((prev) => (prev === "login" ? "signup" : "login"));
+    setError(null);
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+    setError(null);
   };
 
   const handleSubmit = async (e) => {
@@ -42,14 +47,14 @@ const Login = () => {
     } else {
       const { email, password } = form;
       try {
-        const data = await login(email, password);
-        console.log("LOGIN.OK", data.user);
-        localStorage.setItem(TOKEN_KEY, data.jwt);
-
-        const profile = await api.get("/api/user/profile");
-        console.log("PROFILE.OK", profile.data);
+        setError(null);
+        setIsSubmitting(true);
+        await login(email, password);
+        navigate("/");
       } catch (error) {
-        console.log(getErrorMessage(error));
+        setError(getErrorMessage(error));
+      } finally {
+        setIsSubmitting(false);
       }
     }
   };
@@ -58,10 +63,14 @@ const Login = () => {
     login: {
       heading: "Welcome back",
       subtitle: "Sign in to manage your loans and reservations",
+      cta: "Sign in",
+      pending: "Signing in...",
     },
     signup: {
       heading: "Create your account",
       subtitle: "Join the library in under a minute",
+      cta: "Create account",
+      pending: "Creating account...",
     },
   };
 
@@ -81,7 +90,7 @@ const Login = () => {
           >
             {isSignUp && (
               <div className="flex flex-col gap-1.5">
-                <label htmlFor="email" className="font-semibold">
+                <label htmlFor="fullName" className="font-semibold">
                   Full Name
                 </label>
                 <input
@@ -148,24 +157,33 @@ const Login = () => {
             </div>
             {isSignUp && (
               <div className="flex flex-col gap-1.5">
-                <label htmlFor="email" className="font-semibold">
+                <label htmlFor="phone" className="font-semibold">
                   Phone (optional)
                 </label>
                 <input
                   id="phone"
-                  type="phone"
+                  type="tel"
                   name="phone"
                   value={form.phone}
                   onChange={handleChange}
-                  autoComplete="phone"
+                  autoComplete="tel"
                   placeholder="+91 9876543210"
                   className="border border-gray-200 rounded-lg shadow-sm px-3.5 py-2.5 w-full focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 />
               </div>
             )}
+            {error && (
+              <div
+                role="alert"
+                className="text-sm font-semibold rounded-lg border border-red-700 bg-red-100 px-3.5 py-2.5 text-red-700"
+              >
+                {error}
+              </div>
+            )}
             <Button
               variant="contained"
               fullWidth
+              disabled={isSubmitting}
               type="submit"
               sx={{
                 bgcolor: "#4F46E5",
@@ -176,11 +194,11 @@ const Login = () => {
                 fontWeight: 600,
                 "&:hover": {
                   bgcolor: "#4338CA",
-                  //   bgcolor: "rgba(102,126,234,0.05)",
                 },
+                "&.Mui-disabled": { bgcolor: "#A5B4FC", color: "white" },
               }}
             >
-              {isSignUp ? "Sign Up" : "Sign In"}
+              {isSubmitting ? text.pending : text.cta}
             </Button>
             <p className="text-sm text-center text-gray-600 mt-4">
               {isSignUp ? "Already have an account?" : "New to ZoshBook?"}{" "}

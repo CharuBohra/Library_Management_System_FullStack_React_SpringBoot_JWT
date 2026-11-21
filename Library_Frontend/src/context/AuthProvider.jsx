@@ -3,7 +3,7 @@ import { TOKEN_KEY } from "../api/client";
 import { useEffect } from "react";
 import { getProfile } from "../api/userApi";
 import { login as loginRequest } from "../api/authApi";
-import { AuthContext } from "./authContext";
+import { AuthContext } from "./AuthContext";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
