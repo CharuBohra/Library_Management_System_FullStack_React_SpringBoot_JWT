@@ -16,24 +16,27 @@ import ResetPassword from "./pages/UserAuthentication/ResetPassword";
 import PaymentResult from "./pages/Payments/PaymentResult";
 import Settings from "./pages/Settings/Settings";
 import NotFound from "./pages/PageNotFound/NotFound";
+import RequireAuth from "./routes/RequireAuth";
 
 function App() {
   return (
     <>
       <Routes>
         {/* User routes */}
-        <Route element={<UserLayout />}>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/books" element={<BookPage />} />
-          <Route path="/books/:id" element={<BookDetails />} />
-          <Route path="/my-loans" element={<MyLoans />} />
-          <Route path="/my-reservations" element={<MyReservations />} />
-          <Route path="/my-fines" element={<MyFines />} />
-          <Route path="/subscriptions" element={<Subscription />} />
-          <Route path="/wishlist" element={<Wishlist />} />
-          <Route path="/profile" element={<UserProfile />} />
-          <Route path="/payment/result" element={<PaymentResult />} />
-          <Route path="/settings" element={<Settings />} />
+        <Route element={<RequireAuth />}>
+          <Route element={<UserLayout />}>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/books" element={<BookPage />} />
+            <Route path="/books/:id" element={<BookDetails />} />
+            <Route path="/my-loans" element={<MyLoans />} />
+            <Route path="/my-reservations" element={<MyReservations />} />
+            <Route path="/my-fines" element={<MyFines />} />
+            <Route path="/subscriptions" element={<Subscription />} />
+            <Route path="/wishlist" element={<Wishlist />} />
+            <Route path="/profile" element={<UserProfile />} />
+            <Route path="/payment/result" element={<PaymentResult />} />
+            <Route path="/settings" element={<Settings />} />
+          </Route>
         </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />

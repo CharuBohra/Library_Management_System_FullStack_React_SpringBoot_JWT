@@ -1,6 +1,6 @@
 import { Button } from "@mui/material";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, Navigate, useLocation, useNavigate } from "react-router";
 import AuthSidePanel from "./AuthSidePanel";
 import { getErrorMessage } from "../../utils/getErrorMessage";
 import { useAuth } from "../../hooks/useAuth";
@@ -8,7 +8,9 @@ import { signup } from "../../api/authApi";
 
 const Login = () => {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const location = useLocation();
+  const from = location.state?.from ?? "/";
+  const { login, initializing, isAuthenticated } = useAuth();
   const [form, setForm] = useState({
     fullName: "",
     email: "",
@@ -68,7 +70,7 @@ const Login = () => {
         setError(null);
         setIsSubmitting(true);
         await login(email, password);
-        navigate("/");
+        navigate(from, { replace: true });
       } catch (error) {
         setError(getErrorMessage(error));
       } finally {
@@ -93,6 +95,10 @@ const Login = () => {
   };
 
   const text = MODE_TEXT[mode];
+
+  if (!initializing && isAuthenticated) {
+    return <Navigate to={from} replace />;
+  }
 
   return (
     <div className="min-h-screen flex flex-wrap">
