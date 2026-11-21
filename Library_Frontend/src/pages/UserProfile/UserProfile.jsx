@@ -3,15 +3,17 @@ import { fines } from "../../data/fines";
 import { loans } from "../../data/loans";
 import { mockReservations } from "../../data/reservations";
 import { activeSubscription } from "../../data/subscription";
-import { currentUser } from "../../data/user";
 import { wishlist } from "../../data/wishlist";
 import { formatDate, formatDateTime } from "../../utils/formatDate";
 import { getInitials } from "../../utils/getInitials";
 import PageContainer from "../components/PageContainer";
 import { formatMoney } from "../../utils/formatMoney";
 import StatCard from "../components/StatCard";
+import { useAuth } from "../../hooks/useAuth";
 
 const UserProfile = () => {
+  const { user } = useAuth();
+
   const activeLoanCount = loans.filter((l) =>
     ["CHECKED_OUT", "OVERDUE"].includes(l.status),
   ).length;
@@ -64,9 +66,9 @@ const UserProfile = () => {
   ];
 
   const accountDetails = [
-    { label: "Full name", value: currentUser.fullName },
-    { label: "Email", value: currentUser.email },
-    { label: "Phone", value: currentUser.phone },
+    { label: "Full name", value: user.fullName },
+    { label: "Email", value: user.email },
+    { label: "Phone", value: user.phone || "Not Provided" },
     {
       label: "Current plan",
       value: activeSubscription
@@ -80,20 +82,20 @@ const UserProfile = () => {
         <div className="bg-white rounded-lg shadow-md p-6">
           <div className="flex flex-wrap items-start gap-6">
             <div className="text-4xl flex items-center justify-center font-extrabold rounded-full w-26 h-26 bg-indigo-700 text-white">
-              {getInitials(currentUser.fullName)}
+              {getInitials(user.fullName)}
             </div>
             <div className="flex flex-col flex-1 gap-2">
               <div className="flex flex-wrap items-center min-w-0 gap-3">
                 <h1 className="text-4xl font-extrabold text-gray-900 ">
-                  {currentUser.fullName}
+                  {user.fullName}
                 </h1>
                 <span className="inline-flex px-2.5 py-1 font-semibold items-center gap-1.5 rounded-full text-xs bg-indigo-100 text-indigo-700">
-                  {ROLE_LABELS[currentUser.role] ?? currentUser.role}
+                  {ROLE_LABELS[user.role] ?? user.role}
                 </span>
               </div>
-              <span className="text-gray-700 text-lg">{currentUser.email}</span>
+              <span className="text-gray-700 text-lg">{user.email}</span>
               <span className="text-gray-600 text-sm">
-                Last login {formatDateTime(currentUser.lastLogin)}
+                Last login {formatDateTime(user.lastLogin)}
               </span>
             </div>
           </div>
@@ -131,7 +133,7 @@ const UserProfile = () => {
           <div className="flex flex-col w-full sm:w-80 shrink-0 bg-white rounded-lg shadow-md p-8 gap-3">
             <h2 className="text-2xl font-bold text-gray-900">Security</h2>
             <p className="text-sm text-gray-500">
-              We'll email a reset link to {currentUser.email}
+              We'll email a reset link to {user.email}
             </p>
             <Button
               variant="outlined"
