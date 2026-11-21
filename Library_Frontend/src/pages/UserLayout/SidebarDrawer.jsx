@@ -14,10 +14,12 @@ import {
 import { navigationItems, secondaryItems } from "./NavigationItems";
 import { useLocation, useNavigate } from "react-router";
 import { isActive } from "./utils";
+import { useAuth } from "../../hooks/useAuth";
 
 const SidebarDrawer = ({ onNavigate }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const handleChangePath = (path) => {
     navigate(path);
@@ -25,7 +27,9 @@ const SidebarDrawer = ({ onNavigate }) => {
   };
 
   const handleLogout = () => {
-    console.log("Logout");
+    logout();
+    navigate("/login", { replace: true });
+    onNavigate?.();
   };
 
   return (
@@ -104,7 +108,18 @@ const SidebarDrawer = ({ onNavigate }) => {
         </Box>
       </Box>
 
-      <Box>
+      <Box
+        sx={{
+          flex: 1,
+          minHeight: 0,
+          overflowY: "auto",
+          "&::-webkit-scrollbar": { width: 6 },
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "rgba(255,255,255,0.2)",
+            borderRadius: 3,
+          },
+        }}
+      >
         <List>
           {navigationItems.map((item) => {
             const active = isActive(item.path, location);

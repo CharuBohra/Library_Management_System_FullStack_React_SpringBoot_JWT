@@ -35,7 +35,10 @@ const Navbar = ({ handleDrawerToggle }) => {
           color="inherit"
           edge="start"
           aria-label="Open menu"
-          onClick={handleDrawerToggle}
+          onClick={(e) => {
+            e.currentTarget.blur();
+            handleDrawerToggle();
+          }}
           sx={{
             mr: 2,
             display: { md: "none" },
