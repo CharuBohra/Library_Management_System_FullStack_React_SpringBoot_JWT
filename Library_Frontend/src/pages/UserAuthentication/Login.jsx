@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router";
 import AuthSidePanel from "./AuthSidePanel";
 import { getErrorMessage } from "../../utils/getErrorMessage";
 import { useAuth } from "../../hooks/useAuth";
+import { signup } from "../../api/authApi";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ const Login = () => {
   });
 
   const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [mode, setMode] = useState("login");
@@ -25,12 +27,14 @@ const Login = () => {
   const toggleMode = () => {
     setMode((prev) => (prev === "login" ? "signup" : "login"));
     setError(null);
+    setSuccess(null);
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
     setError(null);
+    setSuccess(null);
   };
 
   const handleSubmit = async (e) => {
@@ -38,12 +42,26 @@ const Login = () => {
 
     if (isSignUp) {
       const { fullName, email, password, phone } = form;
-      console.log("POST /auth/signup", {
-        fullName,
-        email,
-        password,
-        phone,
-      });
+      if (!fullName.trim()) {
+        setError("Please enter your full name.");
+        return;
+      }
+      if (password.length < 8) {
+        setError("Password must be at least 8 characters.");
+        return;
+      }
+      try {
+        setError(null);
+        setIsSubmitting(true);
+        await signup(fullName, email, password, phone);
+        setMode("login");
+        setForm((prev) => ({ ...prev, password: "" }));
+        setSuccess("Account created. Please Sign in");
+      } catch (error) {
+        setError(getErrorMessage(error));
+      } finally {
+        setIsSubmitting(false);
+      }
     } else {
       const { email, password } = form;
       try {
@@ -178,6 +196,14 @@ const Login = () => {
                 className="text-sm font-semibold rounded-lg border border-red-700 bg-red-100 px-3.5 py-2.5 text-red-700"
               >
                 {error}
+              </div>
+            )}
+            {success && (
+              <div
+                role="status"
+                className="text-sm font-semibold rounded-lg border border-green-700 bg-green-100 px-3.5 py-2.5 text-green-700"
+              >
+                {success}
               </div>
             )}
             <Button
