@@ -1,9 +1,12 @@
-import { Person } from "@mui/icons-material";
+import { MenuBook, Person } from "@mui/icons-material";
 import { Button } from "@mui/material";
+import { useState } from "react";
 import { useNavigate } from "react-router";
 
 const BookCard = ({ book }) => {
   const navigate = useNavigate();
+  const [imageFailed, setImageFailed] = useState(false);
+  const showImage = book.coverImageUrl && !imageFailed;
   const handleViewDetails = () => {
     navigate(`/books/${book.id}`);
   };
@@ -14,14 +17,20 @@ const BookCard = ({ book }) => {
     >
       {/* Book COver Image  */}
       <div className="relative aspect-2/3 bg-linear-to-br from-indigo-100 to-purple-100 overflow-hidden">
-        <img
-          src={book.coverImageUrl || "/book-placeholder.png"}
-          alt={book.title}
-          onError={(e) => {
-            e.currentTarget.src = "/book-placeholder.png";
-          }}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-        />
+        {showImage ? (
+          <img
+            src={book.coverImageUrl || "/book-placeholder.png"}
+            alt={book.title}
+            onError={() => {
+              setImageFailed(true);
+            }}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <MenuBook sx={{ fontSize: 64, color: "#A5B4FC" }} />
+          </div>
+        )}
       </div>
 
       {/* Book details */}
