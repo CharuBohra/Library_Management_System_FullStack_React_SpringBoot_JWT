@@ -30,6 +30,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -105,15 +106,18 @@ public class AuthServiceImpl implements AuthService {
     @Transactional
     public void createResetPasswordToken(String email) {
 
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(()->new UserNotFoundException("User does not exist with email "+email));
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if(optionalUser.isEmpty()){
+            return;
+        }
+        User user = optionalUser.get();
 
         String rstToken = UUID.randomUUID().toString();
 
         PasswordResetToken passwordResetToken = PasswordResetToken.builder()
                .token(rstToken)
                 .user(user)
-                .expiryDate(LocalDateTime.now().plusMinutes(5))
+                .expiryDate(LocalDateTime.now().plusMinutes(15))
                 .build();
 
         PasswordResetToken savedToken = passwordResetTokenRepository.save(passwordResetToken);
@@ -123,7 +127,7 @@ public class AuthServiceImpl implements AuthService {
         String subject = "Password Reset Link";
 
         String body = "Click the following link to reset your password. " +
-                "This link is valid for 5 minutes:\n" +
+                "This link is valid for 15 minutes:\n" +
                 resetToken;
 
         emailService.sendEmail(user.getEmail(),subject,body);
