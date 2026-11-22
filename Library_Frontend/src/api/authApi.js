@@ -14,3 +14,18 @@ export const signup = async (fullName, email, password, phone) => {
   });
   return response.data; //{message,status}
 };
+
+export const forgotPassword = async (email) => {
+  const response = await api.post("/auth/forgot-password", null, {
+    params: { email },
+  });
+  return response.data;
+};
+
+export const resetPassword = async (token, newPassword) => {
+  const response = await api.post("/auth/reset-password", {
+    token,
+    newPassword,
+  });
+  return response.data;
+};
