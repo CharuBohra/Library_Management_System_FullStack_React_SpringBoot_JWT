@@ -3,6 +3,8 @@ import { Button } from "@mui/material";
 import { useState } from "react";
 import { Link, useSearchParams } from "react-router";
 import AuthSidePanel from "./AuthSidePanel";
+import { resetPassword } from "../../api/authApi";
+import { getErrorMessage } from "../../utils/getErrorMessage";
 
 const ResetPassword = () => {
   const [form, setForm] = useState({
@@ -10,8 +12,9 @@ const ResetPassword = () => {
     confirmPassword: "",
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
@@ -19,10 +22,10 @@ const ResetPassword = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
-    setError("");
+    setError(null);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (form.newPassword.length < 8) {
@@ -33,13 +36,16 @@ const ResetPassword = () => {
       setError("Passwords don't match");
       return;
     }
-    setError("");
-    console.log("POST /auth/reset-password", {
-      token,
-      newPassword: form.newPassword,
-    });
-
-    setSuccess(true);
+    setError(null);
+    setIsSubmitting(true);
+    try {
+      await resetPassword(token, form.newPassword);
+      setSuccess(true);
+    } catch (error) {
+      setError(getErrorMessage(error));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   return (
     <div className="min-h-screen flex flex-wrap">
@@ -68,11 +74,10 @@ const ResetPassword = () => {
                 Set a new password
               </h1>
               <p className="text-gray-700 text-lg mb-2 ">
-                Choose a new password for your account, the link from your email
-                is valid for a limited time,
+                "Choose a new password for your account. The link from your
+                email is valid for a limited time."
               </p>
               <form
-                action=""
                 onSubmit={handleSubmit}
                 className="flex flex-col gap-5 w-full max-w-sm"
               >
@@ -122,7 +127,10 @@ const ResetPassword = () => {
                     className={`border rounded-lg shadow-sm px-3.5 py-2.5 w-full  ${error ? "border-red-400 focus:ring-red-500" : "border-gray-200 focus:ring-indigo-500"} focus:outline-none focus:ring-2`}
                   />
                   {error && (
-                    <span className="text-red-500 text-sm mt-1 font-semibold">
+                    <span
+                      role="alert"
+                      className="text-red-500 text-sm mt-1 font-semibold"
+                    >
                       {error}
                     </span>
                   )}
@@ -131,6 +139,7 @@ const ResetPassword = () => {
                   variant="contained"
                   fullWidth
                   type="submit"
+                  disabled={isSubmitting}
                   sx={{
                     bgcolor: "#4F46E5",
                     borderRadius: 2,
@@ -140,11 +149,11 @@ const ResetPassword = () => {
                     fontWeight: 600,
                     "&:hover": {
                       bgcolor: "#4338CA",
-                      //   bgcolor: "rgba(102,126,234,0.05)",
                     },
+                    "&.Mui-disabled": { bgcolor: "#A5B4FC", color: "white" },
                   }}
                 >
-                  Update Password
+                  {isSubmitting ? "Updating…" : "Update password"}
                 </Button>
                 <p className="text-sm text-center text-gray-600 ">
                   <Link
@@ -162,7 +171,8 @@ const ResetPassword = () => {
           <div className="flex flex-col gap-4">
             <h1 className="text-3xl font-bold text-gray-900">Link not valid</h1>
             <p className="text-gray-600">
-              This reset link is invalid or incomplete.Please request a new one.
+              This reset link is invalid or incomplete. Please request a new
+              one.
             </p>
             <Link
               to="/forgot-password"
