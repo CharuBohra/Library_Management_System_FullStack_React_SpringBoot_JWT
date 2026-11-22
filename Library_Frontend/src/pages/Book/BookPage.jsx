@@ -10,10 +10,11 @@ import {
 } from "@mui/material";
 import { Search, Sort } from "@mui/icons-material";
 import BookCard from "./BookCard";
-import { books } from "../../data/books";
-import { genres } from "../../data/genres";
 import PageContainer from "../components/PageContainer";
-import { filterAndSortBooks } from "./bookFilters";
+import { getGenres } from "../../api/genreApi";
+import { useEffect } from "react";
+import { getBooks } from "../../api/bookApi";
+import { getErrorMessage } from "../../utils/getErrorMessage";
 
 const BookPage = () => {
   const [selectedGenreId, setSelectedGenreId] = useState(null);
@@ -22,14 +23,72 @@ const BookPage = () => {
   const [sortBy, setSortBy] = useState("createdAt");
   const [sortDirection, setSortDirection] = useState("DESC");
 
-  const visibleBooks = filterAndSortBooks(books, genres, {
-    genreId: selectedGenreId,
-    availableOnly,
-    searchTerm,
-    sortBy,
-    sortDirection,
+  const requestKey = `${selectedGenreId} | ${availableOnly} | ${sortBy} | ${sortDirection}`;
+  const [result, setResult] = useState({
+    key: null,
+    books: [],
+    total: 0,
+    error: null,
   });
-  const activeGenres = genres.filter((g) => g.active);
+
+  const [genres, setGenres] = useState([]);
+
+  useEffect(() => {
+    let ignore = false;
+    const load = async () => {
+      try {
+        const data = await getGenres();
+        if (!ignore) setGenres(data);
+      } catch {
+        if (!ignore) setGenres([]);
+      }
+    };
+    load();
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    let ignore = false;
+    const load = async () => {
+      try {
+        const data = await getBooks({
+          genreId: selectedGenreId,
+          availableOnly,
+          sortBy,
+          sortDirection,
+          page: 0,
+          pageSize: 20,
+        });
+        if (!ignore) {
+          setResult({
+            key: requestKey,
+            books: data.content,
+            total: data.totalElements,
+            error: null,
+          });
+        }
+      } catch (error) {
+        if (!ignore) {
+          setResult({
+            key: requestKey,
+            books: [],
+            total: 0,
+            error: getErrorMessage(error),
+          });
+        }
+      }
+    };
+    load();
+    return () => {
+      ignore = true;
+    };
+  }, [requestKey, selectedGenreId, availableOnly, sortBy, sortDirection]);
+
+  const activeGenres = genres.filter(
+    (g) => g.active && g.parentGenreId === null,
+  );
 
   const handleGenreChange = (genreId) => {
     setSelectedGenreId(genreId);
@@ -44,6 +103,9 @@ const BookPage = () => {
   const getCurrentSortValue = () => {
     return `${sortBy}-${sortDirection.toLowerCase()}`;
   };
+
+  const loading = result.key !== requestKey;
+  const visibleBooks = result.books;
   return (
     <div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50">
       <PageContainer>
@@ -202,7 +264,6 @@ const BookPage = () => {
                   {visibleBooks.map((book) => (
                     <BookCard key={book.id} book={book} />
                   ))}
-                  s
                 </div>
               )}
             </main>
