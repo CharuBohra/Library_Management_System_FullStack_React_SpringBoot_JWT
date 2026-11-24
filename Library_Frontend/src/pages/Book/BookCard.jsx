@@ -19,7 +19,7 @@ const BookCard = ({ book }) => {
       <div className="relative aspect-2/3 bg-linear-to-br from-indigo-100 to-purple-100 overflow-hidden">
         {showImage ? (
           <img
-            src={book.coverImageUrl || "/book-placeholder.png"}
+            src={book.coverImageUrl}
             alt={book.title}
             onError={() => {
               setImageFailed(true);

@@ -17,7 +17,11 @@ export const AuthProvider = ({ children }) => {
 
     getProfile()
       .then((profile) => setUser(profile))
-      .catch(() => localStorage.removeItem(TOKEN_KEY))
+      .catch((error) => {
+        if (error.response?.status === 401) {
+          localStorage.removeItem(TOKEN_KEY);
+        }
+      })
       .finally(() => setInitializing(false));
   }, []);
 

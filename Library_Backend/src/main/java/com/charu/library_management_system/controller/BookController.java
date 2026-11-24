@@ -75,6 +75,7 @@ public class BookController {
 
     @GetMapping
     public ResponseEntity<PageResponseDTO<BookDTO>> searchBooks(
+            @RequestParam(required = false) String searchTerm,
             @RequestParam(required = false) Long genreId,
             @RequestParam(required = false , defaultValue = "false") Boolean availableOnly,
             @RequestParam(defaultValue = "0") int page,
@@ -83,6 +84,7 @@ public class BookController {
             @RequestParam(defaultValue = "DESC") String sortDirection
     ){
         BookSearchRequestDTO bookSearchRequestDTO = new BookSearchRequestDTO();
+        bookSearchRequestDTO.setSearchTerm(searchTerm);
         bookSearchRequestDTO.setGenreId(genreId);
         bookSearchRequestDTO.setAvailableOnly(availableOnly);
         bookSearchRequestDTO.setPage(page);
