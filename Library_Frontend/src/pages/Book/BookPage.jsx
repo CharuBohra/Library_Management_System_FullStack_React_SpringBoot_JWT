@@ -23,8 +23,9 @@ const BookPage = () => {
   const [sortBy, setSortBy] = useState("createdAt");
   const [sortDirection, setSortDirection] = useState("DESC");
   const [reloadCount, setReloadCount] = useState(0);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
-  const requestKey = `${selectedGenreId} | ${availableOnly} | ${sortBy} | ${sortDirection} | ${reloadCount}`;
+  const requestKey = `${selectedGenreId} | ${availableOnly} | ${sortBy} | ${sortDirection} | ${reloadCount} | ${debouncedSearch}`;
   const [result, setResult] = useState({
     key: null,
     books: [],
@@ -51,6 +52,16 @@ const BookPage = () => {
   }, []);
 
   useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm.trim());
+    }, 400);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [searchTerm]);
+
+  useEffect(() => {
     let ignore = false;
     const load = async () => {
       try {
@@ -59,6 +70,7 @@ const BookPage = () => {
           availableOnly,
           sortBy,
           sortDirection,
+          searchTerm: debouncedSearch || undefined,
           page: 0,
           pageSize: 20,
         });
@@ -85,7 +97,14 @@ const BookPage = () => {
     return () => {
       ignore = true;
     };
-  }, [requestKey, selectedGenreId, availableOnly, sortBy, sortDirection]);
+  }, [
+    requestKey,
+    selectedGenreId,
+    availableOnly,
+    sortBy,
+    sortDirection,
+    debouncedSearch,
+  ]);
 
   const activeGenres = genres.filter(
     (g) => g.active && g.parentGenreId === null,
