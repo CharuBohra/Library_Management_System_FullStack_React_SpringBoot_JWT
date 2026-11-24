@@ -13,33 +13,35 @@ import {
   Select,
   Typography,
 } from "@mui/material";
-import { reviews } from "../../data/reviews";
 import { formatDate } from "../../utils/formatDate";
-import { activeSubscription } from "../../data/subscription";
 import { useState } from "react";
 import { useEffect } from "react";
 import { getBookById } from "../../api/bookApi";
 import { getErrorMessage } from "../../utils/getErrorMessage";
+import { getBookReviews } from "../../api/bookReviewApi";
+import { getActiveSubscription } from "../../api/subscriptionApi";
 
 const BookDetails = () => {
   const { id } = useParams();
   const [reloadCount, setReloadCount] = useState(0);
-  const requestKey = `${id} | ${reloadCount}`;
-
-  const review = reviews.filter((r) => r.bookId === Number(id));
-
-  const reviewCount = review.length;
-  const avgRating =
-    reviewCount === 0
-      ? 0
-      : review.reduce((sum, r) => sum + r.rating, 0) / reviewCount;
-
+  const [reviews, setReviews] = useState([]);
+  const [subscription, setSubscription] = useState(null);
+  const [pickedDays, setPickedDays] = useState(null);
   const [result, setResult] = useState({
     key: null,
     book: null,
     notFound: false,
     error: null,
   });
+  const requestKey = `${id} | ${reloadCount}`;
+
+  const review = reviews;
+
+  const reviewCount = review.length;
+  const avgRating =
+    reviewCount === 0
+      ? 0
+      : review.reduce((sum, r) => sum + r.rating, 0) / reviewCount;
 
   useEffect(() => {
     let ignore = false;
@@ -80,15 +82,53 @@ const BookDetails = () => {
     };
   }, [requestKey, id]);
 
-  const subscription = activeSubscription;
+  useEffect(() => {
+    let ignore = false;
+    const load = async () => {
+      try {
+        const data = await getBookReviews(id);
+        if (!ignore) {
+          setReviews(data);
+        }
+      } catch (error) {
+        if (!ignore) {
+          setReviews([]);
+        }
+      }
+    };
+    load();
+    return () => {
+      ignore = true;
+    };
+  }, [id]);
+
+  useEffect(() => {
+    let ignore = false;
+    const load = async () => {
+      try {
+        const data = await getActiveSubscription();
+        if (!ignore) {
+          setSubscription(data);
+        }
+      } catch (error) {
+        if (!ignore) {
+          setSubscription(null);
+        }
+      }
+    };
+    load();
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   const maxDays = subscription?.maxDaysPerBook ?? 14;
+
+  const checkoutDays = pickedDays ?? maxDays;
 
   const dayOptions = [...new Set([7, 14, maxDays])]
     .filter((d) => d <= maxDays)
     .sort((a, b) => a - b);
-
-  const [checkoutDays, setCheckoutDays] = useState(maxDays);
 
   const countFor = (stars) => review.filter((r) => r.rating === stars).length;
 
@@ -315,7 +355,7 @@ const BookDetails = () => {
                           label="Borrow for"
                           inputProps={{ "aria-label": "Checkout Days" }}
                           onChange={(e) =>
-                            setCheckoutDays(Number(e.target.value))
+                            setPickedDays(Number(e.target.value))
                           }
                           sx={{
                             fontSize: "0.875rem", // 14px, same as text-sm
