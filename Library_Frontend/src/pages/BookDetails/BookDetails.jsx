@@ -90,7 +90,7 @@ const BookDetails = () => {
         if (!ignore) {
           setReviews(data);
         }
-      } catch (error) {
+      } catch {
         if (!ignore) {
           setReviews([]);
         }
@@ -110,7 +110,7 @@ const BookDetails = () => {
         if (!ignore) {
           setSubscription(data);
         }
-      } catch (error) {
+      } catch {
         if (!ignore) {
           setSubscription(null);
         }
@@ -347,7 +347,9 @@ const BookDetails = () => {
                         Borrow for
                       </InputLabel>
                       <FormControl fullWidth>
-                        <InputLabel id="checkout-days-label">Select</InputLabel>
+                        <InputLabel id="checkout-days-label">
+                          Borrow for
+                        </InputLabel>
                         <Select
                           labelId="checkout-days-label"
                           id="checkout-days-select"
