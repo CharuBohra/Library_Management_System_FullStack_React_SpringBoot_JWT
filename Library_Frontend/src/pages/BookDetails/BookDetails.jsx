@@ -1,5 +1,4 @@
 import { Link, useParams } from "react-router";
-import { books } from "../../data/books";
 import PageContainer from "../components/PageContainer";
 import { ArrowBack, FavoriteBorderOutlined } from "@mui/icons-material";
 import {
@@ -18,10 +17,15 @@ import { reviews } from "../../data/reviews";
 import { formatDate } from "../../utils/formatDate";
 import { activeSubscription } from "../../data/subscription";
 import { useState } from "react";
+import { useEffect } from "react";
+import { getBookById } from "../../api/bookApi";
+import { getErrorMessage } from "../../utils/getErrorMessage";
 
 const BookDetails = () => {
   const { id } = useParams();
-  const book = books.find((b) => b.id === Number(id));
+  const [reloadCount, setReloadCount] = useState(0);
+  const requestKey = `${id} | ${reloadCount}`;
+
   const review = reviews.filter((r) => r.bookId === Number(id));
 
   const reviewCount = review.length;
@@ -29,6 +33,52 @@ const BookDetails = () => {
     reviewCount === 0
       ? 0
       : review.reduce((sum, r) => sum + r.rating, 0) / reviewCount;
+
+  const [result, setResult] = useState({
+    key: null,
+    book: null,
+    notFound: false,
+    error: null,
+  });
+
+  useEffect(() => {
+    let ignore = false;
+    const load = async () => {
+      try {
+        const data = await getBookById(id);
+        if (!ignore) {
+          setResult({
+            key: requestKey,
+            book: data,
+            notFound: false,
+            error: null,
+          });
+        }
+      } catch (error) {
+        if (!ignore) {
+          if (error.response?.status === 404) {
+            setResult({
+              key: requestKey,
+              book: null,
+              notFound: true,
+              error: null,
+            });
+          } else {
+            setResult({
+              key: requestKey,
+              book: null,
+              notFound: false,
+              error: getErrorMessage(error),
+            });
+          }
+        }
+      }
+    };
+    load();
+    return () => {
+      ignore = true;
+    };
+  }, [requestKey, id]);
 
   const subscription = activeSubscription;
 
@@ -45,7 +95,44 @@ const BookDetails = () => {
   const percentFor = (stars) =>
     reviewCount === 0 ? 0 : (countFor(stars) / reviewCount) * 100;
 
-  if (!book) return <p>Book Not Found</p>;
+  const loading = result.key !== requestKey;
+  const book = result.book;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50 py-8">
+        <PageContainer>
+          <div className="p-8 text-gray-600 text-center">Loading book…</div>
+        </PageContainer>
+      </div>
+    );
+  }
+  if (result.notFound) {
+    return (
+      <div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50 py-8">
+        <PageContainer>
+          <p className="p-8 text-center text-gray-500">Book Not Found</p>
+        </PageContainer>
+      </div>
+    );
+  }
+  if (result.error) {
+    return (
+      <div
+        role="alert"
+        className="p-6 rounded-xl bg-red-50 text-red-700 text-center border border-red-700 flex flex-col items-center gap-3"
+      >
+        <p className="text-red-700 font-semibold">{result.error}</p>
+        <button
+          type="button"
+          onClick={() => setReloadCount((prev) => prev + 1)}
+          className="px-4 py-2 text-white rounded-lg font-semibold bg-indigo-600 hover:bg-indigo-700 "
+        >
+          Try again
+        </button>
+      </div>
+    );
+  }
   return (
     <div className="min-h-screen bg-linear-to-br from-indigo-50 via-white to-purple-50 py-8">
       <PageContainer>
