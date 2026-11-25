@@ -1,17 +1,56 @@
 import { ErrorOutline, ReceiptLong } from "@mui/icons-material";
 import PageContainer from "../components/PageContainer";
 import PageHeader from "../components/PageHeader";
-import { fines } from "../../data/fines";
 import { formatMoney } from "../../utils/formatMoney";
 import { Button, FormControl, MenuItem, Select } from "@mui/material";
 import FineRow from "./FineRow";
 import { useState } from "react";
 import { FINE_TYPES } from "./fineConfig";
 import StatCard from "../components/StatCard";
+import { getMyFines } from "../../api/finesApi";
+import { getErrorMessage } from "../../utils/getErrorMessage";
+import { useEffect } from "react";
 
 const MyFines = () => {
   const [statusFilter, setStatusFilter] = useState(null);
   const [typeFilter, setTypeFilter] = useState(null);
+  const [reloadCount, setReloadCount] = useState(0);
+  const [result, setResult] = useState({
+    key: null,
+    fines: [],
+    error: null,
+  });
+  const requestKey = `${reloadCount}`;
+
+  useEffect(() => {
+    let ignore = false;
+    const load = async () => {
+      try {
+        const data = await getMyFines();
+        if (!ignore) {
+          setResult({
+            key: requestKey,
+            fines: data,
+            error: null,
+          });
+        }
+      } catch (error) {
+        if (!ignore) {
+          setResult({
+            key: requestKey,
+            fines: [],
+            error: getErrorMessage(error),
+          });
+        }
+      }
+    };
+    load();
+    return () => {
+      ignore = true;
+    };
+  }, [requestKey]);
+
+  const fines = result.fines;
 
   const totalOutstanding = fines
     .filter((f) => f.status !== "WAIVED")
@@ -29,6 +68,7 @@ const MyFines = () => {
 
   const hasOutstanding = totalOutstanding > 0;
 
+  const loading = result.key !== requestKey;
   const visibleFines = fines.filter(
     (f) =>
       (statusFilter === null || f.status === statusFilter) &&
@@ -73,6 +113,66 @@ const MyFines = () => {
 
   const handlePay = (fine) => {
     console.log("POST /api/fines/" + fine.id + "/pay");
+  };
+
+  const renderFines = () => {
+    // 1. Loading
+    if (loading) {
+      return (
+        <div className="p-8 text-gray-600 text-center">Loading your fines…</div>
+      );
+    }
+    // 2. Error
+    if (result.error) {
+      return (
+        <div
+          role="alert"
+          className="p-6 rounded-xl bg-red-50 text-red-700 text-center border border-red-700 flex flex-col items-center gap-3"
+        >
+          <p className="text-red-700 font-semibold">{result.error}</p>
+          <button
+            type="button"
+            onClick={() => setReloadCount((prev) => prev + 1)}
+            className="px-4 py-2 text-white rounded-lg font-semibold bg-indigo-600 hover:bg-indigo-700 "
+          >
+            Try again
+          </button>
+        </div>
+      );
+    }
+
+    // 3.no data
+    if (visibleFines.length === 0) {
+      return (
+        <p className="p-8 text-center text-gray-500">
+          No fines match these filters.
+        </p>
+      );
+    }
+
+    return (
+      <table className=" w-full min-w-[860px] text-sm">
+        <thead className="bg-gray-50 border-b border-gray-200">
+          <tr className="uppercase tracking-wide font-semibold text-xs text-left">
+            <th className="px-4 py-3">Book</th>
+            <th className="px-4 py-3">Type</th>
+            <th className="px-4 py-3 text-right">Amount</th>
+            <th className="px-4 py-3 text-right">Paid</th>
+            <th className="px-4 py-3 text-right">Outstanding</th>
+            <th className="px-4 py-3">Status</th>
+            <th className="px-4 py-3">Date</th>
+            <th className="px-4 py-3 w-40">
+              <span className="sr-only">Action</span>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {visibleFines.map((fine) => (
+            <FineRow key={fine.id} fine={fine} onPay={handlePay} />
+          ))}
+        </tbody>
+      </table>
+    );
   };
 
   return (
@@ -198,36 +298,7 @@ const MyFines = () => {
               </FormControl>
             </div>
           </div>
-          <div className="relative overflow-x-auto">
-            {visibleFines.length === 0 ? (
-              <p className="p-8 text-center text-gray-500">
-                No fines match these filters.
-              </p>
-            ) : (
-              <table className=" w-full min-w-[860px] text-sm">
-                <thead className="bg-gray-50 border-b border-gray-200">
-                  <tr className="uppercase tracking-wide font-semibold text-xs text-left">
-                    <th className="px-4 py-3">Book</th>
-                    <th className="px-4 py-3">Type</th>
-                    <th className="px-4 py-3 text-right">Amount</th>
-                    <th className="px-4 py-3 text-right">Paid</th>
-                    <th className="px-4 py-3 text-right">Outstanding</th>
-                    <th className="px-4 py-3">Status</th>
-                    <th className="px-4 py-3">Date</th>
-                    <th className="px-4 py-3 w-40">
-                      <span className="sr-only">Action</span>
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {visibleFines.map((fine) => (
-                    <FineRow key={fine.id} fine={fine} onPay={handlePay} />
-                  ))}
-                </tbody>
-              </table>
-            )}
-            ;
-          </div>
+          <div className="relative overflow-x-auto">{renderFines()}</div>
         </div>
         <div className="text-xs text-gray-500 py-4">
           Payments are processed by Razorpay . You'll return here once the

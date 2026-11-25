@@ -100,4 +100,11 @@ public class Fine {
         this.status = FineStatus.PAID;
         this.paidAt = LocalDateTime.now();
     }
+     public BigDecimal getAmountPaid(){
+         return status == FineStatus.PAID ? amount : BigDecimal.ZERO;
+     }
+
+     public BigDecimal getAmountOutstanding(){
+        return status == FineStatus.PENDING ? amount : BigDecimal.ZERO;
+     }
 }
