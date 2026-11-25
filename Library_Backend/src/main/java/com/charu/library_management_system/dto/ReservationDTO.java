@@ -1,6 +1,7 @@
 package com.charu.library_management_system.dto;
 
 import com.charu.library_management_system.enums.ReservationStatus;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
@@ -54,8 +55,8 @@ public class ReservationDTO {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
-
-    private boolean isExpired;
+    
+    private Boolean isExpired;
 
     private boolean canBeCancelled;
 
