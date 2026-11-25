@@ -24,9 +24,6 @@ public interface FineMapper {
     @Mapping(source = "processedBy.id",target = "processedByUserId")
     @Mapping(source = "processedBy.fullName",target = "processedByUserName")
     @Mapping(source = "processedBy.email",target = "processedByUserEmail")
-
-    @Mapping(target = "amountPaid" , ignore = true)
-    @Mapping(target = "amountOutstanding", ignore = true)
     FineDTO toDTO(Fine fine);
 
     @Mapping(source = "id",target = "id")
