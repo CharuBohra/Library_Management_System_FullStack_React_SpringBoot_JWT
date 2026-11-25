@@ -1,7 +1,6 @@
 import { Box, Card, Tab, Tabs } from "@mui/material";
 import { tabs } from "./tabs";
 import { useState } from "react";
-import { loans } from "../../data/loans";
 import LoanCard from "./LoanCard";
 import PageContainer from "../components/PageContainer";
 import { RequestQuote } from "@mui/icons-material";
