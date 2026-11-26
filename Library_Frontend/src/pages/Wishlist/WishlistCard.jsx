@@ -2,6 +2,7 @@ import { Button } from "@mui/material";
 import { formatDate } from "../../utils/formatDate";
 import { useNavigate } from "react-router";
 import { Favorite } from "@mui/icons-material";
+import BookCover from "../components/BookCover";
 
 const WishlistCard = ({ wishlistItem, onRemove }) => {
   const navigate = useNavigate();
@@ -13,25 +14,15 @@ const WishlistCard = ({ wishlistItem, onRemove }) => {
     >
       <div className="relative p-4 pb-0">
         <button
+          type="button"
           aria-label={`View ${wishlistItem.book.title}`}
           onClick={() => navigate(`/books/${wishlistItem.book.id}`)}
+          className="block w-full"
         >
-          {wishlistItem.book.coverImageUrl ? (
-            <div className="relative aspect-2/3 bg-linear-to-br from-indigo-100 to-purple-100 overflow-hidden">
-              <img
-                src={wishlistItem.book.coverImageUrl || "/book-placeholder.png"}
-                alt={wishlistItem.book.title}
-                onError={(e) => {
-                  e.currentTarget.src = "/book-placeholder.png";
-                }}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-              />
-            </div>
-          ) : (
-            <span className="relative aspect-2/3 bg-linear-to-br from-indigo-100 to-purple-100 overflow-hidden">
-              {wishlistItem.book.title}
-            </span>
-          )}
+          <BookCover
+            src={wishlistItem.book.coverImageUrl}
+            alt={wishlistItem.book.title}
+          />
         </button>
         <button
           aria-label={`Remove ${wishlistItem.book.title} from Wishlist`}
